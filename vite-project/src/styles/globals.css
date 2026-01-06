@@ -1,0 +1,1017 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: system-ui, sans-serif;
+}
+
+/* NAVBAR */
+.navbar {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  height: 64px;
+  padding: 0 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: white;
+  z-index: 100;
+  transition: all 0.3s ease;
+}
+
+.navbar-scrolled {
+  background: white;
+  color: black;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.nav-center {
+  display: flex;
+  gap: 24px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+/* HERO SECTION */
+.hero {
+  position: relative;
+  height: 80vh; /* Better height for hero visibility */
+  min-height: 600px;
+  overflow: visible !important; /* ALLOWS CONTENT TO HANG OFF THE BOTTOM */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* BACKGROUND IMAGE */
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  background-image: url("/hero-bg.jpg"); /* 👈 image name yahin change */
+  background-size: cover;
+  background-position: center;
+  z-index: -1;
+}
+
+/* DARK OVERLAY (for readability) */
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(17, 17, 17, 0.45);
+  z-index: -1;
+}
+
+/* HERO TEXT */
+.hero-content {
+  padding-top: 120px; /* navbar ke neeche space */
+  text-align: center;
+  color: rgb(10, 10, 10);
+  width: 70%;
+  display: flex;
+  flex-direction: column;
+}
+
+.hero-content h1 {
+  font-size: 48px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: rgb(237, 236, 236);
+}
+
+.hero-content p {
+  font-size: 18px;
+  color: #e5e7eb;
+}
+
+/* Grouping container for the edge elements */
+.hero-bottom-edge {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translate(-50%, 50%); /* Centers the bar on the exact edge */
+  width: 90%;
+  max-width: 1000px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 100;
+}
+
+/* SEARCH BOX SPACING 
+.search-wrapper {
+  background: w;
+  border-radius: 16px;
+  padding: 20px 24px 24px;
+  max-width: 1100px;
+  margin: 0 auto;
+  text-align: center;
+}*/
+
+/* MAIN SEARCH ROW */
+.search-row {
+  display: flex;
+  align-items: center;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  overflow: visible;
+  position: relative;
+  
+}
+
+/* EACH SECTION */
+.search-col {
+  flex: 1;
+  padding: 14px 18px;
+}
+
+/* DIVIDER LINE BETWEEN COLUMNS */
+.search-col:not(:last-child) {
+  border-right: 1px solid #e5e7eb;
+}
+
+/* SWAP ICON (NO CIRCLE) */
+.swap-icon {
+  font-size: 30px;
+  color: var(--primary-red);
+  margin:  0 -12;
+  cursor: pointer;
+  user-select: none;
+  background: var(--);
+  z-index: 0;
+  position: absolute;
+  left: 20%;
+}
+
+.swapdiv {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px; /* Space for the divider and icon */
+  
+}
+
+/* THE VERTICAL LINE (Border) */
+.vertical-divider {
+  width: 1px;
+  height: 100%; /* Makes the line go from top to bottom of the box */
+  background-color: #e0e8f8; /* Darker gray for better visibility */
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1;
+}
+
+/* THE RED ICON CIRCLE */
+.swap-icon-wrapper {
+  position: absolute;
+  z-index: 10; /* Sits on top of the line */
+  background-color: #e94d59; /* Your brand red */
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  place-items: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Makes it pop */
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.swap-icon-wrapper:hover {
+  transform: scale(1.1) rotate(45deg); /* Optional: cool hover effect */
+}
+
+.swap-icon {
+  color: #ffffff; /* White text */
+  font-size: 18px;
+  /* border: 1px solid #ffffff; */
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  margin-top: 2px;
+  margin-left: -6px;
+  text-align: center;
+  font-weight: bold;
+  user-select: none;
+}
+
+.swap-icon-wrapper:active {
+  transform: scale(0.9) rotate(180deg); /* Visual feedback on click */
+}
+
+/* NAV LINKS */
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+/* DROPDOWN */
+.nav-dropdown {
+  position: relative;
+}
+
+.dropdown-panel {
+  position: absolute;
+  top: 42px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 640px;
+  background: white;
+  color: black;
+  padding: 20px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  z-index: 200;
+}
+
+.dropdown-item {
+  display: flex;
+  gap: 10px;
+  padding: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.dropdown-item:hover {
+  background: #f1f5f9;
+}
+
+.dropdown-item strong {
+  font-size: 14px;
+}
+
+.dropdown-item p {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.dropdown-icon {
+  font-size: 18px;
+  color: #2563eb;
+}
+
+
+:root {
+  --primary-red: #e94d59; /* Matching the red in your screenshot */
+  --light-pink: #fff5f6;
+  --border-gray: #e5e7eb;
+}
+
+/* SEARCH WRAPPER */
+.search-wrapper {
+  background: white;
+  border-radius: 12px;
+  padding: 20px 40px;
+  max-width: 1250px;
+  margin: 40px auto;
+  width: 100%;
+}
+
+/* SERVICE TABS */
+.service-tabs {
+  display: flex !important;
+  gap: 12px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  transition: all 0.2s;
+  background: transparent;
+  /* justify-content: left !important; */
+  flex-direction: row !important  ;
+  padding-left: 5px;
+  width: min-content;
+}
+
+.service-tabs div {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  margin-bottom: px;
+ padding-left: 10px;
+  padding-right: 10px;
+  margin: 0 auto;
+  background-color: #fffbfb; /* White background */
+  border: 1px solid #f2f4f9; /* Light border */
+  border-radius: 50px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05); /* Soft shadow to make it visible */
+  transition: all 0.2s ease-in-out;
+  color: #333;
+  white-space: nowrap;
+}
+
+/* Hover effect */
+.service-tab-item:hover {
+  border-color: #e94d59;
+  background-color: #fff5f6;
+}
+
+.service-tabs .active {
+ /*color: #555;
+  border-bottom: 3px solid #2563eb;
+  padding-bottom: 6px;*/
+ border-bottom: 3px solid ;
+  background: var(--light-pink);
+  color: var(--primary-red);
+  border-color: var(--primary-red);
+  padding-bottom: 4px;
+  background-color: #ffffff;
+}
+ 
+
+.service-tabs span {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+/* TRIP TYPE */
+.trip-type {
+  display: flex;
+  gap: 32px;
+  margin-bottom: 16px ;
+  font-size: 14px;
+  color: #333;
+}
+
+.trip-type label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.trip-type input[type="radio"] {
+  accent-color: var(--primary-red);
+}
+
+/* SEARCH CARD */
+.search-card {
+  display: flex;
+  grid-template-columns: 1.2fr 60px 1.2fr 1fr 1fr 1.3fr auto;
+  align-items: center;
+  background: #2b2525;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px;
+  gap: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+}
+
+.search-box {
+  display: flex;
+  grid-template-columns: 1.2fr auto 1.2fr 1fr 1.4fr;
+  gap: 12px;
+  align-items: center;
+  border: 2px solid #040505;
+  padding: 12px 16px;
+  border-radius: 14px;
+  background: #fff;
+  
+}
+
+/* INPUT BOX */
+.input-box {
+  border-right: 2px solid #e5e7eb;
+  padding-right: 12px;
+}
+
+.input-box:last-of-type {
+  border-right: none;
+}
+
+.label {
+  font-size: 18px;
+  color: #545455;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  position: relative;
+  margin-bottom: 2px !important;
+  line-height: 1.1;
+  font-weight: 400;
+  margin: 0 !important;
+  margin-top: 4px;
+}
+
+.value{
+  display: block;
+  font-size: 10px;
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+.input-box h3 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #817f82;
+  align-items: center;
+  justify-items: center;
+}
+
+.input-box p {
+  font-size: 12px;
+  color: #6b7280;
+   align-items: center;
+  justify-items: center;
+
+}
+
+/* MUTED RETURN */
+.input-box.muted h3 {
+  color: #78797d;
+}
+
+
+
+
+/* SWAP BUTTON */
+.swap-btn {
+ all: unset;
+}
+
+/* SEARCH BUTTON */
+.search-btn {
+  margin-top: 5px;
+  background: var(--primary-red);
+  color: white;
+  border: none;
+  padding: 14px 40px;
+  border-radius: 0 8px 0px 8px;
+  font-size: 16px;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  background: linear-gradient(135deg, #e94d59, #5c1416);
+}
+
+/* SEARCH BUTTON */
+.search-btn-wrapper {
+  margin-top: 1px;     /* 👈 gap reduced */
+  text-align: center;
+}
+
+
+/* FIELD BOX */
+.field {
+  flex: 1; /* This creates the symmetrical gaps/widths */
+  padding: 15px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-right: 1.5px solid #d1d5db; /* Consistent full-height dividers */
+  position: relative;
+}
+
+.field label {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.field strong {
+  display: block;
+  font-size: 20px;
+  font-weight: 600;
+  color: #000;
+}
+
+/* VERTICAL DIVIDER LINE */
+.field:not(:last-child) {
+  border-right: 1px solid #e5e7eb;
+}
+
+
+/* Traveller dropdown */
+.clickable {
+ 
+  cursor: pointer;
+}
+
+/* TRAVELLERS DROPDOWN */
+.travellers-field {
+  position: relative;
+  cursor: pointer;
+}
+
+.travellers-box {
+  position: relative;
+  cursor: pointer;
+}
+
+/* Ensure the trigger container doesn't clip the dropdown */
+.box-section.travellers-trigger {
+  position: relative;
+}
+
+.travellers-trigger:hover {
+  background-color: #fff1f2; /* Light red hover effect */
+}
+
+.travellers-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  width: 350px;
+  height: 220px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  padding: 20px;
+  margin-top: 10px;
+  text-align: left; /* Keep text aligned left inside dropdown */
+  z-index: 9999;
+  overflow: auto;
+}
+
+/* Style for the pills in TravellersClassDropdown.jsx */
+.pill-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 15px;
+}
+
+.pill {
+  padding: 6px 12px;
+  border: 2px solid #e5e7eb;
+  border-radius: 20px;
+  background: white;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 480;
+}
+
+.pill.active {
+  background: rgb(241, 158, 158);
+  color: rgb(95, 74, 74);
+  border-color: var(--primary-red);
+}
+
+.traveller-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.travellers-dropdown h4 {
+  margin: 12px 0 8px;
+  font-size: 14px;
+  font-weight: 600;
+  
+}
+
+/* COUNTER */
+.counter-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 10px 0;
+}
+
+.counter-row p {
+  font-size: 12px;
+  color: #393535;
+}
+
+.counter {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.counter button {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: none;
+  background: #f1f5f9;
+  cursor: pointer;
+}
+
+.counter span {
+  min-width: 20px;
+  text-align: left;
+  font-weight: 600;
+}
+
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-bottom: 10px 0;
+}
+
+.chip-options.two-rows label {
+  width: 48%;
+}
+
+.chip {
+  padding: 6px 12px;
+  border-radius: 20px;
+  border: 1px solid #cbd5f5;
+  background: white;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.chip.active {
+  background: #2563eb;
+  color: #fff;
+  border-color: #2563eb;
+}
+
+/* PILL BUTTONS */
+
+.fare-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 10px;
+   accent-color: var(--primary-red);
+}
+
+
+.fare-type {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 14px;
+  
+}
+
+
+
+.radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 14px;
+}
+
+/* APPLY BUTTON */
+.dropdown-footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 16px;
+}
+
+.apply-wrapper {
+  margin-top: 12px;
+  text-align: right;
+  display: flex;
+  justify-self: flex-end;
+}
+
+.apply-btn {
+  margin-top: 12px;
+  width: 100%;
+  padding: 10px 20px;
+  border-radius: 20px;
+  border: none;
+  font-weight: 600;
+  color: white;
+  cursor: pointer;
+  background: linear-gradient(135deg, #e94d59, #5c1416);
+}
+
+
+/* SEARCH BUTTON */
+.search-btn.big {
+  margin: 24px auto 12px;
+  display: block;
+  padding: 14px 60px;
+  border-radius: 999px;
+  background: #2563eb;
+  color: white;
+  border: none;
+  font-size: 40px;
+  cursor: pointer;
+}
+
+/* SEARCH BUTTON CENTER */
+.search-action {
+  display: flex;
+  justify-content: center;
+  margin-top: 15px;
+}
+
+/* PRODUCT TABS */
+.product-tabs {
+  display: flex;
+  gap: 20px;
+  font-weight: 500;
+  margin-bottom: 12px;
+}
+
+.product-tabs span {
+  cursor: pointer;
+}
+
+.product-tabs .active {
+  color: #2563eb;
+}
+
+/* MAIN BIG BOX */
+.main-search-box {
+  display: flex;
+  align-items: stretch;
+  border: 2px solid #d1d5db;
+  border-radius: 8px;
+  overflow: visible;
+  position: relative;
+  background: var(--light-pink); /* Light red/pink background */
+  
+}
+
+/* BOX SECTION */
+.box-section {
+  flex: 1;
+  padding: 6px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 12px;
+  border-right: 2px solid #d1d5db;
+  position: relative;
+  min-height: 90px;
+}
+
+.box-section.swap {
+  flex: 0.3;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+/* TEXT */
+.box-section strong {
+  display: block;
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+  padding: 0;
+  line-height: 1.1;
+}
+
+/* Ensure From and To text matches Departure style */
+.box-section .display-date {
+  font-size: 18px;
+  font-weight: 600;
+  color: #000;
+  display: block;
+  margin-top: 6px; /* Match the gap you set for Departure */
+  line-height: 1.2;
+}
+
+/* DIVIDER LINE */
+.divider {
+  width: 1px;
+  height: 100%; /* Change from 88px to 100% for perfect fit */
+  background: #d1d5db; /* Match the color of your other borders */
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  align-items: stretch;
+  border-right: 2px solid #d1d5db; /* Single source for all vertical lines */
+}
+
+/* 1. Main Column: Forces everything to stack vertically */
+.departure-section {
+  cursor: pointer;
+  position: relative;
+  min-width: 150px;
+  display: flex;
+  flex-direction: row; /* Stack header and date vertically */
+  justify-content: center;
+  padding: 20px 30px;
+  margin-bottom: 2px;
+  line-height: 1.1;
+}
+
+/* 2. Header Row: Keeps 'Departure' and 'Icon' side-by-side */
+.label-row {
+  display: flex;
+  flex-direction: row;    /* Keep text and icon on one line */
+  align-items: center;
+  gap: 10px;               /* Space between text and icon */
+  margin-bottom: 4px !important;
+  font-size: 18px;
+  color: #0f1012;
+  position: relative;
+  padding-top: 24px;
+  line-height: 1.2;
+  height: 20px;
+  
+}
+
+
+.calendar-trigger-icon {
+  color: #e94d59;         /* Brand red icon */
+  font-size: 16px;
+  display: flex;
+}
+
+/* 3. Date Area: Sits directly below the label-row */
+.datepicker-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+ width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.display-date {
+  font-size: 18px;
+  font-weight: 700;
+  color: #000;
+  display: block;
+  padding-bottom: 0px;
+  margin-top: 0 !important;
+  line-height: 1.2;
+  text-align: left;
+ margin: 0 !important;
+ padding-top: 0 !important; 
+}
+
+/* 4. Click Trigger: Makes the whole box clickable for the calendar */
+.hidden-datepicker-input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 10;
+  pointer-events: none;
+  display: none;
+}
+
+/* Red theme for the calendar popup */
+.react-datepicker__day--selected {
+  background-color: #e94d59 !important;
+  border-radius: 50%;
+}
+
+/* Remove the line after the final section */
+.box-section:last-child {
+  border-right: none;
+}
+
+.box-section:first-child {
+  border-right: none !important;
+}
+/* 5. Calendar Popup: Ensure it floats on top of everything */
+.react-datepicker-popper {
+  z-index: 9999 !important;
+}
+
+.cnt-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1px solid #ddd;
+  background: white;
+  cursor: pointer;
+}
+
+.chevron-icon {
+  font-size: 12px;
+  color: #e94d59;
+  margin-left: 5px;
+}
+
+/* Explore More styling */
+.explore-more {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: white;
+  font-size: 13px;
+  margin-bottom: 12px;
+  font-weight: 500;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+}
+
+.small-chevron {
+  font-size: 10px;
+}
+
+/* QUICK LINKS BAR CONTAINER */
+.quick-links-container {
+  position: absolute;
+  bottom: -30px; /* Pulls it halfway out of the hero section */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 70%;
+  max-width: 1000px;
+  background: white;
+  border-radius: 12px;
+  display: flex;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  z-index: 50; /* Above hero background */
+  border: 1px solid #e5e7eb;
+  overflow: hidden; /* Keeps link hover effects inside rounded corners */
+}
+
+.quick-link-item {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 15px 25px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+/* Vertical line between items */
+.quick-link-item:not(:last-child) {
+  border-right: 1px solid #e5e7eb;
+}
+
+.quick-link-item:hover {
+  background-color: #f9fbfd;
+}
+
+.quick-link-icon-circle {
+  width: 36px;
+  height: 36px;
+  background: #fbdbdb;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #da2e2e;
+  font-size: 16px;
+}
+
+.quick-link-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.quick-link-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  color: #1a1a1a;
+  display: flex;
+  align-items: center;
+}
+
+.quick-link-desc {
+  font-size: 11px;
+  color: #64748b;
+}
+
+/* OFFERS */
+.offers {
+  padding: 90px 40px;
+}
+
+.offers-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.offers-tabs span {
+  margin-right: 20px;
+  cursor: pointer;
+}
+
+.offers-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.offer-card {
+  height: 160px;
+  background: #f8fafc;
+  border-radius: 12px;
+}
+
