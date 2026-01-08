@@ -1,11 +1,18 @@
 import Navbar from "../components/Navbar";
 import SearchBox from "../components/SearchBox";
 import OffersSection from "../components/OffersSection";
+import TravelSegments from "../components/TravelSegments";
+import LogoCarousel from "../components/LogoCarousel";
+import HandpickedCollections from "../components/HandpickedCollections";
+import TravelInsights from "../components/TravelInsights";
+import Footer from "../components/Footer";
+
 import { FaCompass, FaMapMarkedAlt, FaGift, FaChevronDown } from "react-icons/fa";
 
 function HomePage() {
   return (
     <>
+      
       <Navbar />
       
       <section className="hero">
@@ -71,6 +78,11 @@ function HomePage() {
       {/* Spacer to prevent OffersSection from overlapping the floating bar */}
       <div style={{ height: "60px" }}></div>
       <OffersSection />
+      <TravelSegments />
+      <LogoCarousel />
+      <HandpickedCollections />
+      <TravelInsights />
+      <Footer />
     </>
   );
 }

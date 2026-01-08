@@ -8,17 +8,26 @@ import {
   FaBuilding,
   FaQuestionCircle,
   FaUserCircle,
+  FaSun,
+  FaMoon,
 } from "react-icons/fa";
 
 function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [openMenu, setOpenMenu] = useState(null);
+  const [darkMode, setDarkMode] = useState(false);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 120);
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  // Theme Toggle Logic
+  const toggleTheme = () => {
+    setDarkMode(!darkMode);
+    document.body.classList.toggle("dark-theme");
+  };
 
   return (
     <header className={`navbar ${scrolled ? "navbar-scrolled" : ""}`}>
@@ -90,8 +99,15 @@ function Navbar() {
 
       {/* RIGHT */}
       <div className="nav-right">
-        <FaUserCircle />
-        <span>Login / Signup</span>
+        {/* THEME TOGGLE BUTTON */}
+        <button className="theme-toggle" onClick={toggleTheme} title="Toggle Theme">
+          {darkMode ? <FaSun className="sun-icon" /> : <FaMoon className="moon-icon" />}
+        </button>
+
+        <div className="login-group">
+          <FaUserCircle className="login-icon" />
+    <span>Login / Signup</span>
+        </div>
       </div>
     </header>
   );
