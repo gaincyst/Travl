@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react"; // Added hooks
 import Navbar from "../components/Navbar";
 import SearchBox from "../components/SearchBox";
 import OffersSection from "../components/OffersSection";
@@ -10,34 +11,59 @@ import Footer from "../components/Footer";
 import { FaCompass, FaMapMarkedAlt, FaGift, FaChevronDown } from "react-icons/fa";
 
 function HomePage() {
+  const [currentImg, setCurrentImg] = useState(0);
+
+  // List your 5 JPG images here (ensure they are in public/images/)
+  const images = [
+    "/images/i1.jpg",
+    "/images/i2.jpg",
+    "/images/i3.jpg",
+     "/images/i6.jpg",
+    "/images/i7.jpg",
+      "/images/i8.jpg"
+  ];
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentImg((prev) => (prev + 1) % images.length);
+    }, 5000); // Transitions every 5 seconds
+    return () => clearInterval(timer);
+  }, [images.length]);
+
   return (
     <>
-      
       <Navbar />
       
       <section className="hero">
-        {/* Background Image */}
-        <div className="hero-bg"></div>
+        {/* UPDATED: Background Image Slider */}
+        <div className="hero-slider">
+          {images.map((img, index) => (
+            <div
+              key={index}
+              className={`hero-slide ${index === currentImg ? "active" : ""}`}
+              style={{ backgroundImage: `url(${img})` }}
+            />
+          ))}
+          {/* Dark Overlay to make the text pop */}
+          <div className="hero-overlay"></div>
+        </div>
 
-        {/* Hero Text and SearchBox */}
+        {/* Hero Text and SearchBox - Now z-indexed to stay on top */}
         <div className="hero-content">
           <h1>Welcome to Travel2</h1>
           <p>Book flights, hotels, and buses at the best prices</p>
           <SearchBox />
         </div>
 
-        {/* THE EDGE WRAPPER: Contains Explore More and Quick Links */}
+        {/* THE EDGE WRAPPER */}
         <div className="hero-bottom-edge">
-          {/* Explore More - Centered above the white bar */}
           <div className="explore-more">
             <FaChevronDown className="small-chevron" />
             <span>Explore More</span>
             <FaChevronDown className="small-chevron" />
           </div>
 
-          {/* QUICK LINKS BAR - Floats half-on, half-off the hero edge */}
           <div className="quick-links-container">
-            {/* WHERE TO GO */}
             <div className="quick-link-item">
               <div className="quick-link-icon-circle">
                 <FaCompass />
@@ -48,20 +74,16 @@ function HomePage() {
               </div>
             </div>
 
-            {/* HOW TO GO */}
             <div className="quick-link-item">
               <div className="quick-link-icon-circle">
                 <FaMapMarkedAlt />
               </div>
               <div className="quick-link-text">
-                <span className="quick-link-title">
-                  How2Go 
-                </span>
+                <span className="quick-link-title">How2Go</span>
                 <span className="quick-link-desc">Find routes to anywhere</span>
               </div>
             </div>
 
-            {/* GIFT CARDS */}
             <div className="quick-link-item">
               <div className="quick-link-icon-circle">
                 <FaGift />
@@ -75,7 +97,6 @@ function HomePage() {
         </div>
       </section>
 
-      {/* Spacer to prevent OffersSection from overlapping the floating bar */}
       <div style={{ height: "60px" }}></div>
       <OffersSection />
       <TravelSegments />

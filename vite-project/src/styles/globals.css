@@ -101,12 +101,13 @@ body.dark-theme .navbar:not(.navbar-scrolled) .nav-right {
 /* HERO SECTION */
 .hero {
   position: relative;
-  height: 80vh; /* Better height for hero visibility */
+  height: 100vh; /* Better height for hero visibility */
   min-height: 600px;
   overflow: visible !important; /* ALLOWS CONTENT TO HANG OFF THE BOTTOM */
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
 }
 
 /* BACKGROUND IMAGE */
@@ -117,6 +118,44 @@ body.dark-theme .navbar:not(.navbar-scrolled) .nav-right {
   background-size: cover;
   background-position: center;
   z-index: -1;
+}
+
+/* Container for the sliding images */
+.hero-slider {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+/* Individual Image Slides */
+.hero-slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  transition: opacity 2s ease-in-out; /* Smooth cross-fade effect */
+}
+
+.hero-slide.active {
+  opacity: 1;
+}
+
+/* Dark tint over images to keep text readable */
+.hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4); 
+  z-index: 2;
 }
 
 /* DARK OVERLAY (for readability) */
@@ -132,10 +171,12 @@ body.dark-theme .navbar:not(.navbar-scrolled) .nav-right {
 .hero-content {
   padding-top: 120px; /* navbar ke neeche space */
   text-align: center;
-  color: rgb(10, 10, 10);
+  color: rgb(0, 0, 0);/*white le skte hai*/
   width: 70%;
   display: flex;
   flex-direction: column;
+  position: relative;
+  z-index: 3;
 }
 
 .hero-content h1 {
@@ -347,12 +388,15 @@ body.dark-theme .navbar:not(.navbar-scrolled) .nav-right {
 
 /* SEARCH WRAPPER */
 .search-wrapper {
-  background: white;
+ background:rgb(241, 237, 237);
   border-radius: 12px;
   padding: 20px 40px;
   max-width: 1250px;
   margin: 40px auto;
   width: 100%;
+  /* background: rgba(244, 241, 241, 0.4);
+  backdrop-filter: blur(200x);
+  -webkit-backdrop-filter: blur(10px);*/
 }
 
 /* SERVICE TABS */
@@ -1957,7 +2001,7 @@ body.dark-theme {
 
 
 body.dark-theme .label {
-  color: var(--text-sub);
+  color: black;
 }
 
 /* Footer Visibility */
