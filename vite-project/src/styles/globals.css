@@ -176,7 +176,7 @@ body.dark-theme .navbar:not(.navbar-scrolled) .nav-right {
   display: flex;
   flex-direction: column;
   position: relative;
-  z-index: 3;
+  z-index: 100;
 }
 
 .hero-content h1 {
@@ -202,7 +202,7 @@ body.dark-theme .navbar:not(.navbar-scrolled) .nav-right {
   display: flex;
   flex-direction: column;
   align-items: center;
-  z-index: 100;
+  z-index: 10;
 }
 
 /* SEARCH BOX SPACING 
@@ -388,15 +388,13 @@ body.dark-theme .navbar:not(.navbar-scrolled) .nav-right {
 
 /* SEARCH WRAPPER */
 .search-wrapper {
- background:rgb(241, 237, 237);
+ background:rgb(234, 231, 231, 0.75);
   border-radius: 12px;
   padding: 20px 40px;
   max-width: 1250px;
   margin: 40px auto;
   width: 100%;
-  /* background: rgba(244, 241, 241, 0.4);
-  backdrop-filter: blur(200x);
-  -webkit-backdrop-filter: blur(10px);*/
+ 
 }
 
 /* SERVICE TABS */
@@ -423,7 +421,7 @@ body.dark-theme .navbar:not(.navbar-scrolled) .nav-right {
   padding-right: 10px;
   margin: 0 auto;
   background-color: #fffbfb; /* White background */
-  border: 1px solid #f2f4f9; /* Light border */
+  border: 1px solid #7c7d81; /* Light border */
   border-radius: 50px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.05); /* Soft shadow to make it visible */
   transition: all 0.2s ease-in-out;
@@ -464,6 +462,7 @@ body.dark-theme .navbar:not(.navbar-scrolled) .nav-right {
   margin-bottom: 16px ;
   font-size: 14px;
   color: #333;
+  font-weight: 495;
 }
 
 .trip-type label {
@@ -472,6 +471,7 @@ body.dark-theme .navbar:not(.navbar-scrolled) .nav-right {
   gap: 6px;
   font-size: 14px;
   cursor: pointer;
+  font-weight: 495;
 }
 
 .trip-type input[type="radio"] {
@@ -484,11 +484,11 @@ body.dark-theme .navbar:not(.navbar-scrolled) .nav-right {
   grid-template-columns: 1.2fr 60px 1.2fr 1fr 1fr 1.3fr auto;
   align-items: center;
   background: #2b2525;
-  border: 2px solid #e5e7eb;
+  border: 2px solid #0d0e0e;
   border-radius: 12px;
   padding: 16px;
   gap: 12px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.9);
 }
 
 .search-box {
@@ -515,7 +515,7 @@ body.dark-theme .navbar:not(.navbar-scrolled) .nav-right {
 
 .label {
   font-size: 18px;
-  color: #545455;
+  color: #2c2c2d;
   display: flex;
   align-items: center;
   gap: 6px;
@@ -848,11 +848,11 @@ body.dark-theme .navbar:not(.navbar-scrolled) .nav-right {
 .main-search-box {
   display: flex;
   align-items: stretch;
-  border: 2px solid #d1d5db;
+  border: 2px solid #888a8e;
   border-radius: 8px;
   overflow: visible;
   position: relative;
-  background: var(--light-pink); /* Light red/pink background */
+  background: rgb(245, 235, 235, 0.4); /* Light red/pink background */
   
 }
 
@@ -864,7 +864,7 @@ body.dark-theme .navbar:not(.navbar-scrolled) .nav-right {
   flex-direction: column;
   justify-content: flex-start;
   gap: 12px;
-  border-right: 2px solid #d1d5db;
+  border-right: 2px solid  #888a8e;
   position: relative;
   min-height: 90px;
 }
@@ -906,7 +906,7 @@ body.dark-theme .navbar:not(.navbar-scrolled) .nav-right {
   left: 50%;
   transform: translateX(-50%);
   align-items: stretch;
-  border-right: 2px solid #d1d5db; /* Single source for all vertical lines */
+  border-right: 2px solid  #888a8e; /* Single source for all vertical lines */
 }
 
 /* 1. Main Column: Forces everything to stack vertically */
@@ -2060,4 +2060,26 @@ body.dark-theme .bg-blobs {
 /* Dark theme logic for the line */
 body.dark-theme .site-footer::before {
   background-color: transparent; /* Slate grey for dark mode */
+}
+
+.navbar-logo-img {
+  height: 200px; /* Adjust this to fit your navbar height */
+  width: auto;
+  display: block;
+  object-fit: contain;
+  /* If your logo is dark, this filter makes it white in Dark Mode */
+  transition: filter 0.3s ease;
+  margin-left: -80px;
+  margin-top: 50px;
+}
+
+/* It's good practice to shrink it slightly when scrolled so the navbar stays slim */
+.navbar-scrolled .navbar-logo-img {
+  height: 100px; 
+  margin-left: -40px;
+  margin-top: 5px;
+}
+
+body.dark-theme .navbar-scrolled.navbar-logo-img {
+  filter: brightness(10) invert(0); /* Optional: turns a black logo white */
 }

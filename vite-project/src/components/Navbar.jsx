@@ -31,8 +31,12 @@ function Navbar() {
 
   return (
     <header className={`navbar ${scrolled ? "navbar-scrolled" : ""}`}>
-      {/* LOGO */}
-      <div className="logo">Travel2</div>
+      {/* LOGO REPLACED WITH IMAGE */}
+      <div className="logo">
+        <a href="/">
+          <img src="/logos.png" alt="Travel2 Logo" className="navbar-logo-img" />
+        </a>
+      </div>
 
       {/* CENTER */}
       {!scrolled ? (
@@ -99,14 +103,13 @@ function Navbar() {
 
       {/* RIGHT */}
       <div className="nav-right">
-        {/* THEME TOGGLE BUTTON */}
         <button className="theme-toggle" onClick={toggleTheme} title="Toggle Theme">
           {darkMode ? <FaSun className="sun-icon" /> : <FaMoon className="moon-icon" />}
         </button>
 
         <div className="login-group">
           <FaUserCircle className="login-icon" />
-    <span>Login / Signup</span>
+          <span>Login / Signup</span>
         </div>
       </div>
     </header>
