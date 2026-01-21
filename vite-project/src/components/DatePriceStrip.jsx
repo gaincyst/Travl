@@ -4,20 +4,39 @@ import "../styles/DatePriceStrip.css";
 
 const DatePriceStrip = () => {
   const scrollRef = useRef(null);
-  const [activeDate, setActiveDate] = useState("Wed, 21 Jan");
+  const [activeDate, setActiveDate] = useState(null);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(true);
 
-  const dates = [
-    { day: "Tue, 20 Jan", price: "₹ 5,744" },
-    { day: "Wed, 21 Jan", price: "₹ 5,744" },
-    { day: "Thu, 22 Jan", price: "₹ 5,744" },
-    { day: "Fri, 23 Jan", price: "₹ 5,796" },
-    { day: "Sat, 24 Jan", price: "₹ 5,692" },
-    { day: "Sun, 25 Jan", price: "₹ 5,094" },
-    { day: "Mon, 26 Jan", price: "₹ 5,392" },
-    { day: "Tue, 27 Jan", price: "₹ 5,392" },
-  ];
+  // Generate dates for one month from current date (Jan 21, 2026 to Feb 21, 2026)
+  const generateDates = () => {
+    const dates = [];
+    const startDate = new Date(2026, 0, 21); // January 21, 2026
+    const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    
+    for (let i = 0; i < 31; i++) {
+      const currentDate = new Date(startDate);
+      currentDate.setDate(startDate.getDate() + i);
+      
+      const dayName = daysOfWeek[currentDate.getDay()];
+      const date = currentDate.getDate();
+      const month = monthNames[currentDate.getMonth()];
+      
+      // Generate random prices between ₹5,000 and ₹8,000
+      const price = `₹ ${(Math.floor(Math.random() * 3000) + 5000).toLocaleString()}`;
+      
+      dates.push({
+        day: `${dayName}, ${date} ${month}`,
+        price: price,
+        dateObj: currentDate
+      });
+    }
+    
+    return dates;
+  };
+
+  const dates = generateDates();
 
   const checkArrows = () => {
     if (scrollRef.current) {
@@ -29,13 +48,21 @@ const DatePriceStrip = () => {
 
   const scroll = (direction) => {
     if (scrollRef.current) {
-      const scrollAmount = 200; 
+      const scrollAmount = 300; 
       scrollRef.current.scrollBy({
         left: direction === "left" ? -scrollAmount : scrollAmount,
         behavior: "smooth",
       });
     }
   };
+
+  useEffect(() => {
+    checkArrows();
+    // Set the first date as active by default
+    if (dates.length > 0 && !activeDate) {
+      setActiveDate(dates[0].day);
+    }
+  }, []);
 
   return (
     <div className="date-strip-container">

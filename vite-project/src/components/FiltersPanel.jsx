@@ -76,7 +76,7 @@ const FiltersPanel = () => {
         </label>
         <span className="plus-more">+ 4 more</span>
         
-        <div className="divider"></div>
+        {/* <div className="divider"></div> */}
         
         <h3>Price Range</h3>
         <div className="slider-container">

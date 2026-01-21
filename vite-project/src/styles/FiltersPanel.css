@@ -1,11 +1,11 @@
 .filters-container {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 18px;
   width: 100%;
-  max-width: 400px;
-  padding-left: 80px;
-
+  max-width: 600px;
+  padding-left: 100px;
+  padding-right: 80px;
 }
 
 .filter-card {

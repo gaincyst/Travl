@@ -195,9 +195,164 @@ function FlightResults() {
 
       {/* RIGHT SIDE CONTENT */}
       <section className="flights-list-section">
-        {/* Your flight cards will go here */}
-       {/* NEW DATE-PRICE STRIP SECTION */}
-  <DatePriceStrip />
+        {/* DATE-PRICE STRIP SECTION */}
+        <DatePriceStrip />
+        
+        {/* SORT BY BAR */}
+        <div className="sort-by-bar">
+          <span className="results-count">186 Flights Available</span>
+          <div className="sort-options">
+            <button className="sort-btn">
+              Price <span className="sort-label">Low to High</span>
+            </button>
+            <button className="sort-btn">
+              Fastest <span className="sort-label">Shortest First</span>
+            </button>
+            <button className="sort-btn">
+              Departure <span className="sort-label">Earliest First</span>
+            </button>
+            <button className="sort-btn active">
+              Smart <span className="sort-label">Recommended</span>
+            </button>
+          </div>
+        </div>
+
+        {/* FLIGHT CARDS */}
+        <div className="flight-cards-container">
+          {/* Sample Flight Card 1 */}
+          <div className="flight-card">
+            <div className="flight-card-header">
+              <span className="cheapest-badge">Cheapest</span>
+            </div>
+            <div className="flight-card-content">
+              <div className="airline-info">
+                <img src="/airlines/a4.png" alt="IndiGo" className="airline-logo-flight" />
+                <div className="flight-numbers">
+                  <span>IndiGo</span>
+                  <span className="flight-code">6E6696, 6E2739</span>
+                </div>
+              </div>
+              
+              <div className="flight-timing">
+                <div className="time-section">
+                  <span className="time">16:05</span>
+                  <span className="location">DEL</span>
+                </div>
+                <div className="duration-section">
+                  <span className="duration">10h 45m</span>
+                  <div className="flight-line">
+                    <div className="line"></div>
+                    <span className="stops-dot">○</span>
+                  </div>
+                  <span className="stops">1 Stop</span>
+                </div>
+                <div className="time-section">
+                  <span className="time">02:50<sup>+1</sup></span>
+                  <span className="location">BOM</span>
+                </div>
+              </div>
+
+              <div className="flight-price-section">
+                <div className="price-main">₹5,796</div>
+                <div className="price-offers">
+                  <span className="offer-badge">350 Off</span>
+                  <span className="offer-badge">+ 150 💳</span>
+                </div>
+                <button className="book-btn">Book</button>
+                <button className="lock-price-btn">🔒 Lock Price @₹929</button>
+              </div>
+            </div>
+            <div className="flight-card-footer">
+              <button className="flight-details-btn">Flight Details →</button>
+            </div>
+          </div>
+
+          {/* Sample Flight Card 2 */}
+          <div className="flight-card">
+            <div className="flight-card-content">
+              <div className="airline-info">
+                <img src="/airlines/a3.png" alt="Akasa Air" className="airline-logo-flight" />
+                <div className="flight-numbers">
+                  <span>Akasa Air</span>
+                  <span className="flight-code">QP1401</span>
+                </div>
+              </div>
+              
+              <div className="flight-timing">
+                <div className="time-section">
+                  <span className="time">18:30</span>
+                  <span className="location">DEL</span>
+                </div>
+                <div className="duration-section">
+                  <span className="duration">2h 45m</span>
+                  <div className="flight-line">
+                    <div className="line"></div>
+                  </div>
+                  <span className="stops">Non Stop</span>
+                </div>
+                <div className="time-section">
+                  <span className="time">21:15</span>
+                  <span className="location">BOM</span>
+                </div>
+              </div>
+
+              <div className="flight-price-section">
+                <div className="price-main">₹6,150</div>
+                <div className="price-offers">
+                  <span className="offer-badge">400 Off</span>
+                </div>
+                <button className="book-btn">Book</button>
+                <button className="lock-price-btn">🔒 Lock Price @₹999</button>
+              </div>
+            </div>
+            <div className="flight-card-footer">
+              <button className="flight-details-btn">Flight Details →</button>
+            </div>
+          </div>
+
+          {/* Sample Flight Card 3 */}
+          <div className="flight-card">
+            <div className="flight-card-content">
+              <div className="airline-info">
+                <img src="/airlines/a1.png" alt="Air India" className="airline-logo-flight" />
+                <div className="flight-numbers">
+                  <span>Air India</span>
+                  <span className="flight-code">AI803</span>
+                </div>
+              </div>
+              
+              <div className="flight-timing">
+                <div className="time-section">
+                  <span className="time">09:00</span>
+                  <span className="location">DEL</span>
+                </div>
+                <div className="duration-section">
+                  <span className="duration">2h 30m</span>
+                  <div className="flight-line">
+                    <div className="line"></div>
+                  </div>
+                  <span className="stops">Non Stop</span>
+                </div>
+                <div className="time-section">
+                  <span className="time">11:30</span>
+                  <span className="location">BOM</span>
+                </div>
+              </div>
+
+              <div className="flight-price-section">
+                <div className="price-main">₹7,250</div>
+                <div className="price-offers">
+                  <span className="offer-badge">500 Off</span>
+                </div>
+                <button className="book-btn">Book</button>
+                <button className="lock-price-btn">🔒 Lock Price @₹1,050</button>
+              </div>
+            </div>
+            <div className="flight-card-footer">
+              <button className="flight-details-btn">Flight Details →</button>
+            </div>
+          </div>
+        </div>
       </section>
     </div>
   </div>
