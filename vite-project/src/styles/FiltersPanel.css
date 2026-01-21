@@ -1,0 +1,340 @@
+.filters-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 400px;
+  padding-left: 80px;
+
+}
+
+.filter-card {
+  background: #ffffff;
+  padding: 24px;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.card-header h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #000000;
+  margin: 0;
+}
+
+.clear-all {
+  color: #008cff;
+  font-weight: 600;
+  font-size: 13px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.clear-all:hover {
+  text-decoration: underline;
+}
+
+.applied-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.applied-pill {
+  background: #e3f2fd;
+  color: #000000;
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 11px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.close-x {
+  color: #008cff;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight:700;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  background: #008cff;
+  color: #ffffff;
+  border-radius: 50%;
+  padding-bottom: 4px;
+  padding-right: 0.4px;
+}
+
+.close-x:hover {
+  background: #0077cc;
+}
+
+.filter-card h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #000000;
+  margin: 0 0 16px 0;
+}
+
+.checkbox-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 0 12px 0;
+  cursor: pointer;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.checkbox-row input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: #008cff;
+  margin: 0;
+}
+
+.checkbox-row .checkbox-label span {
+  font-size: 15px;
+  color: #000000;
+  font-weight: 400;
+}
+
+.checkbox-row .price {
+  font-size: 15px;
+  color: #000000;
+  font-weight: 400;
+}
+
+.plus-more {
+  color: #008cff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-block;
+  margin-top: 4px;
+}
+
+.plus-more:hover {
+  text-decoration: underline;
+}
+
+.divider {
+  height: 1px;
+  background: #e0e0e0;
+  margin: 20px 0;
+}
+
+.slider-container {
+  position: relative;
+  margin: 1px 0 1px 0;
+  padding-top: 1px;
+}
+
+.price-slider {
+  width: 100%;
+  height: 6px;
+  -webkit-appearance: none;
+  appearance: none;
+  outline: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.price-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  background: #ffffff;
+  border: 3px solid #008cff;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.price-slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  background: #ffffff;
+  border: 3px solid #008cff;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.price-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 15px;
+  color: #000000;
+  font-weight: 400;
+  margin-top: 8px;
+}
+
+.price-tooltip {
+  position: absolute;
+  top: -45px;
+  transform: translateX(-50%);
+  background: #4a4a4a;
+  color: #ffffff;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 10;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.price-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+  border-top: 7px solid #4a4a4a;
+}
+
+/* Onward Journey Section */
+.section-title-with-bar {
+  font-size: 18px;
+  font-weight: 700;
+  color: #000000;
+  margin: 0 0 20px 0;
+  padding-left: 12px;
+  border-left: 4px solid #008cff;
+  background: linear-gradient(to right, #e3f2fd 0%, #e3f2fd 100%);
+  padding-top: 4px;
+  padding-bottom: 4px;
+  margin-left: -24px;
+  padding-left: 20px;
+  margin-right: -24px;
+  padding-right: 24px;
+}
+
+.subsection-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #000000;
+  margin: 20px 0 12px 0;
+}
+
+.time-slots-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin: 12px 0 20px 0;
+}
+
+.time-slot-box {
+  border: 1px solid #d0d0d0;
+  border-radius: 8px;
+  padding: 16px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: #ffffff;
+}
+
+.time-slot-box:hover {
+  border-color: #008cff;
+  background: #f5fbff;
+}
+
+.time-slot-box.active {
+  border-color: #008cff;
+  border-width: 2px;
+  background: #e3f2fd;
+}
+
+.time-icon {
+  width: 28px;
+  height: 28px;
+  color: #666666;
+}
+
+.time-slot-box:hover .time-icon {
+  color: #008cff;
+}
+
+.time-slot-box.active .time-icon {
+  color: #008cff;
+}
+
+.time-label {
+  font-size: 11px;
+  color: #333333;
+  text-align: center;
+  line-height: 1.3;
+  font-weight: 400;
+}
+
+/* Airlines and Aircraft Size Section */
+.airline-row {
+  margin: 0 0 16px 0;
+}
+
+.checkbox-label-with-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.airline-logo-container {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.airline-logo {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.airline-row .checkbox-label-with-logo span {
+  font-size: 15px;
+  color: #000000;
+  font-weight: 400;
+}
+
+.aircraft-size-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #000000;
+  margin: 28px 0 16px 0;
+}
+

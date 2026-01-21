@@ -19,7 +19,7 @@
   align-items: center;
   justify-content: space-between;
   color: white;
-  z-index: 100;
+  z-index: 1000;
   transition: all 0.3s ease;
 }
 
@@ -77,7 +77,7 @@
 }
 
 .sun-icon { color: #ffcc00; }
-.moon-icon { color: #cbd5e0; }
+.moon-icon { color: #171818; }
 
 body {
   background-color: var(--bg-color);
@@ -321,14 +321,82 @@ body.dark-theme .navbar:not(.navbar-scrolled) .nav-right {
   font-weight: 500;
 }
 
+/* MEGA MENU CONTAINER */
+.mega-menu {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 950px; /* Large width for mega menu */
+  background: rgb(242, 240, 240);
+  border-radius: 16px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+  padding: 20px;
+  z-index: 9999 !important; /* Above hero text */
+  margin-top: 1px;
+  pointer-events: auto; /* Ensures you can interact with it */
+  visibility: visible;
+  display: block;
+  /* 1. Subtle Red Accent Line at the top */
+  border-top: 3px solid #530b0b; 
+  
+  /* 2. Gentle Red Gradient Background */
+  background: linear-gradient(180deg, rgb(61, 62, 68) 0%, #ffffff 120%);
+}
+
+/* 3. THE MAGIC RAMP (The "Invisible Bridge") */
+/* This creates a physical connection between the link and the dropdown */
+.nav-dropdown::after {
+  content: "";
+  position: absolute;
+  top: 100%; /* Starts at the bottom of the link */
+  left: 0;
+  width: 100%;
+  height: 30px; /* This spans the gap */
+  background: transparent; /* Change to 'red' temporarily to see the bridge! */
+  z-index: 10;
+}
+
 /* DROPDOWN */
 .nav-dropdown {
   position: relative;
+  padding-bottom: 25px;
+  margin-bottom: -25px;
+  display: flex;
+  align-items: center;
+}
+.mega-menu-content {
+  display: flex;
+  gap: 0px;
+}
+
+.mega-menu-main {
+  flex: 2.5;
+}
+
+.mega-menu-main h3 {
+  font-size: 22px;
+  color: rgb(190, 184, 184);
+  margin-bottom: 5px;
+  font-family: 'Segoe UI', Tahoma, Verdana, sans-serif;
+}
+
+.menu-subtitle {
+  color: #b8b3b3;
+  font-size: 15px;
+  margin-bottom: 20px;
+}
+
+/* GRID LAYOUT */
+.mega-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 25px;
 }
 
 .dropdown-panel {
   position: absolute;
-  top: 42px;
+  top: 100%;
   left: 50%;
   transform: translateX(-50%);
   width: 640px;
@@ -339,36 +407,100 @@ body.dark-theme .navbar:not(.navbar-scrolled) .nav-right {
   grid-template-columns: repeat(3, 1fr);
   gap: 16px;
   border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-  z-index: 200;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.9);
+  z-index: 9999;
+  pointer-events: auto;
 }
 
 .dropdown-item {
   display: flex;
-  gap: 10px;
-  padding: 8px;
-  border-radius: 8px;
+  gap: 15px;
+  padding: 4px;
+  border-radius: 4px;
   cursor: pointer;
+  align-items: flex-start;
+  transition: all 0.2s;
 }
 
 .dropdown-item:hover {
-  background: #f1f5f9;
+  background: #b9b6b6f1;
 }
 
 .dropdown-item strong {
-  font-size: 14px;
+ display: block;
+  font-size: 16px;
+  color: #820909;
 }
 
 .dropdown-item p {
-  font-size: 12px;
-  color: #64748b;
+font-size: 13px;
+  color: #4b2f2f;
+  margin-top: 2px;
 }
 
-.dropdown-icon {
+.dropdown-icon-box {
+  
+  background: #b5b3b3;
+  color: #681a1a;
+  padding: 12px;
+  border-radius: 12px;
+  display: flex;
   font-size: 18px;
-  color: #cd1616;
 }
 
+/* RIGHT PROMO CARD */
+.mega-menu-promo {
+  flex: 1;
+}
+
+.promo-card {
+  background: #f8fafc;
+  border: 3px solid #bebec6;
+  border-radius: 25px;
+  padding: 2px;
+  text-align: center;
+  height: 100%;
+}
+
+.promo-image-placeholder img {
+  width: 80%;
+  max-width: 180px;
+  margin-bottom: 0px;
+}
+
+.promo-card h4 {
+  font-size: 18px;
+  margin-bottom: 10px;
+  color: rgb(232, 88, 88); 
+}
+
+.promo-card p {
+  font-size: 11px;
+  color: #8f9eb4;
+  line-height: 1.5;
+}
+
+/* INDUSTRY PROMO CARD COLOR (Peach/Light Orange background) */
+.industry-promo {
+  background: #fffefe !important; /* Matches the peach tint in your reference */
+  border: 2px solid #4b4948;
+}
+
+.promo-image-box img {
+  width: 100%;
+  border-radius: 20px;
+  margin-bottom: 1px;
+}
+
+/* SLIDE DOWN ANIMATION */
+@keyframes slideDown {
+  from { opacity: 0; transform: translate(-50%, 10px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}
+
+.animate-slide {
+  animation: slideDown 0.3s ease-out forwards;
+}
 
 :root {
   --primary-red: #e94d59; /* Matching the red in your screenshot */
@@ -854,6 +986,29 @@ body.dark-theme .navbar:not(.navbar-scrolled) .nav-right {
   position: relative;
   background: rgb(245, 235, 235, 0.4); /* Light red/pink background */
   
+}
+
+/* Ensure the box can accommodate the extra column */
+.main-search-box.round-trip-layout {
+  display: grid;
+  /* Adjusting fractions so Return fits in line */
+  grid-template-columns: 1fr 40px 1fr 1fr 1fr 1.2fr; 
+}
+
+/* Style for the Return section to match Departure */
+.return-section {
+  border-left: 1px solid #e0e0e0; /* Adds the separator line */
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* For Buses (Travellers column is hidden, keeping date columns equal) */
+.main-search-box.round-trip-layout:not(:has(.travellers-trigger)) {
+  grid-template-columns: 1fr 40px 1fr 1fr 1fr;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateX(-10px); }
+  to { opacity: 1; transform: translateX(0); }
 }
 
 /* BOX SECTION */

@@ -10,8 +10,14 @@ import {
   FaUserCircle,
   FaSun,
   FaMoon,
+  FaUmbrellaBeach,
+  FaGlobe
 } from "react-icons/fa";
 
+import { GiWorld } from "react-icons/gi";
+import { MdOutlineLoyalty } from "react-icons/md";
+import { MdOutlineCardTravel } from "react-icons/md";
+import { TbGraphFilled } from "react-icons/tb";
 function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [openMenu, setOpenMenu] = useState(null);
@@ -23,7 +29,6 @@ function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Theme Toggle Logic
   const toggleTheme = () => {
     setDarkMode(!darkMode);
     document.body.classList.toggle("dark-theme");
@@ -31,7 +36,7 @@ function Navbar() {
 
   return (
     <header className={`navbar ${scrolled ? "navbar-scrolled" : ""}`}>
-      {/* LOGO REPLACED WITH IMAGE */}
+      {/* LOGO */}
       <div className="logo">
         <a href="/">
           <img src="/logos.png" alt="Travel2 Logo" className="navbar-logo-img" />
@@ -43,7 +48,7 @@ function Navbar() {
         <nav className="nav-center">
           <span className="nav-link">About Us</span>
 
-          {/* SOLUTIONS */}
+          {/* SOLUTIONS MEGA MENU */}
           <div
             className="nav-dropdown"
             onMouseEnter={() => setOpenMenu("solutions")}
@@ -54,45 +59,99 @@ function Navbar() {
             </span>
 
             {openMenu === "solutions" && (
-              <div className="dropdown-panel">
-                <DropdownItem title="Flight Booking" desc="Domestic & International" />
-                <DropdownItem title="Hotel Solutions" desc="Smart stays & pricing" />
-                <DropdownItem title="Bus Services" desc="Pan-India connectivity" />
-                <DropdownItem title="Corporate Travel" desc="Business travel tools" />
-                <DropdownItem title="API Integration" desc="Travel APIs for partners" />
-                <DropdownItem title="Analytics" desc="Travel insights & reports" />
+              <div className="mega-menu animate-slide">
+                <div className="mega-menu-content">
+                  {/* Left Side: Services Grid */}
+                  <div className="mega-menu-main">
+                    <h3>Solutions</h3>
+                    <p className="menu-subtitle">An end-to-end suite of travel APIs and white-label solutions—built to scale with your business.</p>
+                    
+                    <div className="mega-grid">
+                      <DropdownItem icon={<FaPlane />} title="Flight API" desc="Lorem ipsum dolor sit amet consectetur." />
+                      <DropdownItem icon={<FaHotel />} title="Hotel API" desc="Lorem ipsum dolor sit amet consectetur." />
+                      <DropdownItem icon={<FaBus />} title="Bus API" desc="Lorem ipsum dolor sit amet consectetur." />
+                      <DropdownItem icon={<FaUmbrellaBeach />} title="Holiday API" desc="Lorem ipsum dolor sit amet consectetur." />
+                      <DropdownItem icon={<FaGlobe />} title="Whitelabel" desc="Lorem ipsum dolor sit amet consectetur." />
+                    </div>
+                  </div>
+
+                  {/* Right Side: Promo Card */}
+                  <div className="mega-menu-promo">
+                    <div className="promo-card">
+                      <div className="promo-image-placeholder">
+                         <img src="/offers/soffer.jpeg" alt="App Preview" />
+                      </div>
+                      <h4>Save 20% on travel APIs</h4>
+                      <p>Get a 1-month free membership on us. Scalable APIs and white-label solutions tailored to your business.</p>
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
           </div>
 
-          {/* INDUSTRIES */}
-          <div
-            className="nav-dropdown"
-            onMouseEnter={() => setOpenMenu("industries")}
-            onMouseLeave={() => setOpenMenu(null)}
-          >
-            <span className="nav-link">
-              Industries <FaChevronDown />
-            </span>
+          {/* INDUSTRIES MEGA MENU */}
+<div
+  className="nav-dropdown"
+  onMouseEnter={() => setOpenMenu("industries")}
+  onMouseLeave={() => setOpenMenu(null)}
+>
+  <span className="nav-link">
+    Industries <FaChevronDown className={`arrow ${openMenu === "industries" ? "up" : ""}`} />
+  </span>
 
-            {openMenu === "industries" && (
-              <div className="dropdown-panel">
-                <DropdownItem title="Travel & Tourism" desc="End-to-end solutions" />
-                <DropdownItem title="Hospitality" desc="Hotels & resorts" />
-                <DropdownItem title="Corporate" desc="Enterprise travel" />
-                <DropdownItem title="Startups" desc="Scalable platforms" />
-                <DropdownItem title="Education" desc="Student travel programs" />
-                <DropdownItem title="Government" desc="Official travel systems" />
-              </div>
-            )}
+  {openMenu === "industries" && (
+    <div className="mega-menu animate-slide">
+      <div className="mega-menu-content">
+        {/* Left Side: Industry Grid */}
+        <div className="mega-menu-main">
+          <h3>Industries</h3>
+          <p className="menu-subtitle">Whether you're a travel agent or a fintech disruptor, Travel2 adapts to your business model.</p>
+          
+          <div className="mega-grid">
+            <DropdownItem 
+              icon={<GiWorld />} 
+              title="Travel Agencies" 
+              desc="Lorem ipsum dolor sit amet consectetur." 
+            />
+            <DropdownItem 
+              icon={<MdOutlineLoyalty />} 
+              title="Fintech & Loyalty Platforms" 
+              desc="Lorem ipsum dolor sit amet consectetur." 
+            />
+            <DropdownItem 
+              icon={<MdOutlineCardTravel />} 
+              title="Content Creators & Influencers" 
+              desc="Lorem ipsum dolor sit amet consectetur." 
+            />
+            <DropdownItem 
+              icon={<TbGraphFilled/>} 
+              title="Enterprises" 
+              desc="Lorem ipsum dolor sit amet consectetur." 
+            />
           </div>
+        </div>
 
+        {/* Right Side: Industry Promo Card */}
+        <div className="mega-menu-promo">
+          <div className="promo-card industry-promo">
+            <div className="promo-image-box">
+               {/* Use the specific illustration from your reference image */}
+               <img src="/offers/soffer2.jpg" alt="Industry Solutions" />
+            </div>
+            <h4>Save 20% on travel APIs</h4>
+            <p>Get a 1-month free membership on us. Scalable APIs and white-label solutions tailored to your business.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  )}
+</div>
           <span className="nav-link">
             <FaQuestionCircle /> FAQ
           </span>
         </nav>
       ) : (
-        /* SCROLLED NAV */
         <nav className="nav-center">
           <span className="nav-link"><FaPlane /> Flights</span>
           <span className="nav-link"><FaHotel /> Hotels</span>
@@ -116,11 +175,13 @@ function Navbar() {
   );
 }
 
-/* DROPDOWN ITEM */
-function DropdownItem({ title, desc }) {
+/* UPDATED DROPDOWN ITEM TO ACCEPT DYNAMIC ICONS */
+function DropdownItem({ icon, title, desc }) {
   return (
     <div className="dropdown-item">
-      <FaBuilding className="dropdown-icon" />
+      <div className="dropdown-icon-box">
+        {icon}
+      </div>
       <div>
         <strong>{title}</strong>
         <p>{desc}</p>

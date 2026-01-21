@@ -1,0 +1,303 @@
+/* Layout for the Page */
+.flight-results-page {
+  font-family: 'Inter', sans-serif;
+  background-color: #f8f9fa;
+}
+
+/* Navbar Container Styling */
+.minimal-navbar {
+  height: 70px;
+  background-color: #ffffff;
+  display: flex;
+  align-items: center;
+  padding: 0 50px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.nav-container {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Logo Group */
+.nav-logo {
+  height:120px; /* Adjust this to fit your navbar height */
+  width: auto;
+  display: block;
+  object-fit: contain;
+  align-items: center;
+  gap: 10px;
+  margin-top: 1px;
+    margin-left: -60px;
+}
+
+
+/* Menu Options Styling */
+.nav-menu {
+  display: flex;
+  gap: 30px;
+  list-style: none;
+  align-items: center;
+
+}
+
+.nav-menu li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  color: #1f1e1e;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.menu-icon {
+  font-size: 18px;
+}
+
+.nav-menu li.active {
+  color: #dd4141;
+}
+
+/* Right utility section */
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.theme-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  padding: 5px;
+  border-radius: 50%;
+  transition: transform 0.3s ease, background 0.2s ease;
+}
+
+.theme-toggle:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: rotate(20deg);
+}
+
+.sun-icon { color: #e8c020; }
+.moon-icon { color: #cbd5e0; }
+
+.login-signup {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.user-login-icon {
+  font-size: 20px;
+  color: #333;
+}
+/* Hero Section */
+.results-hero {
+  
+  background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('/flights/f2.jpg');
+  background-size: cover;
+  background-position: center;
+  height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  
+}
+
+.hero-content h1 {
+  font-size: 32px;
+  margin-bottom: 5px;
+  font-family: "Poppins", sans-serif;
+}
+
+/* Search Box Positioning */
+.search-section-container {
+  margin-top: -30px; /* Overlap effect */
+  display: flex;
+  justify-content: center;
+ 
+}
+
+/* Carousel Container */
+.offers-carousel-container {
+  position: relative;
+  max-width: 1200px;
+  margin: 20px auto;
+  padding: 0 40px;
+  display: flex;
+  align-items: center;
+}
+
+/* Scrollable Wrapper */
+.offers-scroll-wrapper {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scrollbar-width: none; /* Hide scrollbar Firefox */
+  padding: 10px 5px;
+}
+
+.offers-scroll-wrapper::-webkit-scrollbar {
+  display: none; /* Hide scrollbar Chrome/Safari */
+}
+
+/* Offer Card */
+.offer-card {
+  min-width: 330px;
+  height: 90px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+/* Logo Circle */
+.offer-logo-circle {
+  width: 50px;
+  height: 50px;
+  background: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 15px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.offer-logo-circle img {
+  width: 80%;
+  height: 80%;
+  object-fit: contain;
+}
+
+/* Text Details */
+.offer-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.offer-title {
+  font-weight: 700;
+  font-size: 16px;
+  color: #1a1a1a;
+  margin-bottom: 2px;
+}
+
+.offer-subtitle {
+  font-size: 12px;
+  color: #555;
+  white-space: nowrap;
+}
+
+/* Navigation Arrows */
+.carousel-arrow {
+  position: absolute;
+  width: 36px;
+  height: 36px;
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  color: #007bff;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  transition: all 0.2s ease;
+}
+
+.carousel-arrow:hover {
+  background-color: #f8f9fa;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+.carousel-arrow.left { left: 0; }
+.carousel-arrow.right { right: 0; }
+
+/* Special Fares Section Styling */
+.special-fares-container {
+  width: 100%;
+  display: flex;
+  justify-content: center; /* Centers horizontally */
+  margin: 30px 0;
+  padding: 0 50px; /* Generous side spacing */
+}
+
+.special-fares-content {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  background-color: transparent;
+}
+
+.special-fares-label {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+.fare-pills-wrapper {
+  display: flex;
+  gap: 12px;
+}
+
+/* Default Pill Style */
+.fare-pill {
+  display: flex;
+  align-items: center;
+  padding: 6px 16px;
+  border: 1px solid #494848; /* Neutral border */
+  border-radius: 20px;
+  font-size: 14px;
+  color: #242424;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+/* Selected/Active Pill Style */
+.fare-pill.active {
+  background-color: #e83b3b; /* Highlighted blue background */
+  border-color: #932323;
+  color: #ffffff; /* White text */
+  padding-right: 10px; /* Space for the x icon */
+}
+
+/* Close Icon inside active pill */
+.fare-close-icon {
+  margin-left: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  background-color: rgba(255, 255, 255, 0.2);
+  border: 1px solid #fff;
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: bold;
+  line-height: 90px;
+  padding-right: 1px;
+  padding-bottom: 2px;
+}
+
+.fare-pill:hover:not(.active) {
+  background-color: #f0f0f0;
+}

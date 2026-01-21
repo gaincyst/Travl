@@ -1,0 +1,87 @@
+.date-strip-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  overflow: hidden;
+  height: 65px; /* Compact height */
+}
+
+.date-scroll-wrapper {
+  display: flex;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  width: 100%;
+}
+
+.date-scroll-wrapper::-webkit-scrollbar {
+  display: none;
+}
+
+.date-card {
+  flex: 0 0 140px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 0;
+  cursor: pointer;
+  border-right: 1px solid #f0f0f0;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.date-text {
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 4px;
+}
+
+.price-text {
+  font-size: 14px;
+  font-weight: 700;
+  color: #333;
+}
+
+/* Selected state highlight */
+.date-card.active {
+  background-color: #f8faff;
+}
+
+.date-card.active .date-text, 
+.date-card.active .price-text {
+  color: #007bff; /* Blue text for active selection */
+}
+
+.date-card.active::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background-color: #007bff; /* Thick blue underline */
+}
+
+.date-arrow {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 40px;
+  background: #ffffff;
+  border: none;
+  z-index: 10;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  color: #333;
+}
+
+.date-arrow.left { left: 0; border-right: 1px solid #eee; }
+.date-arrow.right { right: 0; border-left: 1px solid #eee; }
