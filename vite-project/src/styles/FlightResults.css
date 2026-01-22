@@ -304,7 +304,7 @@
 
 /* Main Content Layout */
 .results-main-content {
-  width: 1400px;
+  width: 1350px;
   padding: 20px 0;
   background-color: #f8f9fa;
 }
@@ -582,7 +582,7 @@
   font-size: 12px;
   font-weight: 600;
   border-radius: 4px;
-  margin-left: -700px;
+  margin-left: -400px;
   margin-bottom: -10px;
   background: radial-gradient(circle at top left, #7fde74, #e8f5e9);
 }
