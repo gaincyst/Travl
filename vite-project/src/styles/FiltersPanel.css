@@ -2,15 +2,18 @@
   display: flex;
   flex-direction: column;
   gap: 18px;
-  width: 100%;
+  width: 550px;
   max-width: 600px;
-  padding-left: 100px;
-  padding-right: 80px;
+  padding-left: 90px;
+  padding-right: 140px;
+  /* Ensure no overflow scroll is active here */
+  overflow: visible !important; 
+  height: auto !important;
 }
 
 .filter-card {
   background: #ffffff;
-  padding: 24px;
+  padding: 25px;
   border-radius: 4px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }

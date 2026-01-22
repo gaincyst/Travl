@@ -304,7 +304,7 @@
 
 /* Main Content Layout */
 .results-main-content {
-  width: 100%;
+  width: 1600px;
   padding: 20px 0;
   background-color: #f8f9fa;
 }
@@ -312,41 +312,30 @@
 .results-main-content .container {
   max-width: 100%;
   margin: 0;
-  padding: 0;
+  padding:0;
 }
 
 .results-layout {
   display: flex;
-  gap: 0px;
-  align-items: flex-start;
+  gap: none;
+
 }
 
-/* Sidebar Filters */
+/* Sidebar c */
 .sidebar-filters {
-  flex: 0 0 550px;
+  flex: 0 0 300px;
   position: sticky;
   top: 20px;
-  max-height: calc(100vh - 40px);
-  overflow-y: auto;
-  scrollbar-width: thin;
-  
+  max-height: none;
 }
 
-.sidebar-filters::-webkit-scrollbar {
-  width: 6px;
-  
- 
-}
 
-.sidebar-filters::-webkit-scrollbar-thumb {
-  background-color: #cbd5e0;
-  border-radius: 3px;
-}
 
 /* Flights List Section */
 .flights-list-section {
   flex: 1;
   min-width: 0; /* Prevents flex item from overflowing */
+  margin-left: -70px;
 }
 
 /* Sort By Bar */

@@ -26,7 +26,7 @@ const FiltersPanel = () => {
   };
 
   return (
-    <div className="filters-container">
+    <div className="filters-container" >
       {/* Applied Filters */}
       <div className="filter-card">
         <div className="card-header">
