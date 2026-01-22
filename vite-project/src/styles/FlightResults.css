@@ -406,11 +406,12 @@
 
 /* Flight Card */
 .flight-card {
-  background: #ffffff;
+  background: #fdfdfd;
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.8);
   overflow: hidden;
   transition: all 0.2s ease;
+  background: -webkit-repeating-linear-gradient(#8e8d8d 0%, #f9e9e9 5%, #fdfdfd 100%);
 }
 
 .flight-card:hover {
@@ -419,18 +420,21 @@
 
 .flight-card-header {
   padding: 8px 20px;
-  background-color: #f0f9ff;
+  background-color: #ecf6fc;
+  background: radial-gradient(circle at bottom right, #f4b3b3, #ffffff);
+  border-bottom: 1px solid #d0e0e5;
 }
 
 .cheapest-badge {
   display: inline-flex;
   align-items: center;
   padding: 4px 12px;
-  background-color: #007bff;
+  background-color: #f03d3da1;
   color: white;
   font-size: 12px;
   font-weight: 600;
   border-radius: 20px;
+  font-family: cursive;
 }
 
 .flight-card-content {
@@ -530,15 +534,16 @@
 }
 
 .line {
-  width: 100%;
-  height: 2px;
-  background-color: #cbd5e0;
+  width: 60%;
+  height: 5px;
+  background-color: #34db42fb;
+  background: linear-gradient(180deg, #4a44f4b1 0%, #aebaf44b 100%);
 }
 
 .stops-dot {
   position: absolute;
   font-size: 16px;
-  color: #cbd5e0;
+  color: #0a429b;
   background: white;
   padding: 0 5px;
 }
@@ -570,19 +575,22 @@
 }
 
 .offer-badge {
-  display: inline-block;
-  padding: 3px 8px;
+  display: flex;
+  padding: 3px 50px;
   background-color: #e8f5e9;
   color: #2e7d32;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   border-radius: 4px;
+  margin-left: -990px;
+  margin-bottom: -10px;
+  background: radial-gradient(circle at top left, #7fde74, #e8f5e9);
 }
 
 .book-btn {
   width: 100%;
   padding: 10px 20px;
-  background-color: #ff6b35;
+  background-color: #c01313;
   color: white;
   border: none;
   border-radius: 6px;
@@ -591,18 +599,20 @@
   cursor: pointer;
   margin-bottom: 8px;
   transition: background-color 0.2s ease;
+  background: radial-gradient(circle at top left, #851111, #fe6969);
 }
 
 .book-btn:hover {
-  background-color: #e85a28;
+  background: #f40606cf;
+
 }
 
 .lock-price-btn {
   width: 100%;
   padding: 6px 12px;
   background-color: transparent;
-  color: #ff6b35;
-  border: 1px solid #ff6b35;
+  color: #f31c1c;
+  border: 1px solid #f31c1c;
   border-radius: 4px;
   font-size: 12px;
   font-weight: 500;

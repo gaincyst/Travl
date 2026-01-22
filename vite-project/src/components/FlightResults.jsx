@@ -253,16 +253,17 @@ function FlightResults() {
               </div>
 
               <div className="flight-price-section">
+                 <button className="book-btn">Book</button>
                 <div className="price-main">₹5,796</div>
-                <div className="price-offers">
-                  <span className="offer-badge">350 Off</span>
-                  <span className="offer-badge">+ 150 💳</span>
-                </div>
-                <button className="book-btn">Book</button>
+                
                 <button className="lock-price-btn">🔒 Lock Price @₹929</button>
               </div>
             </div>
             <div className="flight-card-footer">
+              <div className="price-offers">
+                 
+                  <span className="offer-badge">+ 150 💳</span>
+                </div>
               <button className="flight-details-btn">Flight Details →</button>
             </div>
           </div>
@@ -298,14 +299,15 @@ function FlightResults() {
 
               <div className="flight-price-section">
                 <div className="price-main">₹6,150</div>
-                <div className="price-offers">
-                  <span className="offer-badge">400 Off</span>
-                </div>
+                
                 <button className="book-btn">Book</button>
                 <button className="lock-price-btn">🔒 Lock Price @₹999</button>
               </div>
             </div>
             <div className="flight-card-footer">
+              <div className="price-offers">
+                  <span className="offer-badge">400 Off</span>
+                </div>
               <button className="flight-details-btn">Flight Details →</button>
             </div>
           </div>
@@ -341,14 +343,15 @@ function FlightResults() {
 
               <div className="flight-price-section">
                 <div className="price-main">₹7,250</div>
-                <div className="price-offers">
-                  <span className="offer-badge">500 Off</span>
-                </div>
+               
                 <button className="book-btn">Book</button>
                 <button className="lock-price-btn">🔒 Lock Price @₹1,050</button>
               </div>
             </div>
             <div className="flight-card-footer">
+               <div className="price-offers">
+                  <span className="offer-badge">500 Off</span>
+                </div>
               <button className="flight-details-btn">Flight Details →</button>
             </div>
           </div>

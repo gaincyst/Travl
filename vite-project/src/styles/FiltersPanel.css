@@ -7,9 +7,27 @@
   padding-left: 90px;
   padding-right: 140px;
   /* Ensure no overflow scroll is active here */
-  overflow: visible !important; 
-  height: auto !important;
+
+  /* 🔥 IMPORTANT PART */
+  height: calc(100vh - 180px);   /* fixed visible height */
+  overflow-y: auto;              /* internal scroll */
 }
+
+.filters-container::-webkit-scrollbar {
+  width: 6px;
+ 
+}
+
+.filters-container::-webkit-scrollbar-thumb {
+  background-color: transparent;
+  border-radius: 3px;
+  
+}
+
+.filters-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
 
 .filter-card {
   background: #ffffff;
