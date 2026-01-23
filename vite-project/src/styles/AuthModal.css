@@ -1,0 +1,195 @@
+/* Overlay */
+.auth-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(2px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+/* Main Wrapper */
+.auth-wrapper {
+    
+  position: relative;
+  width: 1100px;
+  height: 600px;
+  background: url("/d9.jpg") center/cover no-repeat;
+  border-radius: 18px;
+  display: flex;
+  overflow: visible;
+  box-shadow: 0 40px 90px rgba(0,0,0,8);
+ 
+}
+
+.auth-wrapper::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+
+  /* 🌤️ LIGHT, AIRY OVERLAY */
+  background: linear-gradient(
+    to right,
+    rgb(207, 199, 199),
+    rgb(213, 210, 210, 0.15)
+  );
+
+  z-index: 1;
+}
+
+
+/* Close */
+.auth-close {
+  position: absolute;
+  top: 20px;
+  right: 26px;
+  color: #fff;
+  font-size: 22px;
+  cursor: pointer;
+  z-index: 10;
+}
+
+/* LEFT TEXT */
+.auth-left {
+  flex: 1;
+  padding: 70px;
+  color: #fdfdfd;
+}
+
+.brand {
+  letter-spacing: 2px;
+  opacity: 0.9;
+  margin-bottom: 20px;
+}
+
+.auth-left h1 {
+  font-size: 56px;
+  line-height: 1.1;
+  margin-bottom: 16px;
+}
+
+.tagline {
+  font-size: 18px;
+  margin-bottom: 18px;
+  opacity: 0.95;
+}
+
+.desc {
+  font-size: 15px;
+  opacity: 0.85;
+}
+
+/* RIGHT GLASS CARD */
+.auth-card {
+  width: 360px;
+  margin: auto 60px;
+  padding: 32px;
+  background: rgba(255,255,255,0.18);
+  backdrop-filter: blur(16px);
+  border-radius: 16px;
+  color: #fff;
+}
+
+.auth-card label {
+  font-size: 13px;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.auth-card input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 6px;
+  border: none;
+  margin-bottom: 16px;
+  outline: none;
+}
+
+.forgot {
+  font-size: 12px;
+  text-align: right;
+  margin-bottom: 18px;
+  cursor: pointer;
+  opacity: 0.9;
+}
+
+/* Buttons */
+.signin-btn {
+  width: 100%;
+  padding: 12px;
+  background: #2f80ed;
+  border: none;
+  border-radius: 6px;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.auth-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 20px 0;
+  gap: 12px;
+}
+
+.auth-divider span {
+  width: 40%;
+  height: 1px;
+  background: rgba(255,255,255,0.4);
+  flex: none;              /* 🔥 MOST IMPORTANT */
+}
+
+.auth-divider p {
+  margin: 0;
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+
+.google-btn {
+  width: 100%;
+  padding: 10px;
+  background: #fff;
+  border-radius: 6px;
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: center;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.google-btn img {
+  width: 18px;
+}
+
+/* Bottom text */
+.signup-text {
+  margin-top: 16px;
+  font-size: 13px;
+  text-align: center;
+}
+
+.signup-text span {
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* REMOVE UNWANTED VERTICAL GREY LINE */
+.auth-wrapper::before,
+.auth-wrapper::after,
+.auth-card::before,
+.auth-card::after {
+  content: none !important;
+}
+
+.auth-card {
+  border: none !important;
+}
+
+
+

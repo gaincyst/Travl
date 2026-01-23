@@ -1518,7 +1518,7 @@ font-size: 13px;
 .logo-carousel-section {
   width: 100%;
   padding: 12px 0;
-  background: linear-gradient(to right, #fdf4f5, #fff5f2); /* Subtle theme tint */
+  background: radial-gradient(circle, hsla(0, 76%, 92%, 0.59), #f9f6f7); /* Light peach gradient background */
   overflow: hidden;
   margin-top: 40px;
   border-top: 1px solid #f0f0f0;

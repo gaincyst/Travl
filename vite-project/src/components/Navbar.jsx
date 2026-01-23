@@ -13,6 +13,8 @@ import {
   FaUmbrellaBeach,
   FaGlobe
 } from "react-icons/fa";
+import AuthModal from "../components/AuthModal";
+
 
 import { GiWorld } from "react-icons/gi";
 import { MdOutlineLoyalty } from "react-icons/md";
@@ -22,6 +24,7 @@ function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [openMenu, setOpenMenu] = useState(null);
   const [darkMode, setDarkMode] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 120);
@@ -166,10 +169,18 @@ function Navbar() {
           {darkMode ? <FaSun className="sun-icon" /> : <FaMoon className="moon-icon" />}
         </button>
 
-        <div className="login-group">
-          <FaUserCircle className="login-icon" />
-          <span>Login / Signup</span>
-        </div>
+        <div
+  className="login-signup"
+  onClick={() => setShowAuthModal(true)}
+>
+  <FaUserCircle className="login-icon" />
+  <span>Login / Signup</span>
+</div>
+
+{showAuthModal && (
+  <AuthModal onClose={() => setShowAuthModal(false)} />
+)}
+
       </div>
     </header>
   );
