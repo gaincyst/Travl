@@ -140,28 +140,40 @@
   height: 1px;
   background: rgba(255,255,255,0.4);
   flex: none;              /* 🔥 MOST IMPORTANT */
+  margin-top: -15px;
 }
 
 .auth-divider p {
   margin: 0;
-  font-size: 12px;
+  font-size: 13px;
   opacity: 0.8;
+  margin-top: -16px;
 }
-
 
 .google-btn {
   width: 100%;
   padding: 10px;
-  background: #fff;
+  background: #ffffff;
   border-radius: 6px;
   border: none;
+
   display: flex;
   align-items: center;
-  gap: 10px;
   justify-content: center;
+  gap: 10px;
+margin-top: -10px;
   font-weight: 600;
   cursor: pointer;
 }
+
+.google-icon {
+  width: 18px;
+  height: 18px;
+}
+.google-btn:hover {
+  background: #d2d1d1;
+}
+
 
 .google-btn img {
   width: 18px;
@@ -192,4 +204,99 @@
 }
 
 
+
+/* ===== TOGGLE ANIMATION ===== */
+.auth-card {
+  animation: fadeSlide 0.35s ease;
+}
+
+@keyframes fadeSlide {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===== TERMS (SIGNUP ONLY) ===== */
+.terms {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+.terms input {
+  margin:0;
+  width: auto;
+  position: relative;
+  top: 0;
+
+}
+
+/* Password field */
+.password-field {
+  position: relative;
+}
+
+.password-field span {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
+/* Error text */
+.error {
+  color: #ffdddd;
+  font-size: 12px;
+  margin-top: 4px;
+  margin-bottom: 8px;
+}
+
+.auth-heading {
+  color: #fdf6f6;
+  font-size: 26px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+.auth-card.login .auth-heading {
+  color: #ffffff;
+}
+.eye-icon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #333;
+  margin-top: -8px;
+}
+
+.eye-icon svg {
+  display: block;
+}
+
+/* 🔒 FIX: Register card should not overflow wrapper */
+.auth-card.signup {
+  max-height: 520px;          /* wrapper height ke andar */
+  overflow-y: auto;           /* content scroll kare, card bahar na jaaye */
+  padding-top: 24px;
+  padding-bottom: 24px;
+}
+
+/* Scrollbar ko subtle rakho */
+.auth-card.signup::-webkit-scrollbar {
+  width: 6px;
+}
+
+.auth-card.signup::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.35);
+  border-radius: 4px;
+}
 
