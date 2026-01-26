@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from "react";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import "../styles/DatePriceStrip.css";
 
-const DatePriceStrip = () => {
+const DatePriceStrip = ({ showPrice = true }) => {
   const scrollRef = useRef(null);
   const [activeDate, setActiveDate] = useState(null);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
@@ -76,11 +76,11 @@ const DatePriceStrip = () => {
         {dates.map((item, index) => (
           <div
             key={index}
-            className={`date-card ${activeDate === item.day ? "active" : ""}`}
+            className={`date-card ${activeDate === item.day ? "active" : ""} ${!showPrice ? "date-only" : ""}`}
             onClick={() => setActiveDate(item.day)}
           >
             <span className="date-text">{item.day}</span>
-            <span className="price-text">{item.price}</span>
+            {showPrice && <span className="price-text">{item.price}</span>}
           </div>
         ))}
       </div>

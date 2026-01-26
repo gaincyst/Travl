@@ -6,28 +6,22 @@
   max-width: 600px;
   padding-left: 90px;
   padding-right: 140px;
-  /* Ensure no overflow scroll is active here */
-
-  /* 🔥 IMPORTANT PART */
-  height: calc(100vh - 180px);   /* fixed visible height */
-  overflow-y: auto;              /* internal scroll */
+  height: calc(100vh - 180px);
+  overflow-y: auto;
 }
 
 .filters-container::-webkit-scrollbar {
   width: 6px;
- 
 }
 
 .filters-container::-webkit-scrollbar-thumb {
   background-color: transparent;
   border-radius: 3px;
-  
 }
 
 .filters-container::-webkit-scrollbar-track {
   background: transparent;
 }
-
 
 .filter-card {
   background: #ffffff;
@@ -59,6 +53,7 @@
   cursor: pointer;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  margin-top: -50px;
 }
 
 .clear-all:hover {
@@ -72,7 +67,7 @@
 }
 
 .applied-pill {
-  background: #e3f2fd;
+  background: #fed8d8;
   color: #000000;
   padding: 6px 12px;
   border-radius: 16px;
@@ -84,29 +79,29 @@
 }
 
 .close-x {
-  color: #008cff;
+  
   cursor: pointer;
   font-size: 16px;
-  font-weight:700;
+  font-weight: 700;
   line-height: 1;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 16px;
   height: 16px;
-  background: #008cff;
+  background: #e91e1e;
   color: #ffffff;
   border-radius: 50%;
   padding-bottom: 4px;
-  padding-right: 0.4px;
+  padding-right: 1px;
+  padding-left: 1px;
 }
 
 .close-x:hover {
-  background: #0077cc;
+  background: #cc0000ac;
 }
 
 .filter-card h3 {
-  font-size: 18px;
   font-weight: 700;
   color: #000000;
   margin: 0 0 16px 0;
@@ -130,7 +125,7 @@
   width: 18px;
   height: 18px;
   cursor: pointer;
-  accent-color: #008cff;
+  accent-color: #cf1111;
   margin: 0;
 }
 
@@ -140,14 +135,8 @@
   font-weight: 400;
 }
 
-.checkbox-row .price {
-  font-size: 15px;
-  color: #000000;
-  font-weight: 400;
-}
-
 .plus-more {
-  color: #008cff;
+  color: #b73b3b;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
@@ -159,97 +148,15 @@
   text-decoration: underline;
 }
 
-.divider {
-  height: 1px;
-  background: #e0e0e0;
-  margin: 20px 0;
-}
-
-.slider-container {
-  position: relative;
-  margin: 1px 0 1px 0;
-  padding-top: 1px;
-}
-
-.price-slider {
-  width: 100%;
-  height: 6px;
-  -webkit-appearance: none;
-  appearance: none;
-  outline: none;
-  border-radius: 3px;
-  cursor: pointer;
-}
-
-.price-slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 18px;
-  height: 18px;
-  background: #ffffff;
-  border: 3px solid #008cff;
-  border-radius: 50%;
-  cursor: pointer;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
-}
-
-.price-slider::-moz-range-thumb {
-  width: 18px;
-  height: 18px;
-  background: #ffffff;
-  border: 3px solid #008cff;
-  border-radius: 50%;
-  cursor: pointer;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
-}
-
-.price-labels {
-  display: flex;
-  justify-content: space-between;
+/* Bus Section Title Styling */
+.filter-card h3.section-title-with-bar {
   font-size: 15px;
-  color: #000000;
-  font-weight: 400;
-  margin-top: 8px;
-}
-
-.price-tooltip {
-  position: absolute;
-  top: -45px;
-  transform: translateX(-50%);
-  background: #4a4a4a;
-  color: #ffffff;
-  padding: 8px 14px;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 500;
-  white-space: nowrap;
-  pointer-events: none;
-  z-index: 10;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-}
-
-.price-tooltip::after {
-  content: '';
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 0;
-  height: 0;
-  border-left: 7px solid transparent;
-  border-right: 7px solid transparent;
-  border-top: 7px solid #4a4a4a;
-}
-
-/* Onward Journey Section */
-.section-title-with-bar {
-  font-size: 18px;
   font-weight: 700;
   color: #000000;
   margin: 0 0 20px 0;
   padding-left: 12px;
-  border-left: 4px solid #008cff;
-  background: linear-gradient(to right, #e3f2fd 0%, #e3f2fd 100%);
+  border-left: 4px solid #da1212;
+  background: linear-gradient(to right, #edd2d2 0%, #fcfafa 100%);
   padding-top: 4px;
   padding-bottom: 4px;
   margin-left: -24px;
@@ -287,14 +194,14 @@
 }
 
 .time-slot-box:hover {
-  border-color: #008cff;
-  background: #f5fbff;
+  border-color: #a81313;
+  background: #f7e5e5;
 }
 
 .time-slot-box.active {
-  border-color: #008cff;
+  border-color: #c81f1f;
   border-width: 2px;
-  background: #e3f2fd;
+  background: #f8ebeb;
 }
 
 .time-icon {
@@ -304,11 +211,11 @@
 }
 
 .time-slot-box:hover .time-icon {
-  color: #008cff;
+  color: #de1717;
 }
 
 .time-slot-box.active .time-icon {
-  color: #008cff;
+  color: #a00707;
 }
 
 .time-label {
@@ -319,47 +226,7 @@
   font-weight: 400;
 }
 
-/* Airlines and Aircraft Size Section */
-.airline-row {
-  margin: 0 0 16px 0;
-}
-
-.checkbox-label-with-logo {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.airline-logo-container {
-  width: 24px;
-  height: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.airline-logo {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  display: block;
-}
-
-.airline-row .checkbox-label-with-logo span {
-  font-size: 15px;
-  color: #000000;
-  font-weight: 400;
-}
-
-.aircraft-size-title {
-  font-size: 18px;
-  font-weight: 700;
-  color: #000000;
-  margin: 28px 0 16px 0;
-}
-
-/* Bus-specific styles */
+/* Bus Type Buttons */
 .bus-type-buttons {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -384,15 +251,15 @@
 }
 
 .bus-type-btn:hover {
-  border-color: #008cff;
+  border-color: #ff0000;
   background: #f5fbff;
 }
 
 .bus-type-btn.active {
-  border-color: #008cff;
+  border-color: #e87e78;
   border-width: 2px;
-  background: #e3f2fd;
-  color: #008cff;
+  background: #fef3f3;
+  color: #df3c3c;
 }
 
 .bus-type-icon {
@@ -402,13 +269,14 @@
 }
 
 .bus-type-btn:hover .bus-type-icon {
-  color: #008cff;
+  color: #e12929;
 }
 
 .bus-type-btn.active .bus-type-icon {
-  color: #008cff;
+  color: #ec3f3f;
 }
 
+/* Search Input */
 .search-input-wrapper {
   position: relative;
   margin-bottom: 16px;
@@ -426,7 +294,7 @@
 .filter-search-input {
   width: 100%;
   padding: 10px 12px 10px 38px;
-  border: 1px solid #d0d0d0;
+  border: 1px solid #bababa;
   border-radius: 6px;
   font-size: 14px;
   outline: none;
@@ -434,14 +302,13 @@
 }
 
 .filter-search-input:focus {
-  border-color: #008cff;
+  border-color: #a72b2b;
 }
 
 .filter-search-input::placeholder {
   color: #999;
 }
- 
+
 .location-list {
   margin-bottom: 12px;
 }
-

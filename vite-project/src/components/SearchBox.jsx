@@ -6,7 +6,7 @@ import TravellersDropdown from "./TravellersClassDropdown";
 import HotelGuestsDropdown from "./HotelGuestsDropdown";
 import { useNavigate } from "react-router-dom"; // Navigation Import
 
-function SearchBox({ preFilledData, hideServiceTabs }) {
+function SearchBox({ preFilledData, hideServiceTabs, activeService }) {
   const navigate = useNavigate(); // Initialize hook
   const dropdownRef = useRef(null);
   const datePickerRef = useRef(null);
@@ -14,7 +14,7 @@ function SearchBox({ preFilledData, hideServiceTabs }) {
   const checkInRef = useRef(null);
   const checkOutRef = useRef(null);
 
-  const [activeTab, setActiveTab] = useState("flights");
+  const [activeTab, setActiveTab] = useState(activeService || "flights");
   const [tripType, setTripType] = useState("oneWay");
   const [openTravellers, setOpenTravellers] = useState(false);
   
@@ -46,6 +46,10 @@ function SearchBox({ preFilledData, hideServiceTabs }) {
     if (activeTab === "flights") {
       navigate("/flight-results", { 
         state: { fromCity, toCity, startDate, returnDate, displayValue, tripType } 
+      });
+    } else if (activeTab === "bus") {
+      navigate("/bus-results", { 
+        state: { fromCity, toCity, startDate, returnDate, tripType } 
       });
     }
   };

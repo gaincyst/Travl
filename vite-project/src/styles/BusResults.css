@@ -1,7 +1,12 @@
 /* Layout for the Page */
-.flight-results-page {
+.bus-results-page {
   font-family: 'Inter', sans-serif;
   background-color: #f8f9fa;
+}
+
+/* Reduce vertical space between date strip and filters panel (Bus page only) */
+.bus-results-page .date-strip-container {
+  margin-bottom: 8px; /* Reduced from default 20px */
 }
 
 /* Navbar Container Styling */
@@ -23,16 +28,15 @@
 
 /* Logo Group */
 .nav-logo {
-  height:120px; /* Adjust this to fit your navbar height */
+  height:120px;
   width: auto;
   display: block;
   object-fit: contain;
   align-items: center;
   gap: 10px;
   margin-top: 1px;
-    margin-left: -60px;
+  margin-left: -60px;
 }
-
 
 /* Menu Options Styling */
 .nav-menu {
@@ -40,7 +44,6 @@
   gap: 30px;
   list-style: none;
   align-items: center;
-
 }
 
 .nav-menu li {
@@ -102,9 +105,10 @@
   font-size: 20px;
   color: #333;
 }
-/* Hero Section - Flight specific background */
-.flight-results-page .results-hero {
-  background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('/flights/f2.jpg');
+
+/* Hero Section - Bus specific background */
+.bus-results-page .results-hero {
+  background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('/buses/bus3.jpg');
   background-size: cover;
   background-position: center;
   height: 300px;
@@ -113,7 +117,10 @@
   justify-content: center;
   color: white;
 }
-
+.hero-content {
+  text-align: center;
+  color: #fff;
+}
 .hero-content h1 {
   font-size: 32px;
   margin-bottom: 5px;
@@ -122,10 +129,9 @@
 
 /* Search Box Positioning */
 .search-section-container {
-  margin-top: -30px; /* Overlap effect */
+  margin-top: -30px;
   display: flex;
   justify-content: center;
- 
 }
 
 /* Carousel Container */
@@ -144,12 +150,12 @@
   gap: 16px;
   overflow-x: auto;
   scroll-behavior: smooth;
-  scrollbar-width: none; /* Hide scrollbar Firefox */
+  scrollbar-width: none;
   padding: 10px 5px;
 }
 
 .offers-scroll-wrapper::-webkit-scrollbar {
-  display: none; /* Hide scrollbar Chrome/Safari */
+  display: none;
 }
 
 /* Offer Card */
@@ -185,19 +191,19 @@
 }
 
 /* Text Details */
-.offers-scroll-wrapper.offer-details {
+.offers-scroll-wrapper .offer-details {
   display: flex;
   flex-direction: column;
 }
 
-.offers-scroll-wrapper.offer-title {
+.offers-scroll-wrapper .offer-title {
   font-weight: 700;
   font-size: 16px;
   color: #1a1a1a;
   margin-bottom: 2px;
 }
 
-.offers-scroll-wrapper.offer-subtitle {
+.offers-scroll-wrapper .offer-subtitle {
   font-size: 12px;
   color: #555;
   white-space: nowrap;
@@ -233,9 +239,9 @@
 .special-fares-container {
   width: 100%;
   display: flex;
-  justify-content: center; /* Centers horizontally */
+  justify-content: center;
   margin: 30px 0;
-  padding: 0 50px; /* Generous side spacing */
+  padding: 0 50px;
 }
 
 .special-fares-content {
@@ -261,7 +267,7 @@
   display: flex;
   align-items: center;
   padding: 6px 16px;
-  border: 1px solid #494848; /* Neutral border */
+  border: 1px solid #494848;
   border-radius: 20px;
   font-size: 14px;
   color: #242424;
@@ -272,10 +278,10 @@
 
 /* Selected/Active Pill Style */
 .fare-pill.active {
-  background-color: #e83b3b; /* Highlighted blue background */
+  background-color: #e83b3b;
   border-color: #932323;
-  color: #ffffff; /* White text */
-  padding-right: 10px; /* Space for the x icon */
+  color: #ffffff;
+  padding-right: 10px;
 }
 
 /* Close Icon inside active pill */
@@ -316,10 +322,9 @@
 .results-layout {
   display: flex;
   gap: none;
-
 }
 
-/* Sidebar c */
+/* Sidebar */
 .sidebar-filters {
   flex: 0 0 300px;
   position: sticky;
@@ -327,12 +332,10 @@
   max-height: none;
 }
 
-
-
-/* Flights List Section */
-.flights-list-section {
+/* Buses List Section */
+.buses-list-section {
   flex: 1;
-  min-width: 0; /* Prevents flex item from overflowing */
+  min-width: 0;
   margin-left: -70px;
 }
 
@@ -379,9 +382,9 @@
 }
 
 .sort-btn.active {
-  background-color: #007bff;
+  background-color: #d43426f6;
   color: white;
-  border-color: #007bff;
+  border-color: #b51c1c;
 }
 
 .sort-btn.active .sort-label {
@@ -395,15 +398,15 @@
   margin-top: 2px;
 }
 
-/* Flight Cards Container */
-.flight-cards-container {
+/* Bus Cards Container */
+.bus-cards-container {
   display: flex;
   flex-direction: column;
   gap: 15px;
 }
 
-/* Flight Card */
-.flight-card {
+/* Bus Card */
+.bus-card {
   background: #fdfdfd;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.8);
@@ -412,11 +415,11 @@
   background: -webkit-repeating-linear-gradient(#8e8d8d 0%, #f9e9e9 5%, #fdfdfd 100%);
 }
 
-.flight-card:hover {
+.bus-card:hover {
   box-shadow: 0 4px 16px rgba(0,0,0,0.12);
 }
 
-.flight-card-header {
+.bus-card-header {
   padding: 8px 20px;
   background-color: #ecf6fc;
   background: radial-gradient(circle at bottom right, #f4b3b3, #ffffff);
@@ -435,49 +438,49 @@
   font-family: cursive;
 }
 
-.flight-card-content {
+.bus-card-content {
   display: flex;
   align-items: center;
   padding: 20px;
   gap: 20px;
 }
 
-/* Airline Info */
-.airline-info {
+/* Operator Info */
+.operator-info {
   display: flex;
   flex-direction: column;
   align-items: center;
   min-width: 80px;
 }
 
-.airline-logo-flight {
+.operator-logo-bus {
   width: 45px;
   height: 45px;
   object-fit: contain;
   margin-bottom: 8px;
 }
 
-.flight-numbers {
+.bus-details {
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
 }
 
-.flight-numbers span:first-child {
+.bus-details span:first-child {
   font-size: 13px;
   font-weight: 600;
   color: #333;
 }
 
-.flight-code {
+.bus-type {
   font-size: 11px;
   color: #666;
   margin-top: 2px;
 }
 
-/* Flight Timing Section */
-.flight-timing {
+/* Bus Timing Section */
+.bus-timing {
   display: flex;
   align-items: center;
   flex: 1;
@@ -522,7 +525,7 @@
   margin-bottom: 8px;
 }
 
-.flight-line {
+.bus-line {
   width: 100%;
   position: relative;
   display: flex;
@@ -538,21 +541,13 @@
   background: linear-gradient(180deg, #4a44f4b1 0%, #aebaf44b 100%);
 }
 
-.stops-dot {
-  position: absolute;
-  font-size: 16px;
-  color: #0a429b;
-  background: white;
-  padding: 0 5px;
-}
-
 .stops {
   font-size: 12px;
   color: #666;
 }
 
-/* Flight Price Section */
-.flight-price-section {
+/* Bus Price Section */
+.bus-price-section {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -585,25 +580,7 @@
   background: radial-gradient(circle at top left, #7fde74, #e8f5e9);
 }
 
-.book-btn {
-  width: 100%;
-  padding: 10px 20px;
-  background-color: #c01313;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-  margin-bottom: 8px;
-  transition: background-color 0.2s ease;
-  background: radial-gradient(circle at top left, #851111, #fe6969);
-}
 
-.book-btn:hover {
-  background: #f40606cf;
-
-}
 
 .lock-price-btn {
   width: 100%;
@@ -622,15 +599,15 @@
   background-color: #fff4f0;
 }
 
-/* Flight Card Footer */
-.flight-card-footer {
+/* Bus Card Footer */
+.bus-card-footer {
   padding: 12px 20px;
   border-top: 1px solid #f0f0f0;
   display: flex;
   justify-content: flex-end;
 }
 
-.flight-details-btn {
+.bus-details-btn {
   background: transparent;
   border: none;
   color: #007bff;
@@ -640,7 +617,232 @@
   transition: color 0.2s ease;
 }
 
-.flight-details-btn:hover {
+.bus-details-btn:hover {
   color: #0056b3;
   text-decoration: underline;
 }
+
+/* ============================================ */
+/* BUS TICKET CARDS - SCOPED STYLES */
+/* ============================================ */
+
+.bus-cards-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* Bus Ticket Card */
+.bus-ticket-card {
+  background: #fdfdfd;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.8);
+  overflow: hidden;
+  transition: all 0.2s ease;
+  background: -webkit-repeating-linear-gradient(#8e8d8d 0%, #f9e9e9 5%, #fdfdfd 100%);
+}
+
+.bus-ticket-card:hover {
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+}
+
+.bus-ticket-content {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  gap: 20px;
+}
+
+/* Bus Operator Info Section */
+.bus-operator-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 200px;
+}
+
+.bus-name-section {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 8px;
+}
+
+.bus-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 4px;
+}
+
+.bus-type {
+  font-size: 12px;
+  color: #666;
+  line-height: 1.3;
+}
+
+.bus-rating-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  background-color: #46974f;
+  color: white;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 4px;
+  gap: 4px;
+  width: fit-content;
+}
+
+.star-icon {
+  color: #ffd700;
+  font-size: 12px;
+}
+
+.review-count {
+  font-size: 11px;
+  margin-left: -550px;
+  opacity: 0.9;
+}
+
+/* Bus Timing Section */
+.bus-timing {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  gap: 20px;
+}
+
+.bus-time-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 60px;
+}
+
+.bus-time {
+  font-size: 20px;
+  font-weight: 700;
+  color: #333;
+}
+
+.bus-date {
+  font-size: 13px;
+  color: #666;
+  margin-top: 4px;
+}
+
+.bus-date sup {
+  font-size: 10px;
+  color: #999;
+  margin-left: 2px;
+}
+
+.bus-duration-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+
+.bus-duration {
+  font-size: 13px;
+  font-weight: 600;
+  color: #666;
+  
+}
+
+.bus-line {
+  width: 100%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: -30px;
+}
+
+.bus-line .line {
+  width: 60%;
+  height: 5px;
+  background-color: #34db42fb;
+  background: linear-gradient(180deg, #4a44f4b1 0%, #aebaf44b 100%);
+}
+
+/* Bus Price Section */
+.bus-price-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 160px;
+}
+
+.bus-price-main {
+  font-size: 24px;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.bus-seat-info {
+  font-size: 12px;
+  color: #666;
+  text-align: center;
+  line-height: 1.4;
+  margin-bottom: 28px;
+}
+
+.bus-details-link {
+  background: transparent;
+  border: none;
+  color: #ed0808;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  margin-top: 20px;
+  margin-bottom: -28px;
+  margin-right: -90px;
+}
+
+.bus-details-link:hover {
+  color: #c54a4a;
+  text-decoration: underline;
+}
+
+/* Bus Ticket Footer */
+.bus-ticket-footer {
+  padding: 12px 20px;
+  border-top: 1px solid #f0f0f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.bus-badge-tag {
+  display: inline-flex;
+  padding: 4px 12px;
+  background-color: #e8f5e9;
+  color: #2e7d32;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 4px;
+  background: radial-gradient(circle at top left, #7fde74, #e8f5e9);
+}
+
+.bus-select-seat-btn {
+  padding: 10px 30px;
+  background: radial-gradient(circle at top left, #851111, #fe6969);
+background-color: #c01313;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  letter-spacing: 0.5px;
+}
+
+.bus-select-seat-btn:hover {
+ background: #f40606cf;
+
+}
+

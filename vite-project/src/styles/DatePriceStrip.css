@@ -65,6 +65,7 @@
   width: 100%;
   height: 4px;
   background-color: #007bff; /* Thick blue underline */
+  
 }
 
 .date-arrow {
@@ -85,3 +86,15 @@
 
 .date-arrow.left { left: 0; border-right: 1px solid #eee; }
 .date-arrow.right { right: 0; border-left: 1px solid #eee; }
+
+/* Date-only styling (for Bus page) */
+.date-card.date-only {
+  justify-content: center; /* Center the date text vertically */
+  
+}
+
+.date-card.date-only .date-text {
+  margin-bottom: 0; /* Remove bottom margin when no price */
+  font-size: 13px; /* Keep same font size */
+  
+}

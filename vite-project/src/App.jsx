@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import FlightResults from "./components/FlightResults";
+import BusResults from "./components/BusResults";
 
 function App() {
   return (
@@ -21,6 +22,9 @@ function App() {
             
             {/* Results page with minimal navbar and pre-filled data */}
             <Route path="/flight-results" element={<FlightResults />} />
+            
+            {/* Bus Results page */}
+            <Route path="/bus-results" element={<BusResults />} />
           </Routes>
         </div>
       </div>
