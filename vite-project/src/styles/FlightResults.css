@@ -120,6 +120,18 @@
   font-family: "Poppins", sans-serif;
 }
 
+.hero-content .breadcrumb {
+  color: #fff;
+}
+
+.hero-content .breadcrumb span {
+  color: #fff;
+}
+
+.hero-content .breadcrumb .current {
+  color: #fff;
+}
+
 /* Search Box Positioning */
 .search-section-container {
   margin-top: -30px; /* Overlap effect */

@@ -187,7 +187,7 @@
   width: 18px;
   height: 18px;
   background: #ffffff;
-  border: 3px solid #008cff;
+  border: 3px solid #f63333;
   border-radius: 50%;
   cursor: pointer;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
@@ -197,7 +197,7 @@
   width: 18px;
   height: 18px;
   background: #ffffff;
-  border: 3px solid #008cff;
+  border: 3px solid #d53131;
   border-radius: 50%;
   cursor: pointer;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
@@ -207,7 +207,7 @@
   display: flex;
   justify-content: space-between;
   font-size: 15px;
-  color: #000000;
+  color: #6f6d6ddb;
   font-weight: 400;
   margin-top: 8px;
 }

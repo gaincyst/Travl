@@ -22,7 +22,7 @@ const FiltersPanel = () => {
 
   const getSliderBackground = () => {
     const percentage = calculateSliderPosition();
-    return `linear-gradient(to right, #008cff 0%, #008cff ${percentage}%, #e0e0e0 ${percentage}%, #e0e0e0 100%)`;
+    return `linear-gradient(to right, #f63333 0%, #f63333 ${percentage}%, #e0e0e0 ${percentage}%, #e0e0e0 100%)`;
   };
 
   return (

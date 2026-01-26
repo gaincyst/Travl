@@ -51,6 +51,10 @@ function SearchBox({ preFilledData, hideServiceTabs, activeService }) {
       navigate("/bus-results", { 
         state: { fromCity, toCity, startDate, returnDate, tripType } 
       });
+    } else if (activeTab === "hotel") {
+      navigate("/hotel-results", { 
+        state: { city: fromCity, checkInDate: startDate, checkOutDate: returnDate, guests: displayValue } 
+      });
     }
   };
 

@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import FlightResults from "./components/FlightResults";
 import BusResults from "./components/BusResults";
+import HotelResults from "./components/HotelResults";
 
 function App() {
   return (
@@ -25,6 +26,9 @@ function App() {
             
             {/* Bus Results page */}
             <Route path="/bus-results" element={<BusResults />} />
+            
+            {/* Hotel Results page */}
+            <Route path="/hotel-results" element={<HotelResults />} />
           </Routes>
         </div>
       </div>

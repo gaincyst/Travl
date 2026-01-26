@@ -156,7 +156,7 @@
   margin: 0 0 20px 0;
   padding-left: 12px;
   border-left: 4px solid #da1212;
-  background: linear-gradient(to right, #edd2d2 0%, #fcfafa 100%);
+  background: linear-gradient(to right, #fef7f7 0%, #ffffff 100%);
   padding-top: 4px;
   padding-bottom: 4px;
   margin-left: -24px;
@@ -195,7 +195,7 @@
 
 .time-slot-box:hover {
   border-color: #a81313;
-  background: #f7e5e5;
+  background: #f9ecec;
 }
 
 .time-slot-box.active {
@@ -252,7 +252,7 @@
 
 .bus-type-btn:hover {
   border-color: #ff0000;
-  background: #f5fbff;
+  background: #ffefef;
 }
 
 .bus-type-btn.active {
