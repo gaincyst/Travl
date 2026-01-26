@@ -43,6 +43,7 @@ function SearchBox({ preFilledData, hideServiceTabs, activeService }) {
 
   // Logic to navigate on Search click
   const handleSearch = () => {
+    console.log("Active Tab:", activeTab); // Debug log
     if (activeTab === "flights") {
       navigate("/flight-results", { 
         state: { fromCity, toCity, startDate, returnDate, displayValue, tripType } 
@@ -55,6 +56,9 @@ function SearchBox({ preFilledData, hideServiceTabs, activeService }) {
       navigate("/hotel-results", { 
         state: { city: fromCity, checkInDate: startDate, checkOutDate: returnDate, guests: displayValue } 
       });
+    } else {
+      // Fallback in case activeTab doesn't match
+      console.warn("Unknown activeTab:", activeTab);
     }
   };
 
