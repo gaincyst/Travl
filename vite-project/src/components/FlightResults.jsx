@@ -7,7 +7,8 @@ import {
   FaMoon,
   FaSun,
   FaThLarge,
-  FaUserCircle, FaChevronLeft, FaChevronRight
+  FaUserCircle, FaChevronLeft, FaChevronRight, FaArrowUp, FaArrowDown,
+  FaLock, FaSuitcase, FaUtensils
 } from "react-icons/fa";
 
 import FiltersPanel from "./FiltersPanel";
@@ -21,6 +22,69 @@ function FlightResults() {
 
   // ✅ FIX 1: dark mode state added
   const [darkMode, setDarkMode] = useState(false);
+
+  // Sorting state management - 3 states: null (no sort), 'asc', 'desc'
+  const [sortStates, setSortStates] = useState({
+    price: null,
+    fastest: null,
+    departure: null,
+    smart: 'active'
+  });
+
+  const toggleSort = (sortKey) => {
+    setSortStates(prev => {
+      // If Smart is clicked, just toggle it to active
+      if (sortKey === 'smart') {
+        return {
+          price: null,
+          fastest: null,
+          departure: null,
+          smart: 'active'
+        };
+      }
+      
+      const currentState = prev[sortKey];
+      let newState;
+      
+      if (currentState === null) {
+        newState = 'asc'; // First click: ascending/primary
+      } else if (currentState === 'asc') {
+        newState = 'desc'; // Second click: descending/reverse
+      } else {
+        newState = null; // Third click: reset
+      }
+      
+      return {
+        price: null,
+        fastest: null,
+        departure: null,
+        smart: null, // Deselect smart when any other sort is clicked
+        [sortKey]: newState
+      };
+    });
+  };
+
+  const getSortLabel = (sortKey, state) => {
+    if (state === null) {
+      return {
+        price: 'Low to High',
+        fastest: 'Shortest First',
+        departure: 'Earliest First'
+      }[sortKey];
+    } else if (state === 'asc') {
+      return {
+        price: 'High to Low',
+        fastest: 'Shortest First',
+        departure: 'Earliest First'
+      }[sortKey];
+    } else {
+      return {
+        price: 'Low to High',
+        fastest: 'Longest First',
+        departure: 'Latest First'
+      }[sortKey];
+    }
+  };
 
   const toggleTheme = () => {
     setDarkMode((prev) => !prev);
@@ -62,8 +126,107 @@ function FlightResults() {
   ];
 
   const [selectedFare, setSelectedFare] = useState(null);
+  const [openFlightDetails, setOpenFlightDetails] = useState({});
+  const [activeTab, setActiveTab] = useState({});
+
+  const toggleFlightDetails = (cardId) => {
+    setOpenFlightDetails(prev => ({
+      ...prev,
+      [cardId]: !prev[cardId]
+    }));
+    if (!activeTab[cardId]) {
+      setActiveTab(prev => ({
+        ...prev,
+        [cardId]: 'flight-info'
+      }));
+    }
+  };
+
+  const handleTabChange = (cardId, tab) => {
+    setActiveTab(prev => ({
+      ...prev,
+      [cardId]: tab
+    }));
+  };
 
   const fareOptions = ["Student", "Senior Citizen", "Armed Forces"];
+
+  // Flight data
+  const flightData = [
+    {
+      id: 1,
+      badge: "Cheapest",
+      airline: "IndiGo",
+      airlineLogo: "/airlines/a4.png",
+      flightCode: "6E - 677",
+      departureTime: "16:05",
+      departureLocation: "DEL",
+      departureCity: "MUMBAI",
+      departureTerminal: "Terminal: 2",
+      arrivalTime: "02:50",
+      arrivalLocation: "LKO",
+      arrivalCity: "LUCKNOW",
+      arrivalTerminal: "Terminal: 3",
+      arrivalDate: "15 Oct 2025 at 01:25",
+      departureDate: "14 Oct 2025 at 23:15",
+      duration: "2h 10m",
+      stops: "1 Stop",
+      price: "₹5,796",
+      lockPrice: "₹929",
+      offers: "+ 150 💳",
+      refundable: false,
+      layout: "3-3 Layout",
+      beverage: "Beverage Available"
+    },
+    {
+      id: 2,
+      airline: "Akasa Air",
+      airlineLogo: "/airlines/a3.png",
+      flightCode: "QP1401",
+      departureTime: "18:30",
+      departureLocation: "DEL",
+      departureCity: "MUMBAI",
+      departureTerminal: "Terminal: 2",
+      arrivalTime: "21:15",
+      arrivalLocation: "BOM",
+      arrivalCity: "BANGALORE",
+      arrivalTerminal: "Terminal: 1",
+      arrivalDate: "15 Oct 2025 at 21:15",
+      departureDate: "14 Oct 2025 at 18:30",
+      duration: "2h 45m",
+      stops: "Non Stop",
+      price: "₹6,150",
+      lockPrice: "₹999",
+      offers: "400 Off",
+      refundable: true,
+      layout: "3-3 Layout",
+      beverage: "Beverage Available"
+    },
+    {
+      id: 3,
+      airline: "Air India",
+      airlineLogo: "/airlines/a1.png",
+      flightCode: "AI803",
+      departureTime: "09:00",
+      departureLocation: "DEL",
+      departureCity: "MUMBAI",
+      departureTerminal: "Terminal: 3",
+      arrivalTime: "11:30",
+      arrivalLocation: "BOM",
+      arrivalCity: "BANGALORE",
+      arrivalTerminal: "Terminal: 2",
+      arrivalDate: "15 Oct 2025 at 11:30",
+      departureDate: "14 Oct 2025 at 09:00",
+      duration: "2h 30m",
+      stops: "Non Stop",
+      price: "₹7,250",
+      lockPrice: "₹1,050",
+      offers: "500 Off",
+      refundable: true,
+      layout: "3-3 Layout",
+      beverage: "Beverage Available"
+    }
+  ];
 
   return (
     <div className="flight-results-page">
@@ -202,159 +365,220 @@ function FlightResults() {
         <div className="sort-by-bar">
           <span className="results-count">186 Flights Available</span>
           <div className="sort-options">
-            <button className="sort-btn">
-              Price <span className="sort-label">Low to High</span>
+            <button 
+              className={`sort-btn ${sortStates.price !== null ? 'active' : ''}`}
+              onClick={() => toggleSort('price')}
+            >
+              Price
+              <span className="sort-label">
+                {getSortLabel('price', sortStates.price)}
+                {sortStates.price === 'asc' && <FaArrowUp style={{marginLeft: '4px', fontSize: '10px'}} />}
+                {sortStates.price === 'desc' && <FaArrowDown style={{marginLeft: '4px', fontSize: '10px'}} />}
+              </span>
             </button>
-            <button className="sort-btn">
-              Fastest <span className="sort-label">Shortest First</span>
+            <button 
+              className={`sort-btn ${sortStates.fastest !== null ? 'active' : ''}`}
+              onClick={() => toggleSort('fastest')}
+            >
+              Fastest
+              <span className="sort-label">
+                {getSortLabel('fastest', sortStates.fastest)}
+                {sortStates.fastest === 'asc' && <FaArrowUp style={{marginLeft: '4px', fontSize: '10px'}} />}
+                {sortStates.fastest === 'desc' && <FaArrowDown style={{marginLeft: '4px', fontSize: '10px'}} />}
+              </span>
             </button>
-            <button className="sort-btn">
-              Departure <span className="sort-label">Earliest First</span>
+            <button 
+              className={`sort-btn ${sortStates.departure !== null ? 'active' : ''}`}
+              onClick={() => toggleSort('departure')}
+            >
+              Departure
+              <span className="sort-label">
+                {getSortLabel('departure', sortStates.departure)}
+                {sortStates.departure === 'asc' && <FaArrowUp style={{marginLeft: '4px', fontSize: '10px'}} />}
+                {sortStates.departure === 'desc' && <FaArrowDown style={{marginLeft: '4px', fontSize: '10px'}} />}
+              </span>
             </button>
-            <button className="sort-btn active">
-              Smart <span className="sort-label">Recommended</span>
+            <button 
+              className={`sort-btn ${sortStates.smart === 'active' ? 'active' : ''}`}
+              onClick={() => toggleSort('smart')}
+            >
+              Smart
+              <span className="sort-label">Recommended</span>
             </button>
           </div>
         </div>
 
         {/* FLIGHT CARDS */}
         <div className="flight-cards-container">
-          {/* Sample Flight Card 1 */}
-          <div className="flight-card">
-            <div className="flight-card-header">
-              <span className="cheapest-badge">Cheapest</span>
-            </div>
-            <div className="flight-card-content">
-              <div className="airline-info">
-                <img src="/airlines/a4.png" alt="IndiGo" className="airline-logo-flight" />
-                <div className="flight-numbers">
-                  <span>IndiGo</span>
-                  <span className="flight-code">6E6696, 6E2739</span>
-                </div>
-              </div>
-              
-              <div className="flight-timing">
-                <div className="time-section">
-                  <span className="time">16:05</span>
-                  <span className="location">DEL</span>
-                </div>
-                <div className="duration-section">
-                  <span className="duration">10h 45m</span>
-                  <div className="flight-line">
-                    <div className="line"></div>
-                    <span className="stops-dot">○</span>
+          {flightData.map((flight) => (
+            <div key={flight.id} className="flight-card-wrapper">
+              <div className="flight-card">
+                {flight.badge && (
+                  <div className="flight-card-header">
+                    <span className="cheapest-badge">{flight.badge}</span>
                   </div>
-                  <span className="stops">1 Stop</span>
-                </div>
-                <div className="time-section">
-                  <span className="time">02:50<sup>+1</sup></span>
-                  <span className="location">BOM</span>
-                </div>
-              </div>
-
-              <div className="flight-price-section">
-                 <button className="book-btn">Book</button>
-                <div className="price-main">₹5,796</div>
-                
-                <button className="lock-price-btn">🔒 Lock Price @₹929</button>
-              </div>
-            </div>
-            <div className="flight-card-footer">
-              <div className="price-offers">
-                 
-                  <span className="offer-badge">+ 150 💳</span>
-                </div>
-              <button className="flight-details-btn">Flight Details →</button>
-            </div>
-          </div>
-
-          {/* Sample Flight Card 2 */}
-          <div className="flight-card">
-            <div className="flight-card-content">
-              <div className="airline-info">
-                <img src="/airlines/a3.png" alt="Akasa Air" className="airline-logo-flight" />
-                <div className="flight-numbers">
-                  <span>Akasa Air</span>
-                  <span className="flight-code">QP1401</span>
-                </div>
-              </div>
-              
-              <div className="flight-timing">
-                <div className="time-section">
-                  <span className="time">18:30</span>
-                  <span className="location">DEL</span>
-                </div>
-                <div className="duration-section">
-                  <span className="duration">2h 45m</span>
-                  <div className="flight-line">
-                    <div className="line"></div>
+                )}
+                <div className="flight-card-content">
+                  <div className="airline-info">
+                    <img src={flight.airlineLogo} alt={flight.airline} className="airline-logo-flight" />
+                    <div className="flight-numbers">
+                      <span>{flight.airline}</span>
+                      <span className="flight-code">{flight.flightCode}</span>
+                    </div>
                   </div>
-                  <span className="stops">Non Stop</span>
-                </div>
-                <div className="time-section">
-                  <span className="time">21:15</span>
-                  <span className="location">BOM</span>
-                </div>
-              </div>
-
-              <div className="flight-price-section">
-                <div className="price-main">₹6,150</div>
-                
-                <button className="book-btn">Book</button>
-                <button className="lock-price-btn">🔒 Lock Price @₹999</button>
-              </div>
-            </div>
-            <div className="flight-card-footer">
-              <div className="price-offers">
-                  <span className="offer-badge">400 Off</span>
-                </div>
-              <button className="flight-details-btn">Flight Details →</button>
-            </div>
-          </div>
-
-          {/* Sample Flight Card 3 */}
-          <div className="flight-card">
-            <div className="flight-card-content">
-              <div className="airline-info">
-                <img src="/airlines/a1.png" alt="Air India" className="airline-logo-flight" />
-                <div className="flight-numbers">
-                  <span>Air India</span>
-                  <span className="flight-code">AI803</span>
-                </div>
-              </div>
-              
-              <div className="flight-timing">
-                <div className="time-section">
-                  <span className="time">09:00</span>
-                  <span className="location">DEL</span>
-                </div>
-                <div className="duration-section">
-                  <span className="duration">2h 30m</span>
-                  <div className="flight-line">
-                    <div className="line"></div>
+                  
+                  <div className="flight-timing">
+                    <div className="time-section">
+                      <span className="time">{flight.departureTime}</span>
+                      <span className="location">{flight.departureLocation}</span>
+                    </div>
+                    <div className="duration-section">
+                      <span className="duration">{flight.duration}</span>
+                      <div className="flight-line">
+                        <div className="line"></div>
+                        {flight.stops !== "Non Stop" && <span className="stops-dot">○</span>}
+                      </div>
+                      <span className="stops">{flight.stops}</span>
+                    </div>
+                    <div className="time-section">
+                      <span className="time">{flight.arrivalTime}{flight.stops !== "Non Stop" && <sup>+1</sup>}</span>
+                      <span className="location">{flight.arrivalLocation}</span>
+                    </div>
                   </div>
-                  <span className="stops">Non Stop</span>
+
+                  <div className="flight-price-section">
+                    <button className="book-btn">Book</button>
+                    <div className="price-main">{flight.price}</div>
+                    <button className="lock-price-btn">🔒 Lock Price @{flight.lockPrice}</button>
+                  </div>
                 </div>
-                <div className="time-section">
-                  <span className="time">11:30</span>
-                  <span className="location">BOM</span>
+                <div className="flight-card-footer">
+                  <div className="price-offers">
+                    <span className="offer-badge">{flight.offers}</span>
+                  </div>
+                  <button 
+                    className="flight-details-btn"
+                    onClick={() => toggleFlightDetails(flight.id)}
+                  >
+                    {openFlightDetails[flight.id] ? 'Hide Details' : 'Flight Details'} →
+                  </button>
                 </div>
               </div>
 
-              <div className="flight-price-section">
-                <div className="price-main">₹7,250</div>
-               
-                <button className="book-btn">Book</button>
-                <button className="lock-price-btn">🔒 Lock Price @₹1,050</button>
-              </div>
-            </div>
-            <div className="flight-card-footer">
-               <div className="price-offers">
-                  <span className="offer-badge">500 Off</span>
+              {/* FLIGHT DETAILS DROPDOWN */}
+              {openFlightDetails[flight.id] && (
+                <div className="flight-details-dropdown">
+                  {/* Tabs */}
+                  <div className="flight-details-tabs">
+                    <button 
+                      className={`tab-btn ${activeTab[flight.id] === 'flight-info' ? 'active' : ''}`}
+                      onClick={() => handleTabChange(flight.id, 'flight-info')}
+                    >
+                      <FaPlane style={{marginRight: '6px', fontSize: '14px'}} />
+                      FLIGHT INFORMATION
+                    </button>
+                    <button 
+                      className={`tab-btn ${activeTab[flight.id] === 'fare-details' ? 'active' : ''}`}
+                      onClick={() => handleTabChange(flight.id, 'fare-details')}
+                    >
+                      <FaLock style={{marginRight: '6px', fontSize: '14px'}} />
+                      FARE DETAILS
+                    </button>
+                    <button 
+                      className={`tab-btn ${activeTab[flight.id] === 'baggage-rules' ? 'active' : ''}`}
+                      onClick={() => handleTabChange(flight.id, 'baggage-rules')}
+                    >
+                      <FaSuitcase style={{marginRight: '6px', fontSize: '14px'}} />
+                      BAGGAGE RULES
+                    </button>
+                    <button 
+                      className={`tab-btn ${activeTab[flight.id] === 'cancellation' ? 'active' : ''}`}
+                      onClick={() => handleTabChange(flight.id, 'cancellation')}
+                    >
+                      <FaLock style={{marginRight: '6px', fontSize: '14px'}} />
+                      CANCELLATION
+                    </button>
+                  </div>
+
+                  {/* Tab Content */}
+                  <div className="flight-details-content">
+                    {activeTab[flight.id] === 'flight-info' && (
+                      <div className="flight-info-tab">
+                        <div className="flight-info-header">
+                          <div className="airline-header">
+                            <img src={flight.airlineLogo} alt={flight.airline} className="dropdown-airline-logo" />
+                            <div className="airline-details">
+                              <span className="airline-name">{flight.airline}</span>
+                              <span className="flight-number">{flight.flightCode}</span>
+                            </div>
+                          </div>
+                          <div className="flight-route">
+                            <div className="route-segment">
+                              <div className="route-location">
+                                <span className="route-code">{flight.departureLocation}</span>
+                                <span className="route-time">{flight.departureDate}</span>
+                              </div>
+                              <div className="route-city">
+                                <span>{flight.departureCity}</span>
+                                <span className="terminal-info">{flight.departureTerminal}</span>
+                              </div>
+                            </div>
+                            <div className="route-duration">
+                              <span className="duration-text">{flight.duration}</span>
+                              <div className="duration-timeline-line"></div>
+                              <div className={`refundable-badge ${flight.refundable ? '' : 'non-refundable'}`}>
+                                {flight.refundable ? 'Refundable' : 'Non-Refundable'}
+                              </div>
+                            </div>
+                            <div className="route-segment">
+                              <div className="route-location">
+                                <span className="route-code">{flight.arrivalLocation}</span>
+                                <span className="route-time">{flight.arrivalDate}</span>
+                              </div>
+                              <div className="route-city">
+                                <span>{flight.arrivalCity}</span>
+                                <span className="terminal-info">{flight.arrivalTerminal}</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        {/* Bottom Icons Section */}
+                        <div className="flight-amenities">
+                          <div className="amenity-item">
+                            <FaThLarge style={{fontSize: '16px', color: '#666'}} />
+                            <span>{flight.layout}</span>
+                          </div>
+                          <div className="amenity-item">
+                            <FaUtensils style={{fontSize: '16px', color: '#666'}} />
+                            <span>{flight.beverage}</span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {activeTab[flight.id] === 'fare-details' && (
+                      <div className="fare-details-tab">
+                        <p>Fare details content goes here</p>
+                      </div>
+                    )}
+
+                    {activeTab[flight.id] === 'baggage-rules' && (
+                      <div className="baggage-rules-tab">
+                        <p>Baggage rules content goes here</p>
+                      </div>
+                    )}
+
+                    {activeTab[flight.id] === 'cancellation' && (
+                      <div className="cancellation-tab">
+                        <p>Cancellation policy content goes here</p>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              <button className="flight-details-btn">Flight Details →</button>
+              )}
             </div>
-          </div>
+          ))}
         </div>
       </section>
     </div>
