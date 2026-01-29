@@ -664,6 +664,7 @@
 /* Flight Details Dropdown */
 .flight-card-wrapper {
   margin-bottom: 15px;
+
 }
 
 .flight-details-dropdown {
@@ -672,7 +673,7 @@
   border-top: none;
   border-radius: 0 0 12px 12px;
   overflow: hidden;
-  margin-top: -12px;
+  margin-top: 12px;
 }
 
 .flight-details-tabs {
@@ -700,13 +701,13 @@
 }
 
 .tab-btn:hover {
-  color: #333;
+  color: #3f3b3b;
   background: #ffffff;
 }
 
 .tab-btn.active {
-  color: #1a3e5f;
-  border-bottom-color: #1a3e5f;
+  color: #dd2828;
+  border-bottom-color: #af2727;
   background: #ffffff;
 }
 
@@ -893,10 +894,164 @@
 }
 
 /* Other Tabs Placeholder */
-.fare-details-tab,
-.baggage-rules-tab,
+.fare-details-tab {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: -5px;
+  margin-top: -8px;
+}
+
+.baggage-rules-tab {
+  padding: 30px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 35px;
+}
+
 .cancellation-tab {
-  padding: 20px;
+  padding: 6px 2px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 30px;
+}
+
+.cancellation-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 20px;
+}
+
+.cancellation-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.cancellation-message {
+  font-size: 16px;
+  font-weight: 500;
+  color: #333333;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Baggage Section */
+.baggage-section {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.baggage-heading {
+  font-size: 16px;
+  font-weight: 600;
+  color: #666666;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  margin-top: -25px;
+}
+
+.baggage-divider {
+  width: 100%;
+  height: 1px;
+  background-color: #d0d0d0;
+  margin-top: -9px;
+}
+
+.baggage-columns {
+  display: flex;
+  gap: 100px;
+}
+
+.baggage-column {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.baggage-column-header {
   font-size: 14px;
-  color: #666;
+  font-weight: 600;
+  color: #666666;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  margin-top: 8px;
+}
+
+.baggage-column-value {
+  font-size: 13px;
+  font-weight: 400;
+  color: #ae6e6e;
+  line-height: 1.5;
+}
+
+/* Fare Breakdown Card */
+.fare-breakdown-card {
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 24px 28px;
+  max-width: 500px;
+  width: 100%;
+}
+
+.fare-breakdown-heading {
+  font-size: 18px;
+  font-weight: 600;
+  color: #000000;
+  margin: 0 0 20px 0;
+  margin-top: 8px;
+}
+
+.fare-breakdown-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+}
+
+.fare-label {
+  font-size: 15px;
+  font-weight: 400;
+  color: #666666;
+  margin-top: -20px;
+}
+
+.fare-value {
+  font-size: 15px;
+  font-weight: 400;
+  color: #333333;
+  margin-top: -20px;
+  
+}
+
+.fare-divider {
+  height: 2px;
+  background-color: #e0e0e0;
+  margin: 16px 0;
+  margin-top: 5px;
+}
+
+.fare-total-row {
+  padding: 12px 0 0 0;
+
+}
+
+.fare-total-label {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333333;
+  text-transform: uppercase;
+  margin-top: -15px;
+}
+
+.fare-total-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: #ff6b35;
+  margin-top: -15px;
 }

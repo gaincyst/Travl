@@ -176,7 +176,9 @@ function FlightResults() {
       offers: "+ 150 💳",
       refundable: false,
       layout: "3-3 Layout",
-      beverage: "Beverage Available"
+      beverage: "Beverage Available",
+      baseFare: 4950,
+      taxes: 846
     },
     {
       id: 2,
@@ -200,7 +202,9 @@ function FlightResults() {
       offers: "400 Off",
       refundable: true,
       layout: "3-3 Layout",
-      beverage: "Beverage Available"
+      beverage: "Beverage Available",
+      baseFare: 5250,
+      taxes: 900
     },
     {
       id: 3,
@@ -224,7 +228,9 @@ function FlightResults() {
       offers: "500 Off",
       refundable: true,
       layout: "3-3 Layout",
-      beverage: "Beverage Available"
+      beverage: "Beverage Available",
+      baseFare: 6200,
+      taxes: 1050
     }
   ];
 
@@ -559,19 +565,92 @@ function FlightResults() {
 
                     {activeTab[flight.id] === 'fare-details' && (
                       <div className="fare-details-tab">
-                        <p>Fare details content goes here</p>
+                        <div className="fare-breakdown-card">
+                          <h3 className="fare-breakdown-heading">Fare breakdown</h3>
+                          
+                          <div className="fare-breakdown-row">
+                            <span className="fare-label">Base Fare</span>
+                            <span className="fare-value">₹{flight.baseFare}</span>
+                          </div>
+                          
+                          <div className="fare-breakdown-row">
+                            <span className="fare-label">Taxes & Fees</span>
+                            <span className="fare-value">₹{flight.taxes}</span>
+                          </div>
+                          
+                          <div className="fare-divider"></div>
+                          
+                          <div className="fare-breakdown-row fare-total-row">
+                            <span className="fare-total-label">TOTAL</span>
+                            <span className="fare-total-value">₹{flight.baseFare + flight.taxes}</span>
+                          </div>
+                        </div>
                       </div>
                     )}
 
                     {activeTab[flight.id] === 'baggage-rules' && (
                       <div className="baggage-rules-tab">
-                        <p>Baggage rules content goes here</p>
+                        {/* CHECK-IN Section */}
+                        <div className="baggage-section">
+                          <h3 className="baggage-heading">CHECK-IN</h3>
+                          <div className="baggage-divider"></div>
+                          <div className="baggage-columns">
+                            <div className="baggage-column">
+                              <div className="baggage-column-header">ADULT</div>
+                              <div className="baggage-column-value">15 kgs (1-piece only)</div>
+                            </div>
+                            <div className="baggage-column">
+                              <div className="baggage-column-header">CHILD</div>
+                              <div className="baggage-column-value">15 kgs (1-piece only)</div>
+                            </div>
+                            <div className="baggage-column">
+                              <div className="baggage-column-header">INFANT</div>
+                              <div className="baggage-column-value">0 kgs</div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* CABIN Section */}
+                        <div className="baggage-section">
+                          <h3 className="baggage-heading">CABIN</h3>
+                          <div className="baggage-divider"></div>
+                          <div className="baggage-columns">
+                            <div className="baggage-column">
+                              <div className="baggage-column-header">ADULT</div>
+                              <div className="baggage-column-value">7 kgs (1-piece only)</div>
+                            </div>
+                            <div className="baggage-column">
+                              <div className="baggage-column-header">CHILD</div>
+                              <div className="baggage-column-value">7 kgs (1-piece only)</div>
+                            </div>
+                            <div className="baggage-column">
+                              <div className="baggage-column-header">INFANT</div>
+                              <div className="baggage-column-value">7 kgs (1-piece only)</div>
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     )}
 
                     {activeTab[flight.id] === 'cancellation' && (
                       <div className="cancellation-tab">
-                        <p>Cancellation policy content goes here</p>
+                        <div className="cancellation-empty-state">
+                          <div className="cancellation-icon">
+                            <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                              <circle cx="40" cy="12" r="3" fill="#999" />
+                              <circle cx="68" cy="52" r="2" fill="#999" />
+                              <circle cx="55" cy="18" r="2.5" fill="#999" />
+                              <circle cx="16" cy="45" r="2" fill="#999" />
+                              <rect x="28" y="28" width="24" height="32" rx="2" stroke="#666" strokeWidth="1.5" fill="none" />
+                              <path d="M32 34 L36 34 M32 38 L38 38 M32 42 L36 42" stroke="#666" strokeWidth="1.2" strokeLinecap="round" />
+                              <text x="34" y="36" fontSize="8" fill="#666" fontWeight="600">₹</text>
+                              <circle cx="40" cy="54" r="8" fill="white" stroke="#666" strokeWidth="1.5" />
+                              <path d="M40 50 L40 54 M40 58 L40 58" stroke="#e74c3c" strokeWidth="2" strokeLinecap="round" />
+                              <circle cx="40" cy="58" r="1" fill="#e74c3c" />
+                            </svg>
+                          </div>
+                          <p className="cancellation-message">Sorry! Fare rules could not be<br />fetched at the moment.</p>
+                        </div>
                       </div>
                     )}
                   </div>
