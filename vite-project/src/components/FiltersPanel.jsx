@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from "react";
 import "../styles/FiltersPanel.css";
+import { PiSunHorizon } from "react-icons/pi";
+import { PiSunLight } from "react-icons/pi";
+import { IoPartlySunnyOutline } from "react-icons/io5";
 
 const FiltersPanel = () => {
   // State for all filters
@@ -406,33 +409,24 @@ const FiltersPanel = () => {
             className={`time-slot-box ${filters.onwardJourney.departureTime.includes('Before 6 AM') ? 'active' : ''}`}
             onClick={() => toggleTimeSlot('onwardJourney', 'departureTime', 'Before 6 AM')}
           >
-            <svg className="time-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <circle cx="12" cy="12" r="5"/>
-              <line x1="12" y1="1" x2="12" y2="3"/>
-            </svg>
+            <PiSunHorizon className="time-icon" />
+            
             <span className="time-label">Before<br/>6 AM</span>
           </div>
           <div 
             className={`time-slot-box ${filters.onwardJourney.departureTime.includes('6 AM - 12 PM') ? 'active' : ''}`}
             onClick={() => toggleTimeSlot('onwardJourney', 'departureTime', '6 AM - 12 PM')}
           >
-            <svg className="time-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <circle cx="12" cy="12" r="5"/>
-              <line x1="12" y1="1" x2="12" y2="3"/>
-              <line x1="12" y1="21" x2="12" y2="23"/>
-              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
-              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-            </svg>
+            <PiSunLight className="time-icon" />
+
             <span className="time-label">6 AM to<br/>12 PM</span>
           </div>
           <div 
             className={`time-slot-box ${filters.onwardJourney.departureTime.includes('12 PM - 6 PM') ? 'active' : ''}`}
             onClick={() => toggleTimeSlot('onwardJourney', 'departureTime', '12 PM - 6 PM')}
           >
-            <svg className="time-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <circle cx="12" cy="12" r="5"/>
-              <line x1="12" y1="21" x2="12" y2="23"/>
-            </svg>
+            <IoPartlySunnyOutline className="time-icon"/>
+            
             <span className="time-label">12 PM to<br/>6 PM</span>
           </div>
           <div 
@@ -452,33 +446,24 @@ const FiltersPanel = () => {
             className={`time-slot-box ${filters.onwardJourney.arrivalTime.includes('Before 6 AM') ? 'active' : ''}`}
             onClick={() => toggleTimeSlot('onwardJourney', 'arrivalTime', 'Before 6 AM')}
           >
-            <svg className="time-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <circle cx="12" cy="12" r="5"/>
-              <line x1="12" y1="1" x2="12" y2="3"/>
-            </svg>
+            <PiSunHorizon className="time-icon" />
+        
             <span className="time-label">Before<br/>6 AM</span>
           </div>
           <div 
             className={`time-slot-box ${filters.onwardJourney.arrivalTime.includes('6 AM - 12 PM') ? 'active' : ''}`}
             onClick={() => toggleTimeSlot('onwardJourney', 'arrivalTime', '6 AM - 12 PM')}
           >
-            <svg className="time-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <circle cx="12" cy="12" r="5"/>
-              <line x1="12" y1="1" x2="12" y2="3"/>
-              <line x1="12" y1="21" x2="12" y2="23"/>
-              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
-              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-            </svg>
+            <PiSunLight className="time-icon" />
+            
             <span className="time-label">6 AM to<br/>12 PM</span>
           </div>
           <div 
             className={`time-slot-box ${filters.onwardJourney.arrivalTime.includes('12 PM - 6 PM') ? 'active' : ''}`}
             onClick={() => toggleTimeSlot('onwardJourney', 'arrivalTime', '12 PM - 6 PM')}
           >
-            <svg className="time-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <circle cx="12" cy="12" r="5"/>
-              <line x1="12" y1="21" x2="12" y2="23"/>
-            </svg>
+            <IoPartlySunnyOutline className="time-icon"/>
+             
             <span className="time-label">12 PM to<br/>6 PM</span>
           </div>
           <div 
@@ -573,33 +558,23 @@ const FiltersPanel = () => {
             className={`time-slot-box ${filters.returnJourney.departureTime.includes('Before 6 AM') ? 'active' : ''}`}
             onClick={() => toggleTimeSlot('returnJourney', 'departureTime', 'Before 6 AM')}
           >
-            <svg className="time-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <circle cx="12" cy="12" r="5"/>
-              <line x1="12" y1="1" x2="12" y2="3"/>
-            </svg>
+            <PiSunHorizon className="time-icon" />
+            
             <span className="time-label">Before<br/>6 AM</span>
           </div>
           <div 
             className={`time-slot-box ${filters.returnJourney.departureTime.includes('6 AM - 12 PM') ? 'active' : ''}`}
             onClick={() => toggleTimeSlot('returnJourney', 'departureTime', '6 AM - 12 PM')}
           >
-            <svg className="time-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <circle cx="12" cy="12" r="5"/>
-              <line x1="12" y1="1" x2="12" y2="3"/>
-              <line x1="12" y1="21" x2="12" y2="23"/>
-              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
-              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-            </svg>
+            <PiSunLight className="time-icon" />
+            
             <span className="time-label">6 AM to<br/>12 PM</span>
           </div>
           <div 
             className={`time-slot-box ${filters.returnJourney.departureTime.includes('12 PM - 6 PM') ? 'active' : ''}`}
             onClick={() => toggleTimeSlot('returnJourney', 'departureTime', '12 PM - 6 PM')}
           >
-            <svg className="time-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <circle cx="12" cy="12" r="5"/>
-              <line x1="12" y1="21" x2="12" y2="23"/>
-            </svg>
+              <IoPartlySunnyOutline className="time-icon"/>
             <span className="time-label">12 PM to<br/>6 PM</span>
           </div>
           <div 
@@ -619,33 +594,23 @@ const FiltersPanel = () => {
             className={`time-slot-box ${filters.returnJourney.arrivalTime.includes('Before 6 AM') ? 'active' : ''}`}
             onClick={() => toggleTimeSlot('returnJourney', 'arrivalTime', 'Before 6 AM')}
           >
-            <svg className="time-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <circle cx="12" cy="12" r="5"/>
-              <line x1="12" y1="1" x2="12" y2="3"/>
-            </svg>
+            <PiSunHorizon className="time-icon" />
+            
             <span className="time-label">Before<br/>6 AM</span>
           </div>
           <div 
             className={`time-slot-box ${filters.returnJourney.arrivalTime.includes('6 AM - 12 PM') ? 'active' : ''}`}
             onClick={() => toggleTimeSlot('returnJourney', 'arrivalTime', '6 AM - 12 PM')}
           >
-            <svg className="time-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <circle cx="12" cy="12" r="5"/>
-              <line x1="12" y1="1" x2="12" y2="3"/>
-              <line x1="12" y1="21" x2="12" y2="23"/>
-              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
-              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-            </svg>
+            <PiSunLight className="time-icon" />
+           
             <span className="time-label">6 AM to<br/>12 PM</span>
           </div>
           <div 
             className={`time-slot-box ${filters.returnJourney.arrivalTime.includes('12 PM - 6 PM') ? 'active' : ''}`}
             onClick={() => toggleTimeSlot('returnJourney', 'arrivalTime', '12 PM - 6 PM')}
           >
-            <svg className="time-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <circle cx="12" cy="12" r="5"/>
-              <line x1="12" y1="21" x2="12" y2="23"/>
-            </svg>
+            <IoPartlySunnyOutline className="time-icon"/>
             <span className="time-label">12 PM to<br/>6 PM</span>
           </div>
           <div 
@@ -709,7 +674,7 @@ const FiltersPanel = () => {
               }))}
             />
             <div className="airline-logo-container">
-              <img src="/public/airlines/a1.png" alt="Air India" className="airline-logo" />
+              <img src="/airlines/a1.png" alt="Air India" className="airline-logo" />
             </div>
             <span>Air India</span>
           </div>
@@ -727,7 +692,7 @@ const FiltersPanel = () => {
               }))}
             />
             <div className="airline-logo-container">
-              <img src="/public/airlines/a2.png" alt="Air India Express" className="airline-logo" />
+              <img src="/airlines/a2.png" alt="Air India Express" className="airline-logo" />
             </div>
             <span>Air India Express</span>
           </div>
@@ -745,7 +710,7 @@ const FiltersPanel = () => {
               }))}
             />
             <div className="airline-logo-container">
-              <img src="/public/airlines/a3.png" alt="Akasa Air" className="airline-logo" />
+              <img src="/airlines/a3.png" alt="Akasa Air" className="airline-logo" />
             </div>
             <span>Akasa Air</span>
           </div>
@@ -763,7 +728,7 @@ const FiltersPanel = () => {
               }))}
             />
             <div className="airline-logo-container">
-              <img src="/public/airlines/a4.png " alt="IndiGo" className="airline-logo" />
+              <img src="/airlines/a4.png" alt="IndiGo" className="airline-logo" />
             </div>
             <span>IndiGo</span>
           </div>
@@ -781,7 +746,7 @@ const FiltersPanel = () => {
               }))}
             />
             <div className="airline-logo-container">
-              <img src="/public/airlines/a5.png" alt="SpiceJet" className="airline-logo" />
+              <img src="/airlines/a5.png" alt="SpiceJet" className="airline-logo" />
             </div>
             <span>SpiceJet</span>
           </div>

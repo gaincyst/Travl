@@ -7,7 +7,8 @@ import {
   FaMoon,
   FaSun,
   FaThLarge,
-  FaUserCircle, FaChevronLeft, FaChevronRight, FaArrowUp, FaArrowDown, FaStar
+  FaUserCircle, FaChevronLeft, FaChevronRight, FaArrowUp, FaArrowDown, FaStar,
+  FaTint, FaBolt, FaLightbulb, FaVideo, FaBed
 } from "react-icons/fa";
 import { MdEventSeat } from "react-icons/md";
 import { PiDeviceMobileSpeaker } from "react-icons/pi";
@@ -30,6 +31,10 @@ function BusResults() {
   const [activePointsTab, setActivePointsTab] = useState({});
   const [selectedBoardingPoint, setSelectedBoardingPoint] = useState({});
   const [selectedDroppingPoint, setSelectedDroppingPoint] = useState({});
+  
+  // Bus Details dropdown state (separate from seat selection)
+  const [openBusDetails, setOpenBusDetails] = useState({});
+  const [activeBusTab, setActiveBusTab] = useState({});
 
   // Sorting state management - 3 states: null (no sort), 'asc', 'desc'
   // Smart is 'active' by default
@@ -120,6 +125,26 @@ function BusResults() {
     if (!activePointsTab[busId]) {
       setActivePointsTab(prev => ({ ...prev, [busId]: 'boarding' }));
     }
+  };
+
+  const toggleBusDetails = (busId) => {
+    setOpenBusDetails(prev => ({
+      ...prev,
+      [busId]: !prev[busId]
+    }));
+    if (!activeBusTab[busId]) {
+      setActiveBusTab(prev => ({
+        ...prev,
+        [busId]: 'photos'
+      }));
+    }
+  };
+
+  const handleBusTabChange = (busId, tab) => {
+    setActiveBusTab(prev => ({
+      ...prev,
+      [busId]: tab
+    }));
   };
 
   const toggleSeatSelection = (busId, seatId, isBooked) => {
@@ -394,7 +419,12 @@ function BusResults() {
                       </div>
                       <div className="bus-price-main">₹279</div>
                       
-                      <button className="bus-details-link">Bus Details →</button>
+                      <button 
+                        className="bus-details-link"
+                        onClick={() => toggleBusDetails('bus1')}
+                      >
+                        {openBusDetails['bus1'] ? 'Hide Details' : 'Bus Details'} →
+                      </button>
                     </div>
                   </div>
                   <div className="bus-ticket-footer">
@@ -407,10 +437,326 @@ function BusResults() {
                     <span className="review-count">13 Reviews</span>
                     <button className="bus-select-seat-btn" onClick={() => toggleDropdown('bus1')}>SELECT SEATS</button>
                   </div>
+                </div>
 
-                  {/* Bus Details Dropdown */}
-                  {openDropdowns['bus1'] && (
-                    <div className="bus-details-dropdown">
+                {/* Bus Details Dropdown (NEW - Clone of Flight Details) */}
+                {openBusDetails['bus1'] && (
+                  <div className="flight-details-dropdown">
+                    <div className="flight-details-tabs">
+                      <button 
+                        className={`tab-btn ${activeBusTab['bus1'] === 'photos' || !activeBusTab['bus1'] ? 'active' : ''}`}
+                        onClick={() => handleBusTabChange('bus1', 'photos')}
+                      >
+                        Photos
+                      </button>
+                      <button 
+                        className={`tab-btn ${activeBusTab['bus1'] === 'amenities' ? 'active' : ''}`}
+                        onClick={() => handleBusTabChange('bus1', 'amenities')}
+                      >
+                        Amenities
+                      </button>
+                      <button 
+                        className={`tab-btn ${activeBusTab['bus1'] === 'ratings' ? 'active' : ''}`}
+                        onClick={() => handleBusTabChange('bus1', 'ratings')}
+                      >
+                        Ratings & Reviews
+                      </button>
+                      <button 
+                        className={`tab-btn ${activeBusTab['bus1'] === 'policies' ? 'active' : ''}`}
+                        onClick={() => handleBusTabChange('bus1', 'policies')}
+                      >
+                        Policies
+                      </button>
+                    </div>
+
+                    <div className="flight-details-content">
+                      {(activeBusTab['bus1'] === 'photos' || !activeBusTab['bus1']) && (
+                        <div className="bus-photos-grid">
+                          <img src="/buses/bb1.jpeg" alt="Bus" className="bus-photo" />
+                          <img src="/buses/bb2.jpg" alt="Bus" className="bus-photo" />
+                          <img src="/buses/bb3.jpg" alt="Bus" className="bus-photo" />
+                          <img src="/buses/bb4.jpg" alt="Bus" className="bus-photo" />
+                          <img src="/buses/bb5.jpeg" alt="Bus" className="bus-photo" />
+                          <img src="/buses/bb6.jpeg" alt="Bus" className="bus-photo" />
+                          <img src="/buses/bb7.jpeg" alt="Bus" className="bus-photo" />
+                        </div>
+                      )}
+
+                      {activeBusTab['bus1'] === 'amenities' && (
+                        <div className="bus-amenities-content">
+                          <div className="amenity-item">
+                            <FaTint className="amenity-icon" />
+                            <span>Water Bottle</span>
+                          </div>
+                          <div className="amenity-item">
+                            <FaBed className="amenity-icon" />
+                            <span>Blankets</span>
+                          </div>
+                          <div className="amenity-item">
+                            <FaBolt className="amenity-icon" />
+                            <span>Charging Point</span>
+                          </div>
+                          <div className="amenity-item">
+                            <FaLightbulb className="amenity-icon" />
+                            <span>Reading Light</span>
+                          </div>
+                          <div className="amenity-item">
+                            <FaVideo className="amenity-icon" />
+                            <span>CCTV</span>
+                          </div>
+                        </div>
+                      )}
+
+                      {activeBusTab['bus1'] === 'ratings' && (
+                        <div className="bus-ratings-content">
+                          <div className="ratings-top-section">
+                            <div className="overall-rating">
+                              <div className="rating-number">4</div>
+                              <div className="rating-stars">
+                                <FaStar className="star-filled" />
+                                <FaStar className="star-filled" />
+                                <FaStar className="star-filled" />
+                                <FaStar className="star-filled" />
+                                <FaStar className="star-empty" />
+                              </div>
+                              <div className="reviews-count">15 reviews</div>
+                              <div className="rating-bars">
+                                <div className="rating-bar-row">
+                                  <span>5</span>
+                                  <div className="bar-bg"><div className="bar-fill" style={{width: '60%'}}></div></div>
+                                </div>
+                                <div className="rating-bar-row">
+                                  <span>4</span>
+                                  <div className="bar-bg"><div className="bar-fill" style={{width: '20%'}}></div></div>
+                                </div>
+                                <div className="rating-bar-row">
+                                  <span>3</span>
+                                  <div className="bar-bg"><div className="bar-fill" style={{width: '10%'}}></div></div>
+                                </div>
+                                <div className="rating-bar-row">
+                                  <span>2</span>
+                                  <div className="bar-bg"><div className="bar-fill" style={{width: '5%'}}></div></div>
+                                </div>
+                                <div className="rating-bar-row">
+                                  <span>1</span>
+                                  <div className="bar-bg"><div className="bar-fill" style={{width: '5%'}}></div></div>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="rating-categories">
+                              <span className="category-chip">Seat / Sleep Comfort</span>
+                              <span className="category-chip">AC</span>
+                              <span className="category-chip">Rest stop hygiene</span>
+                              <span className="category-chip">Punctuality</span>
+                              <span className="category-chip">Live tracking</span>
+                              <span className="category-chip">Staff behavior</span>
+                              <span className="category-chip">Cleanliness</span>
+                              <span className="category-chip">Driving</span>
+                            </div>
+                          </div>
+                          <div className="reviews-grid">
+                            <div className="review-card">
+                              <div className="review-rating"><FaStar /> 1</div>
+                              <div className="review-text">Always delay.</div>
+                              <div className="review-meta">
+                                <span className="reviewer-name">Sanket Katiyar</span>
+                                <span className="review-date">23-01-2026</span>
+                              </div>
+                            </div>
+                            <div className="review-card">
+                              <div className="review-rating"><FaStar /> 1</div>
+                              <div className="review-text">Not clean, AC not switched on, suffocation in bus</div>
+                              <div className="review-meta">
+                                <span className="reviewer-name">yash agarwal</span>
+                                <span className="review-date">19-01-2026</span>
+                              </div>
+                            </div>
+                            <div className="review-card">
+                              <div className="review-rating"><FaStar /> 5</div>
+                              <div className="review-text">Very good</div>
+                              <div className="review-meta">
+                                <span className="reviewer-name">Janardan Singh</span>
+                                <span className="review-date">12-01-2026</span>
+                              </div>
+                            </div>
+                            <div className="review-card">
+                              <div className="review-rating"><FaStar /> 5</div>
+                              <div className="review-text">Bus was on time. Gave water bottle. Happy to travel again with Laksmi bus services. Thank you.</div>
+                              <div className="review-meta">
+                                <span className="reviewer-name">Shivam Uttam</span>
+                                <span className="review-date">07-01-2026</span>
+                              </div>
+                            </div>
+                            <div className="review-card">
+                              <div className="review-rating"><FaStar /> 5</div>
+                              <div className="review-text">I give 5 star because this was the only way available but some cons were there. 1) They don't let me go to washroom and do not even stop for rest. 2) No rest stop. 3) In midnight chilling weather, bus was late by 1.5 hours, instead of 2 it came at 3.30. It was very chilly.</div>
+                              <div className="review-meta">
+                                <span className="reviewer-name">saurabh Tripathi</span>
+                                <span className="review-date">28-12-2025</span>
+                              </div>
+                            </div>
+                            <div className="review-card">
+                              <div className="review-rating"><FaStar /> 5</div>
+                              <div className="review-text">Thanks.</div>
+                              <div className="review-meta">
+                                <span className="reviewer-name">rohit kumar</span>
+                                <span className="review-date">27-12-2025</span>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="view-all-reviews">
+                            <a href="#">View all Reviews (9)</a>
+                          </div>
+                        </div>
+                      )}
+
+                      {activeBusTab['bus1'] === 'policies' && (
+                        <div className="bus-policies-content">
+                          <div className="policies-layout">
+                            {/* Left Section - Cancellation Policy */}
+                            <div className="cancellation-policy-section">
+                              <h3 className="policy-section-title">Cancellation Policy</h3>
+                              <div className="cancellation-table-wrapper">
+                                <table className="cancellation-table">
+                                  <thead>
+                                    <tr>
+                                      <th>CANCELLATION TIME</th>
+                                      <th>PENALTY (%)</th>
+                                      <th>PENALTY (₹)</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    <tr>
+                                      <td>more than 168 hrs before travel</td>
+                                      <td>15.0%</td>
+                                      <td>₹ 119</td>
+                                    </tr>
+                                    <tr>
+                                      <td>72 to 168 hr(s) before travel</td>
+                                      <td>15.0%</td>
+                                      <td>₹ 119</td>
+                                    </tr>
+                                    <tr>
+                                      <td>24 to 72 hr(s) before travel</td>
+                                      <td>15.0%</td>
+                                      <td>₹ 119</td>
+                                    </tr>
+                                    <tr>
+                                      <td>12 to 24 hr(s) before travel</td>
+                                      <td>25.0%</td>
+                                      <td>₹ 199</td>
+                                    </tr>
+                                    <tr>
+                                      <td>4 to 12 hr(s) before travel</td>
+                                      <td>50.0%</td>
+                                      <td>₹ 397</td>
+                                    </tr>
+                                    <tr>
+                                      <td>0 to 4 hr(s) before travel</td>
+                                      <td>100.0%</td>
+                                      <td>₹ 793</td>
+                                    </tr>
+                                  </tbody>
+                                </table>
+                                
+                                <div className="policy-notes">
+                                  <p>* The penalty is calculated based on total seat worth 793</p>
+                                  <p>* Penalty is calculated basis the bus service scheduled start time at: 30-01-2026 20:00 (subject to change).</p>
+                                  <p>* Partial cancellation is allowed for this ticket.</p>
+                                  <p>* Please note : the ticket cannot be cancelled after the bus departs from the first boarding point.</p>
+                                  <p>* Above defined cancellation charges are illustrasted basis maximum fare applicable. Exact cancellation charges will depend on the final price charged along with discount and other adjustments.</p>
+                                  <p>* Cancellation amount shown above may also vary basis the non-refundable components of the ticket defined by the bus operator</p>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Right Section - Travel Policy */}
+                            <div className="travel-policy-section">
+                              <h3 className="policy-section-title">Travel Policy</h3>
+                              <div className="travel-policy-items">
+                                <div className="travel-policy-item">
+                                  <div className="policy-icon">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                      <circle cx="12" cy="8" r="3" stroke="#333" strokeWidth="1.5"/>
+                                      <path d="M6 21C6 17.686 8.686 15 12 15C15.314 15 18 17.686 18 21" stroke="#333" strokeWidth="1.5"/>
+                                    </svg>
+                                  </div>
+                                  <div className="policy-text">
+                                    <h4>Child passenger</h4>
+                                    <p>Children above the age of 5 will need a ticket</p>
+                                  </div>
+                                </div>
+
+                                <div className="travel-policy-item">
+                                  <div className="policy-icon">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                      <rect x="4" y="8" width="16" height="10" rx="1" stroke="#333" strokeWidth="1.5"/>
+                                      <path d="M8 8V6C8 4.895 8.895 4 10 4H14C15.105 4 16 4.895 16 6V8" stroke="#333" strokeWidth="1.5"/>
+                                      <circle cx="12" cy="13" r="1" fill="#333"/>
+                                    </svg>
+                                  </div>
+                                  <div className="policy-text">
+                                    <h4>Luggage</h4>
+                                    <p>2 pieces of luggage will be accepted free of charge per passenger. Excess items will be chargeable Excess baggage over 10 kgs per passenger will be chargeable</p>
+                                  </div>
+                                </div>
+
+                                <div className="travel-policy-item">
+                                  <div className="policy-icon">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                      <path d="M12 3C10.343 3 9 4.343 9 6C9 7.657 10.343 9 12 9C13.657 9 15 7.657 15 6C15 4.343 13.657 3 12 3Z" stroke="#333" strokeWidth="1.5"/>
+                                      <path d="M12 9C8.686 9 6 11.686 6 15V18C6 18.552 6.448 19 7 19H9" stroke="#333" strokeWidth="1.5"/>
+                                      <path d="M12 9C15.314 9 18 11.686 18 15V18C18 18.552 17.552 19 17 19H15" stroke="#333" strokeWidth="1.5"/>
+                                      <path d="M10 15C10 13.895 10.895 13 12 13C13.105 13 14 13.895 14 15V19C14 20.105 13.105 21 12 21C10.895 21 10 20.105 10 19V15Z" stroke="#333" strokeWidth="1.5"/>
+                                    </svg>
+                                  </div>
+                                  <div className="policy-text">
+                                    <h4>Pets</h4>
+                                    <p>Pets are not allowed</p>
+                                  </div>
+                                </div>
+
+                                <div className="travel-policy-item">
+                                  <div className="policy-icon">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                      <path d="M8 2L6 6H4C3.448 6 3 6.448 3 7V17C3 17.552 3.448 18 4 18H5" stroke="#333" strokeWidth="1.5"/>
+                                      <circle cx="8" cy="18" r="2" stroke="#333" strokeWidth="1.5"/>
+                                      <circle cx="16" cy="18" r="2" stroke="#333" strokeWidth="1.5"/>
+                                      <path d="M10 18H14" stroke="#333" strokeWidth="1.5"/>
+                                      <path d="M18 18H20C20.552 18 21 17.552 21 17V12L18 6H6L8 2" stroke="#333" strokeWidth="1.5"/>
+                                      <path d="M14 10L16 8L18 10" stroke="#333" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                                    </svg>
+                                  </div>
+                                  <div className="policy-text">
+                                    <h4>Liquor</h4>
+                                    <p>Carrying or consuming liquor inside the bus is prohibited. Bus operator reserves the right to deboard drunk passengers.</p>
+                                  </div>
+                                </div>
+
+                                <div className="travel-policy-item">
+                                  <div className="policy-icon">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                      <circle cx="12" cy="12" r="9" stroke="#333" strokeWidth="1.5"/>
+                                      <path d="M12 7V12L15 15" stroke="#333" strokeWidth="1.5" strokeLinecap="round"/>
+                                    </svg>
+                                  </div>
+                                  <div className="policy-text">
+                                    <h4>Pickup time</h4>
+                                    <p>Bus operator is not obligated to wait beyond the scheduled departure time of the bus. No refund request will be entertained for late arriving passengers.</p>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Seat Selection Dropdown (Existing) */}
+                {openDropdowns['bus1'] && (
+                  <div className="bus-details-dropdown">
                       <div className="bus-details-tabs">
                         <button className="bus-tab active">Select Seats</button>
                         <button className="bus-tab seat-legend-container">
@@ -686,7 +1032,6 @@ function BusResults() {
                       </div>
                     </div>
                   )}
-                </div>
 
                 {/* Bus Card 2 */}
                <div className="bus-ticket-card">
@@ -721,7 +1066,12 @@ function BusResults() {
                       </div>
                       <div className="bus-price-main">₹450</div>
                       
-                      <button className="bus-details-link">Bus Details →</button>
+                      <button 
+                        className="bus-details-link"
+                        onClick={() => toggleBusDetails('bus2')}
+                      >
+                        {openBusDetails['bus2'] ? 'Hide Details' : 'Bus Details'} →
+                      </button>
                     </div>
                   </div>
                   <div className="bus-ticket-footer">
@@ -735,6 +1085,321 @@ function BusResults() {
                     <button className="bus-select-seat-btn" onClick={() => toggleDropdown('bus2')}>SELECT SEATS</button>
                   </div>
                 </div>
+
+                {/* Bus Details Dropdown for Bus 2 */}
+                {openBusDetails['bus2'] && (
+                  <div className="flight-details-dropdown">
+                    <div className="flight-details-tabs">
+                      <button 
+                        className={`tab-btn ${activeBusTab['bus2'] === 'photos' || !activeBusTab['bus2'] ? 'active' : ''}`}
+                        onClick={() => handleBusTabChange('bus2', 'photos')}
+                      >
+                        Photos
+                      </button>
+                      <button 
+                        className={`tab-btn ${activeBusTab['bus2'] === 'amenities' ? 'active' : ''}`}
+                        onClick={() => handleBusTabChange('bus2', 'amenities')}
+                      >
+                        Amenities
+                      </button>
+                      <button 
+                        className={`tab-btn ${activeBusTab['bus2'] === 'ratings' ? 'active' : ''}`}
+                        onClick={() => handleBusTabChange('bus2', 'ratings')}
+                      >
+                        Ratings & Reviews
+                      </button>
+                      <button 
+                        className={`tab-btn ${activeBusTab['bus2'] === 'policies' ? 'active' : ''}`}
+                        onClick={() => handleBusTabChange('bus2', 'policies')}
+                      >
+                        Policies
+                      </button>
+                    </div>
+
+                    <div className="flight-details-content">
+                      {(activeBusTab['bus2'] === 'photos' || !activeBusTab['bus2']) && (
+                        <div className="bus-photos-grid">
+                          <img src="/buses/bb1.jpeg" alt="Bus" className="bus-photo" />
+                          <img src="/buses/bb2.jpg" alt="Bus" className="bus-photo" />
+                          <img src="/buses/bb3.jpg" alt="Bus" className="bus-photo" />
+                          <img src="/buses/bb4.jpg" alt="Bus" className="bus-photo" />
+                          <img src="/buses/bb5.jpeg" alt="Bus" className="bus-photo" />
+                          <img src="/buses/bb6.jpeg" alt="Bus" className="bus-photo" />
+                          <img src="/buses/bb7.jpeg" alt="Bus" className="bus-photo" />
+                        </div>
+                      )}
+
+                      {activeBusTab['bus2'] === 'amenities' && (
+                        <div className="bus-amenities-content">
+                          <div className="amenity-item">
+                            <FaTint className="amenity-icon" />
+                            <span>Water Bottle</span>
+                          </div>
+                          <div className="amenity-item">
+                            <FaBed className="amenity-icon" />
+                            <span>Blankets</span>
+                          </div>
+                          <div className="amenity-item">
+                            <FaBolt className="amenity-icon" />
+                            <span>Charging Point</span>
+                          </div>
+                          <div className="amenity-item">
+                            <FaLightbulb className="amenity-icon" />
+                            <span>Reading Light</span>
+                          </div>
+                          <div className="amenity-item">
+                            <FaVideo className="amenity-icon" />
+                            <span>CCTV</span>
+                          </div>
+                        </div>
+                      )}
+
+                      {activeBusTab['bus2'] === 'ratings' && (
+                        <div className="bus-ratings-content">
+                          <div className="ratings-top-section">
+                            <div className="overall-rating">
+                              <div className="rating-number">4</div>
+                              <div className="rating-stars">
+                                <FaStar className="star-filled" />
+                                <FaStar className="star-filled" />
+                                <FaStar className="star-filled" />
+                                <FaStar className="star-filled" />
+                                <FaStar className="star-empty" />
+                              </div>
+                              <div className="reviews-count">15 reviews</div>
+                              <div className="rating-bars">
+                                <div className="rating-bar-row">
+                                  <span>5</span>
+                                  <div className="bar-bg"><div className="bar-fill" style={{width: '60%'}}></div></div>
+                                </div>
+                                <div className="rating-bar-row">
+                                  <span>4</span>
+                                  <div className="bar-bg"><div className="bar-fill" style={{width: '20%'}}></div></div>
+                                </div>
+                                <div className="rating-bar-row">
+                                  <span>3</span>
+                                  <div className="bar-bg"><div className="bar-fill" style={{width: '10%'}}></div></div>
+                                </div>
+                                <div className="rating-bar-row">
+                                  <span>2</span>
+                                  <div className="bar-bg"><div className="bar-fill" style={{width: '5%'}}></div></div>
+                                </div>
+                                <div className="rating-bar-row">
+                                  <span>1</span>
+                                  <div className="bar-bg"><div className="bar-fill" style={{width: '5%'}}></div></div>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="rating-categories">
+                              <span className="category-chip">Seat / Sleep Comfort</span>
+                              <span className="category-chip">AC</span>
+                              <span className="category-chip">Rest stop hygiene</span>
+                              <span className="category-chip">Punctuality</span>
+                              <span className="category-chip">Live tracking</span>
+                              <span className="category-chip">Staff behavior</span>
+                              <span className="category-chip">Cleanliness</span>
+                              <span className="category-chip">Driving</span>
+                            </div>
+                          </div>
+                          <div className="reviews-grid">
+                            <div className="review-card">
+                              <div className="review-rating"><FaStar /> 1</div>
+                              <div className="review-text">Always delay.</div>
+                              <div className="review-meta">
+                                <span className="reviewer-name">Sanket Katiyar</span>
+                                <span className="review-date">23-01-2026</span>
+                              </div>
+                            </div>
+                            <div className="review-card">
+                              <div className="review-rating"><FaStar /> 1</div>
+                              <div className="review-text">Not clean, AC not switched on, suffocation in bus</div>
+                              <div className="review-meta">
+                                <span className="reviewer-name">yash agarwal</span>
+                                <span className="review-date">19-01-2026</span>
+                              </div>
+                            </div>
+                            <div className="review-card">
+                              <div className="review-rating"><FaStar /> 5</div>
+                              <div className="review-text">Very good</div>
+                              <div className="review-meta">
+                                <span className="reviewer-name">Janardan Singh</span>
+                                <span className="review-date">12-01-2026</span>
+                              </div>
+                            </div>
+                            <div className="review-card">
+                              <div className="review-rating"><FaStar /> 5</div>
+                              <div className="review-text">Bus was on time. Gave water bottle. Happy to travel again with Laksmi bus services. Thank you.</div>
+                              <div className="review-meta">
+                                <span className="reviewer-name">Shivam Uttam</span>
+                                <span className="review-date">07-01-2026</span>
+                              </div>
+                            </div>
+                            <div className="review-card">
+                              <div className="review-rating"><FaStar /> 5</div>
+                              <div className="review-text">I give 5 star because this was the only way available but some cons were there. 1) They don't let me go to washroom and do not even stop for rest. 2) No rest stop. 3) In midnight chilling weather, bus was late by 1.5 hours, instead of 2 it came at 3.30. It was very chilly.</div>
+                              <div className="review-meta">
+                                <span className="reviewer-name">saurabh Tripathi</span>
+                                <span className="review-date">28-12-2025</span>
+                              </div>
+                            </div>
+                            <div className="review-card">
+                              <div className="review-rating"><FaStar /> 5</div>
+                              <div className="review-text">Thanks.</div>
+                              <div className="review-meta">
+                                <span className="reviewer-name">rohit kumar</span>
+                                <span className="review-date">27-12-2025</span>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="view-all-reviews">
+                            <a href="#">View all Reviews (9)</a>
+                          </div>
+                        </div>
+                      )}
+
+                      {activeBusTab['bus2'] === 'policies' && (
+                        <div className="bus-policies-content">
+                          <div className="policies-layout">
+                            {/* Left Section - Cancellation Policy */}
+                            <div className="cancellation-policy-section">
+                              <h3 className="policy-section-title">Cancellation Policy</h3>
+                              <div className="cancellation-table-wrapper">
+                                <table className="cancellation-table">
+                                  <thead>
+                                    <tr>
+                                      <th>CANCELLATION TIME</th>
+                                      <th>PENALTY (%)</th>
+                                      <th>PENALTY (₹)</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    <tr>
+                                      <td>more than 168 hrs before travel</td>
+                                      <td>15.0%</td>
+                                      <td>₹ 119</td>
+                                    </tr>
+                                    <tr>
+                                      <td>72 to 168 hr(s) before travel</td>
+                                      <td>15.0%</td>
+                                      <td>₹ 119</td>
+                                    </tr>
+                                    <tr>
+                                      <td>24 to 72 hr(s) before travel</td>
+                                      <td>15.0%</td>
+                                      <td>₹ 119</td>
+                                    </tr>
+                                    <tr>
+                                      <td>12 to 24 hr(s) before travel</td>
+                                      <td>25.0%</td>
+                                      <td>₹ 199</td>
+                                    </tr>
+                                    <tr>
+                                      <td>4 to 12 hr(s) before travel</td>
+                                      <td>50.0%</td>
+                                      <td>₹ 397</td>
+                                    </tr>
+                                    <tr>
+                                      <td>0 to 4 hr(s) before travel</td>
+                                      <td>100.0%</td>
+                                      <td>₹ 793</td>
+                                    </tr>
+                                  </tbody>
+                                </table>
+                                
+                                <div className="policy-notes">
+                                  <p>* The penalty is calculated based on total seat worth 793</p>
+                                  <p>* Penalty is calculated basis the bus service scheduled start time at: 30-01-2026 20:00 (subject to change).</p>
+                                  <p>* Partial cancellation is allowed for this ticket.</p>
+                                  <p>* Please note : the ticket cannot be cancelled after the bus departs from the first boarding point.</p>
+                                  <p>* Above defined cancellation charges are illustrasted basis maximum fare applicable. Exact cancellation charges will depend on the final price charged along with discount and other adjustments.</p>
+                                  <p>* Cancellation amount shown above may also vary basis the non-refundable components of the ticket defined by the bus operator</p>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Right Section - Travel Policy */}
+                            <div className="travel-policy-section">
+                              <h3 className="policy-section-title">Travel Policy</h3>
+                              <div className="travel-policy-items">
+                                <div className="travel-policy-item">
+                                  <div className="policy-icon">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                      <circle cx="12" cy="8" r="3" stroke="#333" strokeWidth="1.5"/>
+                                      <path d="M6 21C6 17.686 8.686 15 12 15C15.314 15 18 17.686 18 21" stroke="#333" strokeWidth="1.5"/>
+                                    </svg>
+                                  </div>
+                                  <div className="policy-text">
+                                    <h4>Child passenger</h4>
+                                    <p>Children above the age of 5 will need a ticket</p>
+                                  </div>
+                                </div>
+
+                                <div className="travel-policy-item">
+                                  <div className="policy-icon">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                      <rect x="4" y="8" width="16" height="10" rx="1" stroke="#333" strokeWidth="1.5"/>
+                                      <path d="M8 8V6C8 4.895 8.895 4 10 4H14C15.105 4 16 4.895 16 6V8" stroke="#333" strokeWidth="1.5"/>
+                                      <circle cx="12" cy="13" r="1" fill="#333"/>
+                                    </svg>
+                                  </div>
+                                  <div className="policy-text">
+                                    <h4>Luggage</h4>
+                                    <p>2 pieces of luggage will be accepted free of charge per passenger. Excess items will be chargeable Excess baggage over 10 kgs per passenger will be chargeable</p>
+                                  </div>
+                                </div>
+
+                                <div className="travel-policy-item">
+                                  <div className="policy-icon">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                      <path d="M12 3C10.343 3 9 4.343 9 6C9 7.657 10.343 9 12 9C13.657 9 15 7.657 15 6C15 4.343 13.657 3 12 3Z" stroke="#333" strokeWidth="1.5"/>
+                                      <path d="M12 9C8.686 9 6 11.686 6 15V18C6 18.552 6.448 19 7 19H9" stroke="#333" strokeWidth="1.5"/>
+                                      <path d="M12 9C15.314 9 18 11.686 18 15V18C18 18.552 17.552 19 17 19H15" stroke="#333" strokeWidth="1.5"/>
+                                      <path d="M10 15C10 13.895 10.895 13 12 13C13.105 13 14 13.895 14 15V19C14 20.105 13.105 21 12 21C10.895 21 10 20.105 10 19V15Z" stroke="#333" strokeWidth="1.5"/>
+                                    </svg>
+                                  </div>
+                                  <div className="policy-text">
+                                    <h4>Pets</h4>
+                                    <p>Pets are not allowed</p>
+                                  </div>
+                                </div>
+
+                                <div className="travel-policy-item">
+                                  <div className="policy-icon">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                      <path d="M8 2L6 6H4C3.448 6 3 6.448 3 7V17C3 17.552 3.448 18 4 18H5" stroke="#333" strokeWidth="1.5"/>
+                                      <circle cx="8" cy="18" r="2" stroke="#333" strokeWidth="1.5"/>
+                                      <circle cx="16" cy="18" r="2" stroke="#333" strokeWidth="1.5"/>
+                                      <path d="M10 18H14" stroke="#333" strokeWidth="1.5"/>
+                                      <path d="M18 18H20C20.552 18 21 17.552 21 17V12L18 6H6L8 2" stroke="#333" strokeWidth="1.5"/>
+                                      <path d="M14 10L16 8L18 10" stroke="#333" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                                    </svg>
+                                  </div>
+                                  <div className="policy-text">
+                                    <h4>Liquor</h4>
+                                    <p>Carrying or consuming liquor inside the bus is prohibited. Bus operator reserves the right to deboard drunk passengers.</p>
+                                  </div>
+                                </div>
+
+                                <div className="travel-policy-item">
+                                  <div className="policy-icon">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                      <circle cx="12" cy="12" r="9" stroke="#333" strokeWidth="1.5"/>
+                                      <path d="M12 7V12L15 15" stroke="#333" strokeWidth="1.5" strokeLinecap="round"/>
+                                    </svg>
+                                  </div>
+                                  <div className="policy-text">
+                                    <h4>Pickup time</h4>
+                                    <p>Bus operator is not obligated to wait beyond the scheduled departure time of the bus. No refund request will be entertained for late arriving passengers.</p>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
 
                 {/* Bus Card 3 */}
                 <div className="bus-ticket-card">
@@ -769,7 +1434,12 @@ function BusResults() {
                       </div>
                       <div className="bus-price-main">₹550</div>
                       
-                      <button className="bus-details-link">Bus Details →</button>
+                      <button 
+                        className="bus-details-link"
+                        onClick={() => toggleBusDetails('bus3')}
+                      >
+                        {openBusDetails['bus3'] ? 'Hide Details' : 'Bus Details'} →
+                      </button>
                     </div>
                   </div>
                   <div className="bus-ticket-footer">
@@ -783,6 +1453,321 @@ function BusResults() {
                     <button className="bus-select-seat-btn" onClick={() => toggleDropdown('bus3')}>SELECT SEATS</button>
                   </div>
                 </div>
+
+                {/* Bus Details Dropdown for Bus 3 */}
+                {openBusDetails['bus3'] && (
+                  <div className="flight-details-dropdown">
+                    <div className="flight-details-tabs">
+                      <button 
+                        className={`tab-btn ${activeBusTab['bus3'] === 'photos' || !activeBusTab['bus3'] ? 'active' : ''}`}
+                        onClick={() => handleBusTabChange('bus3', 'photos')}
+                      >
+                        Photos
+                      </button>
+                      <button 
+                        className={`tab-btn ${activeBusTab['bus3'] === 'amenities' ? 'active' : ''}`}
+                        onClick={() => handleBusTabChange('bus3', 'amenities')}
+                      >
+                        Amenities
+                      </button>
+                      <button 
+                        className={`tab-btn ${activeBusTab['bus3'] === 'ratings' ? 'active' : ''}`}
+                        onClick={() => handleBusTabChange('bus3', 'ratings')}
+                      >
+                        Ratings & Reviews
+                      </button>
+                      <button 
+                        className={`tab-btn ${activeBusTab['bus3'] === 'policies' ? 'active' : ''}`}
+                        onClick={() => handleBusTabChange('bus3', 'policies')}
+                      >
+                        Policies
+                      </button>
+                    </div>
+
+                    <div className="flight-details-content">
+                      {(activeBusTab['bus3'] === 'photos' || !activeBusTab['bus3']) && (
+                        <div className="bus-photos-grid">
+                          <img src="/buses/bb1.jpeg" alt="Bus" className="bus-photo" />
+                          <img src="/buses/bb2.jpg" alt="Bus" className="bus-photo" />
+                          <img src="/buses/bb3.jpg" alt="Bus" className="bus-photo" />
+                          <img src="/buses/bb4.jpg" alt="Bus" className="bus-photo" />
+                          <img src="/buses/bb5.jpeg" alt="Bus" className="bus-photo" />
+                          <img src="/buses/bb6.jpeg" alt="Bus" className="bus-photo" />
+                          <img src="/buses/bb7.jpeg" alt="Bus" className="bus-photo" />
+                        </div>
+                      )}
+
+                      {activeBusTab['bus3'] === 'amenities' && (
+                        <div className="bus-amenities-content">
+                          <div className="amenity-item">
+                            <FaTint className="amenity-icon" />
+                            <span>Water Bottle</span>
+                          </div>
+                          <div className="amenity-item">
+                            <FaBed className="amenity-icon" />
+                            <span>Blankets</span>
+                          </div>
+                          <div className="amenity-item">
+                            <FaBolt className="amenity-icon" />
+                            <span>Charging Point</span>
+                          </div>
+                          <div className="amenity-item">
+                            <FaLightbulb className="amenity-icon" />
+                            <span>Reading Light</span>
+                          </div>
+                          <div className="amenity-item">
+                            <FaVideo className="amenity-icon" />
+                            <span>CCTV</span>
+                          </div>
+                        </div>
+                      )}
+
+                      {activeBusTab['bus3'] === 'ratings' && (
+                        <div className="bus-ratings-content">
+                          <div className="ratings-top-section">
+                            <div className="overall-rating">
+                              <div className="rating-number">4</div>
+                              <div className="rating-stars">
+                                <FaStar className="star-filled" />
+                                <FaStar className="star-filled" />
+                                <FaStar className="star-filled" />
+                                <FaStar className="star-filled" />
+                                <FaStar className="star-empty" />
+                              </div>
+                              <div className="reviews-count">15 reviews</div>
+                              <div className="rating-bars">
+                                <div className="rating-bar-row">
+                                  <span>5</span>
+                                  <div className="bar-bg"><div className="bar-fill" style={{width: '60%'}}></div></div>
+                                </div>
+                                <div className="rating-bar-row">
+                                  <span>4</span>
+                                  <div className="bar-bg"><div className="bar-fill" style={{width: '20%'}}></div></div>
+                                </div>
+                                <div className="rating-bar-row">
+                                  <span>3</span>
+                                  <div className="bar-bg"><div className="bar-fill" style={{width: '10%'}}></div></div>
+                                </div>
+                                <div className="rating-bar-row">
+                                  <span>2</span>
+                                  <div className="bar-bg"><div className="bar-fill" style={{width: '5%'}}></div></div>
+                                </div>
+                                <div className="rating-bar-row">
+                                  <span>1</span>
+                                  <div className="bar-bg"><div className="bar-fill" style={{width: '5%'}}></div></div>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="rating-categories">
+                              <span className="category-chip">Seat / Sleep Comfort</span>
+                              <span className="category-chip">AC</span>
+                              <span className="category-chip">Rest stop hygiene</span>
+                              <span className="category-chip">Punctuality</span>
+                              <span className="category-chip">Live tracking</span>
+                              <span className="category-chip">Staff behavior</span>
+                              <span className="category-chip">Cleanliness</span>
+                              <span className="category-chip">Driving</span>
+                            </div>
+                          </div>
+                          <div className="reviews-grid">
+                            <div className="review-card">
+                              <div className="review-rating"><FaStar /> 1</div>
+                              <div className="review-text">Always delay.</div>
+                              <div className="review-meta">
+                                <span className="reviewer-name">Sanket Katiyar</span>
+                                <span className="review-date">23-01-2026</span>
+                              </div>
+                            </div>
+                            <div className="review-card">
+                              <div className="review-rating"><FaStar /> 1</div>
+                              <div className="review-text">Not clean, AC not switched on, suffocation in bus</div>
+                              <div className="review-meta">
+                                <span className="reviewer-name">yash agarwal</span>
+                                <span className="review-date">19-01-2026</span>
+                              </div>
+                            </div>
+                            <div className="review-card">
+                              <div className="review-rating"><FaStar /> 5</div>
+                              <div className="review-text">Very good</div>
+                              <div className="review-meta">
+                                <span className="reviewer-name">Janardan Singh</span>
+                                <span className="review-date">12-01-2026</span>
+                              </div>
+                            </div>
+                            <div className="review-card">
+                              <div className="review-rating"><FaStar /> 5</div>
+                              <div className="review-text">Bus was on time. Gave water bottle. Happy to travel again with Laksmi bus services. Thank you.</div>
+                              <div className="review-meta">
+                                <span className="reviewer-name">Shivam Uttam</span>
+                                <span className="review-date">07-01-2026</span>
+                              </div>
+                            </div>
+                            <div className="review-card">
+                              <div className="review-rating"><FaStar /> 5</div>
+                              <div className="review-text">I give 5 star because this was the only way available but some cons were there. 1) They don't let me go to washroom and do not even stop for rest. 2) No rest stop. 3) In midnight chilling weather, bus was late by 1.5 hours, instead of 2 it came at 3.30. It was very chilly.</div>
+                              <div className="review-meta">
+                                <span className="reviewer-name">saurabh Tripathi</span>
+                                <span className="review-date">28-12-2025</span>
+                              </div>
+                            </div>
+                            <div className="review-card">
+                              <div className="review-rating"><FaStar /> 5</div>
+                              <div className="review-text">Thanks.</div>
+                              <div className="review-meta">
+                                <span className="reviewer-name">rohit kumar</span>
+                                <span className="review-date">27-12-2025</span>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="view-all-reviews">
+                            <a href="#">View all Reviews (9)</a>
+                          </div>
+                        </div>
+                      )}
+
+                      {activeBusTab['bus3'] === 'policies' && (
+                        <div className="bus-policies-content">
+                          <div className="policies-layout">
+                            {/* Left Section - Cancellation Policy */}
+                            <div className="cancellation-policy-section">
+                              <h3 className="policy-section-title">Cancellation Policy</h3>
+                              <div className="cancellation-table-wrapper">
+                                <table className="cancellation-table">
+                                  <thead>
+                                    <tr>
+                                      <th>CANCELLATION TIME</th>
+                                      <th>PENALTY (%)</th>
+                                      <th>PENALTY (₹)</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    <tr>
+                                      <td>more than 168 hrs before travel</td>
+                                      <td>15.0%</td>
+                                      <td>₹ 119</td>
+                                    </tr>
+                                    <tr>
+                                      <td>72 to 168 hr(s) before travel</td>
+                                      <td>15.0%</td>
+                                      <td>₹ 119</td>
+                                    </tr>
+                                    <tr>
+                                      <td>24 to 72 hr(s) before travel</td>
+                                      <td>15.0%</td>
+                                      <td>₹ 119</td>
+                                    </tr>
+                                    <tr>
+                                      <td>12 to 24 hr(s) before travel</td>
+                                      <td>25.0%</td>
+                                      <td>₹ 199</td>
+                                    </tr>
+                                    <tr>
+                                      <td>4 to 12 hr(s) before travel</td>
+                                      <td>50.0%</td>
+                                      <td>₹ 397</td>
+                                    </tr>
+                                    <tr>
+                                      <td>0 to 4 hr(s) before travel</td>
+                                      <td>100.0%</td>
+                                      <td>₹ 793</td>
+                                    </tr>
+                                  </tbody>
+                                </table>
+                                
+                                <div className="policy-notes">
+                                  <p>* The penalty is calculated based on total seat worth 793</p>
+                                  <p>* Penalty is calculated basis the bus service scheduled start time at: 30-01-2026 20:00 (subject to change).</p>
+                                  <p>* Partial cancellation is allowed for this ticket.</p>
+                                  <p>* Please note : the ticket cannot be cancelled after the bus departs from the first boarding point.</p>
+                                  <p>* Above defined cancellation charges are illustrasted basis maximum fare applicable. Exact cancellation charges will depend on the final price charged along with discount and other adjustments.</p>
+                                  <p>* Cancellation amount shown above may also vary basis the non-refundable components of the ticket defined by the bus operator</p>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Right Section - Travel Policy */}
+                            <div className="travel-policy-section">
+                              <h3 className="policy-section-title">Travel Policy</h3>
+                              <div className="travel-policy-items">
+                                <div className="travel-policy-item">
+                                  <div className="policy-icon">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                      <circle cx="12" cy="8" r="3" stroke="#333" strokeWidth="1.5"/>
+                                      <path d="M6 21C6 17.686 8.686 15 12 15C15.314 15 18 17.686 18 21" stroke="#333" strokeWidth="1.5"/>
+                                    </svg>
+                                  </div>
+                                  <div className="policy-text">
+                                    <h4>Child passenger</h4>
+                                    <p>Children above the age of 5 will need a ticket</p>
+                                  </div>
+                                </div>
+
+                                <div className="travel-policy-item">
+                                  <div className="policy-icon">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                      <rect x="4" y="8" width="16" height="10" rx="1" stroke="#333" strokeWidth="1.5"/>
+                                      <path d="M8 8V6C8 4.895 8.895 4 10 4H14C15.105 4 16 4.895 16 6V8" stroke="#333" strokeWidth="1.5"/>
+                                      <circle cx="12" cy="13" r="1" fill="#333"/>
+                                    </svg>
+                                  </div>
+                                  <div className="policy-text">
+                                    <h4>Luggage</h4>
+                                    <p>2 pieces of luggage will be accepted free of charge per passenger. Excess items will be chargeable Excess baggage over 10 kgs per passenger will be chargeable</p>
+                                  </div>
+                                </div>
+
+                                <div className="travel-policy-item">
+                                  <div className="policy-icon">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                      <path d="M12 3C10.343 3 9 4.343 9 6C9 7.657 10.343 9 12 9C13.657 9 15 7.657 15 6C15 4.343 13.657 3 12 3Z" stroke="#333" strokeWidth="1.5"/>
+                                      <path d="M12 9C8.686 9 6 11.686 6 15V18C6 18.552 6.448 19 7 19H9" stroke="#333" strokeWidth="1.5"/>
+                                      <path d="M12 9C15.314 9 18 11.686 18 15V18C18 18.552 17.552 19 17 19H15" stroke="#333" strokeWidth="1.5"/>
+                                      <path d="M10 15C10 13.895 10.895 13 12 13C13.105 13 14 13.895 14 15V19C14 20.105 13.105 21 12 21C10.895 21 10 20.105 10 19V15Z" stroke="#333" strokeWidth="1.5"/>
+                                    </svg>
+                                  </div>
+                                  <div className="policy-text">
+                                    <h4>Pets</h4>
+                                    <p>Pets are not allowed</p>
+                                  </div>
+                                </div>
+
+                                <div className="travel-policy-item">
+                                  <div className="policy-icon">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                      <path d="M8 2L6 6H4C3.448 6 3 6.448 3 7V17C3 17.552 3.448 18 4 18H5" stroke="#333" strokeWidth="1.5"/>
+                                      <circle cx="8" cy="18" r="2" stroke="#333" strokeWidth="1.5"/>
+                                      <circle cx="16" cy="18" r="2" stroke="#333" strokeWidth="1.5"/>
+                                      <path d="M10 18H14" stroke="#333" strokeWidth="1.5"/>
+                                      <path d="M18 18H20C20.552 18 21 17.552 21 17V12L18 6H6L8 2" stroke="#333" strokeWidth="1.5"/>
+                                      <path d="M14 10L16 8L18 10" stroke="#333" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                                    </svg>
+                                  </div>
+                                  <div className="policy-text">
+                                    <h4>Liquor</h4>
+                                    <p>Carrying or consuming liquor inside the bus is prohibited. Bus operator reserves the right to deboard drunk passengers.</p>
+                                  </div>
+                                </div>
+
+                                <div className="travel-policy-item">
+                                  <div className="policy-icon">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                      <circle cx="12" cy="12" r="9" stroke="#333" strokeWidth="1.5"/>
+                                      <path d="M12 7V12L15 15" stroke="#333" strokeWidth="1.5" strokeLinecap="round"/>
+                                    </svg>
+                                  </div>
+                                  <div className="policy-text">
+                                    <h4>Pickup time</h4>
+                                    <p>Bus operator is not obligated to wait beyond the scheduled departure time of the bus. No refund request will be entertained for late arriving passengers.</p>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
 
                 {/* Bus Card 4 */}
                 <div className="bus-ticket-card">
@@ -817,7 +1802,12 @@ function BusResults() {
                       </div>
                       <div className="bus-price-main">₹380</div>
                       
-                      <button className="bus-details-link">Bus Details →</button>
+                      <button 
+                        className="bus-details-link"
+                        onClick={() => toggleBusDetails('bus4')}
+                      >
+                        {openBusDetails['bus4'] ? 'Hide Details' : 'Bus Details'} →
+                      </button>
                     </div>
                   </div>
                   <div className="bus-ticket-footer">
@@ -832,8 +1822,322 @@ function BusResults() {
                   </div>
                 </div>
 
+                {/* Bus Details Dropdown for Bus 4 */}
+                {openBusDetails['bus4'] && (
+                  <div className="flight-details-dropdown">
+                    <div className="flight-details-tabs">
+                      <button 
+                        className={`tab-btn ${activeBusTab['bus4'] === 'photos' || !activeBusTab['bus4'] ? 'active' : ''}`}
+                        onClick={() => handleBusTabChange('bus4', 'photos')}
+                      >
+                        Photos
+                      </button>
+                      <button 
+                        className={`tab-btn ${activeBusTab['bus4'] === 'amenities' ? 'active' : ''}`}
+                        onClick={() => handleBusTabChange('bus4', 'amenities')}
+                      >
+                        Amenities
+                      </button>
+                      <button 
+                        className={`tab-btn ${activeBusTab['bus4'] === 'ratings' ? 'active' : ''}`}
+                        onClick={() => handleBusTabChange('bus4', 'ratings')}
+                      >
+                        Ratings & Reviews
+                      </button>
+                      <button 
+                        className={`tab-btn ${activeBusTab['bus4'] === 'policies' ? 'active' : ''}`}
+                        onClick={() => handleBusTabChange('bus4', 'policies')}
+                      >
+                        Policies
+                      </button>
+                    </div>
 
-              </div>
+                    <div className="flight-details-content">
+                      {(activeBusTab['bus4'] === 'photos' || !activeBusTab['bus4']) && (
+                        <div className="bus-photos-grid">
+                          <img src="/buses/bb1.jpeg" alt="Bus" className="bus-photo" />
+                          <img src="/buses/bb2.jpg" alt="Bus" className="bus-photo" />
+                          <img src="/buses/bb3.jpg" alt="Bus" className="bus-photo" />
+                          <img src="/buses/bb4.jpg" alt="Bus" className="bus-photo" />
+                          <img src="/buses/bb5.jpeg" alt="Bus" className="bus-photo" />
+                          <img src="/buses/bb6.jpeg" alt="Bus" className="bus-photo" />
+                          <img src="/buses/bb7.jpeg" alt="Bus" className="bus-photo" />
+                        </div>
+                      )}
+
+                      {activeBusTab['bus4'] === 'amenities' && (
+                        <div className="bus-amenities-content">
+                          <div className="amenity-item">
+                            <FaTint className="amenity-icon" />
+                            <span>Water Bottle</span>
+                          </div>
+                          <div className="amenity-item">
+                            <FaBed className="amenity-icon" />
+                            <span>Blankets</span>
+                          </div>
+                          <div className="amenity-item">
+                            <FaBolt className="amenity-icon" />
+                            <span>Charging Point</span>
+                          </div>
+                          <div className="amenity-item">
+                            <FaLightbulb className="amenity-icon" />
+                            <span>Reading Light</span>
+                          </div>
+                          <div className="amenity-item">
+                            <FaVideo className="amenity-icon" />
+                            <span>CCTV</span>
+                          </div>
+                        </div>
+                      )}
+
+                      {activeBusTab['bus4'] === 'ratings' && (
+                        <div className="bus-ratings-content">
+                          <div className="ratings-top-section">
+                            <div className="overall-rating">
+                              <div className="rating-number">4</div>
+                              <div className="rating-stars">
+                                <FaStar className="star-filled" />
+                                <FaStar className="star-filled" />
+                                <FaStar className="star-filled" />
+                                <FaStar className="star-filled" />
+                                <FaStar className="star-empty" />
+                              </div>
+                              <div className="reviews-count">15 reviews</div>
+                              <div className="rating-bars">
+                                <div className="rating-bar-row">
+                                  <span>5</span>
+                                  <div className="bar-bg"><div className="bar-fill" style={{width: '60%'}}></div></div>
+                                </div>
+                                <div className="rating-bar-row">
+                                  <span>4</span>
+                                  <div className="bar-bg"><div className="bar-fill" style={{width: '20%'}}></div></div>
+                                </div>
+                                <div className="rating-bar-row">
+                                  <span>3</span>
+                                  <div className="bar-bg"><div className="bar-fill" style={{width: '10%'}}></div></div>
+                                </div>
+                                <div className="rating-bar-row">
+                                  <span>2</span>
+                                  <div className="bar-bg"><div className="bar-fill" style={{width: '5%'}}></div></div>
+                                </div>
+                                <div className="rating-bar-row">
+                                  <span>1</span>
+                                  <div className="bar-bg"><div className="bar-fill" style={{width: '5%'}}></div></div>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="rating-categories">
+                              <span className="category-chip">Seat / Sleep Comfort</span>
+                              <span className="category-chip">AC</span>
+                              <span className="category-chip">Rest stop hygiene</span>
+                              <span className="category-chip">Punctuality</span>
+                              <span className="category-chip">Live tracking</span>
+                              <span className="category-chip">Staff behavior</span>
+                              <span className="category-chip">Cleanliness</span>
+                              <span className="category-chip">Driving</span>
+                            </div>
+                          </div>
+                          <div className="reviews-grid">
+                            <div className="review-card">
+                              <div className="review-rating"><FaStar /> 1</div>
+                              <div className="review-text">Always delay.</div>
+                              <div className="review-meta">
+                                <span className="reviewer-name">Sanket Katiyar</span>
+                                <span className="review-date">23-01-2026</span>
+                              </div>
+                            </div>
+                            <div className="review-card">
+                              <div className="review-rating"><FaStar /> 1</div>
+                              <div className="review-text">Not clean, AC not switched on, suffocation in bus</div>
+                              <div className="review-meta">
+                                <span className="reviewer-name">yash agarwal</span>
+                                <span className="review-date">19-01-2026</span>
+                              </div>
+                            </div>
+                            <div className="review-card">
+                              <div className="review-rating"><FaStar /> 5</div>
+                              <div className="review-text">Very good</div>
+                              <div className="review-meta">
+                                <span className="reviewer-name">Janardan Singh</span>
+                                <span className="review-date">12-01-2026</span>
+                              </div>
+                            </div>
+                            <div className="review-card">
+                              <div className="review-rating"><FaStar /> 5</div>
+                              <div className="review-text">Bus was on time. Gave water bottle. Happy to travel again with Laksmi bus services. Thank you.</div>
+                              <div className="review-meta">
+                                <span className="reviewer-name">Shivam Uttam</span>
+                                <span className="review-date">07-01-2026</span>
+                              </div>
+                            </div>
+                            <div className="review-card">
+                              <div className="review-rating"><FaStar /> 5</div>
+                              <div className="review-text">I give 5 star because this was the only way available but some cons were there. 1) They don't let me go to washroom and do not even stop for rest. 2) No rest stop. 3) In midnight chilling weather, bus was late by 1.5 hours, instead of 2 it came at 3.30. It was very chilly.</div>
+                              <div className="review-meta">
+                                <span className="reviewer-name">saurabh Tripathi</span>
+                                <span className="review-date">28-12-2025</span>
+                              </div>
+                            </div>
+                            <div className="review-card">
+                              <div className="review-rating"><FaStar /> 5</div>
+                              <div className="review-text">Thanks.</div>
+                              <div className="review-meta">
+                                <span className="reviewer-name">rohit kumar</span>
+                                <span className="review-date">27-12-2025</span>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="view-all-reviews">
+                            <a href="#">View all Reviews (9)</a>
+                          </div>
+                        </div>
+                      )}
+
+                      {activeBusTab['bus4'] === 'policies' && (
+                        <div className="bus-policies-content">
+                          <div className="policies-layout">
+                            {/* Left Section - Cancellation Policy */}
+                            <div className="cancellation-policy-section">
+                              <h3 className="policy-section-title">Cancellation Policy</h3>
+                              <div className="cancellation-table-wrapper">
+                                <table className="cancellation-table">
+                                  <thead>
+                                    <tr>
+                                      <th>CANCELLATION TIME</th>
+                                      <th>PENALTY (%)</th>
+                                      <th>PENALTY (₹)</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    <tr>
+                                      <td>more than 168 hrs before travel</td>
+                                      <td>15.0%</td>
+                                      <td>₹ 119</td>
+                                    </tr>
+                                    <tr>
+                                      <td>72 to 168 hr(s) before travel</td>
+                                      <td>15.0%</td>
+                                      <td>₹ 119</td>
+                                    </tr>
+                                    <tr>
+                                      <td>24 to 72 hr(s) before travel</td>
+                                      <td>15.0%</td>
+                                      <td>₹ 119</td>
+                                    </tr>
+                                    <tr>
+                                      <td>12 to 24 hr(s) before travel</td>
+                                      <td>25.0%</td>
+                                      <td>₹ 199</td>
+                                    </tr>
+                                    <tr>
+                                      <td>4 to 12 hr(s) before travel</td>
+                                      <td>50.0%</td>
+                                      <td>₹ 397</td>
+                                    </tr>
+                                    <tr>
+                                      <td>0 to 4 hr(s) before travel</td>
+                                      <td>100.0%</td>
+                                      <td>₹ 793</td>
+                                    </tr>
+                                  </tbody>
+                                </table>
+                                
+                                <div className="policy-notes">
+                                  <p>* The penalty is calculated based on total seat worth 793</p>
+                                  <p>* Penalty is calculated basis the bus service scheduled start time at: 30-01-2026 20:00 (subject to change).</p>
+                                  <p>* Partial cancellation is allowed for this ticket.</p>
+                                  <p>* Please note : the ticket cannot be cancelled after the bus departs from the first boarding point.</p>
+                                  <p>* Above defined cancellation charges are illustrasted basis maximum fare applicable. Exact cancellation charges will depend on the final price charged along with discount and other adjustments.</p>
+                                  <p>* Cancellation amount shown above may also vary basis the non-refundable components of the ticket defined by the bus operator</p>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Right Section - Travel Policy */}
+                            <div className="travel-policy-section">
+                              <h3 className="policy-section-title">Travel Policy</h3>
+                              <div className="travel-policy-items">
+                                <div className="travel-policy-item">
+                                  <div className="policy-icon">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                      <circle cx="12" cy="8" r="3" stroke="#333" strokeWidth="1.5"/>
+                                      <path d="M6 21C6 17.686 8.686 15 12 15C15.314 15 18 17.686 18 21" stroke="#333" strokeWidth="1.5"/>
+                                    </svg>
+                                  </div>
+                                  <div className="policy-text">
+                                    <h4>Child passenger</h4>
+                                    <p>Children above the age of 5 will need a ticket</p>
+                                  </div>
+                                </div>
+
+                                <div className="travel-policy-item">
+                                  <div className="policy-icon">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                      <rect x="4" y="8" width="16" height="10" rx="1" stroke="#333" strokeWidth="1.5"/>
+                                      <path d="M8 8V6C8 4.895 8.895 4 10 4H14C15.105 4 16 4.895 16 6V8" stroke="#333" strokeWidth="1.5"/>
+                                      <circle cx="12" cy="13" r="1" fill="#333"/>
+                                    </svg>
+                                  </div>
+                                  <div className="policy-text">
+                                    <h4>Luggage</h4>
+                                    <p>2 pieces of luggage will be accepted free of charge per passenger. Excess items will be chargeable Excess baggage over 10 kgs per passenger will be chargeable</p>
+                                  </div>
+                                </div>
+
+                                <div className="travel-policy-item">
+                                  <div className="policy-icon">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                      <path d="M12 3C10.343 3 9 4.343 9 6C9 7.657 10.343 9 12 9C13.657 9 15 7.657 15 6C15 4.343 13.657 3 12 3Z" stroke="#333" strokeWidth="1.5"/>
+                                      <path d="M12 9C8.686 9 6 11.686 6 15V18C6 18.552 6.448 19 7 19H9" stroke="#333" strokeWidth="1.5"/>
+                                      <path d="M12 9C15.314 9 18 11.686 18 15V18C18 18.552 17.552 19 17 19H15" stroke="#333" strokeWidth="1.5"/>
+                                      <path d="M10 15C10 13.895 10.895 13 12 13C13.105 13 14 13.895 14 15V19C14 20.105 13.105 21 12 21C10.895 21 10 20.105 10 19V15Z" stroke="#333" strokeWidth="1.5"/>
+                                    </svg>
+                                  </div>
+                                  <div className="policy-text">
+                                    <h4>Pets</h4>
+                                    <p>Pets are not allowed</p>
+                                  </div>
+                                </div>
+
+                                <div className="travel-policy-item">
+                                  <div className="policy-icon">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                      <path d="M8 2L6 6H4C3.448 6 3 6.448 3 7V17C3 17.552 3.448 18 4 18H5" stroke="#333" strokeWidth="1.5"/>
+                                      <circle cx="8" cy="18" r="2" stroke="#333" strokeWidth="1.5"/>
+                                      <circle cx="16" cy="18" r="2" stroke="#333" strokeWidth="1.5"/>
+                                      <path d="M10 18H14" stroke="#333" strokeWidth="1.5"/>
+                                      <path d="M18 18H20C20.552 18 21 17.552 21 17V12L18 6H6L8 2" stroke="#333" strokeWidth="1.5"/>
+                                      <path d="M14 10L16 8L18 10" stroke="#333" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                                    </svg>
+                                  </div>
+                                  <div className="policy-text">
+                                    <h4>Liquor</h4>
+                                    <p>Carrying or consuming liquor inside the bus is prohibited. Bus operator reserves the right to deboard drunk passengers.</p>
+                                  </div>
+                                </div>
+
+                                <div className="travel-policy-item">
+                                  <div className="policy-icon">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                      <circle cx="12" cy="12" r="9" stroke="#333" strokeWidth="1.5"/>
+                                      <path d="M12 7V12L15 15" stroke="#333" strokeWidth="1.5" strokeLinecap="round"/>
+                                    </svg>
+                                  </div>
+                                  <div className="policy-text">
+                                    <h4>Pickup time</h4>
+                                    <p>Bus operator is not obligated to wait beyond the scheduled departure time of the bus. No refund request will be entertained for late arriving passengers.</p>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+              </div> {/* End of bus-cards-container */}
             </section>
           </div>
         </div>
