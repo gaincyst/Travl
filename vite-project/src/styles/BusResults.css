@@ -1299,6 +1299,22 @@ background-color: #c01313;
   transform: translateY(-2px);
 }
 
+.continue-btn.disabled,
+.continue-btn:disabled {
+  background: #9e9e9e;
+  color: #e0e0e0;
+  cursor: not-allowed;
+  box-shadow: none;
+  opacity: 0.6;
+}
+
+.continue-btn.disabled:hover,
+.continue-btn:disabled:hover {
+  background: #9e9e9e;
+  transform: none;
+  box-shadow: none;
+}
+
 /* Bus Details Dropdown - Clone of Flight Details Styles */
 .flight-details-dropdown {
   background: #ffffff;
@@ -1789,3 +1805,642 @@ background-color: #c01313;
   transform: translateY(0);
 }
 
+/* ============================================
+   PASSENGER DETAILS PANEL STYLES
+   ============================================ */
+
+/* Backdrop */
+.panel-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
+  z-index: 9998;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Side Panel */
+.passenger-details-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 750px;
+  height: 100vh;
+  background: #f5f7fa;
+  box-shadow: -4px 0 20px rgba(0, 0, 0, 0.9);
+  z-index: 9999;
+  overflow-y: auto;
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+/* Close Button */
+.panel-close-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: transparent;
+  border: none;
+  font-size: 28px;
+  color: #fff;
+  cursor: pointer;
+  z-index: 10;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+}
+
+.panel-close-btn:hover {
+  transform: scale(1.1);
+}
+
+/* Panel Header */
+.panel-header {
+  background: linear-gradient(140deg, #800c0c, #e85757);
+  padding: 24px 24px 20px 24px;
+  color: #fff;
+}
+
+.panel-header h2 {
+  font-size: 22px;
+  font-weight: 600;
+  margin: 0;
+ 
+}
+
+/* Panel Content */
+.panel-content {
+  padding: 0;
+}
+
+/* Journey Summary */
+.journey-summary {
+  background: #fff;
+  padding: 20px 24px;
+  margin-bottom: 12px;
+}
+
+.summary-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.operator-name {
+  font-size: 18px;
+  font-weight: 600;
+  color: #000;
+  margin: 0;
+}
+
+.seat-number {
+  font-size: 14px;
+  color: #c70e0e;
+  text-align: right;
+}
+
+.bus-type-line {
+  font-size: 13px;
+  color: #d21919;
+  margin-bottom: 16px;
+}
+
+.journey-timeline {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 140px;
+}
+
+.journey-point {
+  flex: 1;
+}
+
+.time-large {
+  font-size: 20px;
+  font-weight: 700;
+  color: #000;
+  margin-bottom: 2px;
+}
+
+.date-small {
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 8px;
+}
+
+.city-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #000;
+  margin-bottom: 4px;
+}
+
+.location-detail {
+  font-size: 12px;
+  color: #666;
+  line-height: 1.4;
+}
+
+.journey-duration {
+  font-size: 13px;
+  color: #666;
+  text-align: center;
+  padding: 0 12px;
+  white-space: nowrap;
+  margin-left: -90px;
+  margin-bottom: -20px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.journey-duration::before,
+.journey-duration::after {
+  content: '';
+  width: 35px;
+  height: 1px;
+  background-color: #999;
+}
+
+/* Traveller Details Section */
+.traveller-details-section {
+  background: #fff;
+  padding: 20px 24px;
+  margin-bottom: 12px;
+}
+
+.section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #000;
+  margin: 0 0 16px 0;
+}
+
+.subtitle {
+  font-size: 12px;
+  font-weight: 400;
+  color: #666;
+  margin-left: 8px;
+}
+
+.traveller-form {
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.traveller-form:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.seat-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #000;
+  margin-bottom: 12px;
+}
+
+
+.form-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.form-field {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.name-field {
+  flex: 2;
+}
+
+.age-field {
+  flex: 0.8;
+}
+
+.gender-field {
+  flex: 1.2;
+}
+
+.form-field label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 6px;
+}
+
+.form-field input,
+.form-field select {
+  padding: 10px 12px;
+  border: 1px solid #d0d0d0;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #333;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.form-field input:focus,
+.form-field select:focus {
+  border-color: #d21919;
+}
+
+.form-field input::placeholder {
+  color: #999;
+}
+
+/* Gender Toggle */
+.gender-toggle {
+  display: flex;
+  gap: 8px;
+}
+
+.gender-btn {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #d0d0d0;
+  border-radius: 6px;
+  background: #fff;
+  font-size: 13px;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.gender-btn.active {
+  background: #bbb9b9;
+  color: #0b0b0b;
+  border-color: #000;
+}
+
+.gender-btn.female.active {
+  background: #df5959;
+  color: #fff;
+  border-color: #d91a1a;
+}
+
+.gender-btn:hover:not(.active) {
+  border-color: #999;
+}
+
+.gender-icon {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  
+}
+.gender-icon.gender-btn.female.active{
+  color: white;
+}
+
+/* Contact Details Section */
+.contact-details-section {
+  background: #fff;
+  padding: 20px 24px;
+  margin-bottom: 12px;
+}
+
+.gst-toggle-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 48px;
+  height: 24px;
+}
+
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.3s;
+  border-radius: 24px;
+}
+
+.toggle-slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.3s;
+  border-radius: 50%;
+}
+
+.toggle-switch input:checked + .toggle-slider {
+  background-color: #2b9c3a;
+}
+
+.toggle-switch input:checked + .toggle-slider:before {
+  transform: translateX(24px);
+}
+
+.toggle-label {
+  font-size: 14px;
+  color: #333;
+}
+
+/* State Section */
+.state-section {
+  background: #fff;
+  padding: 20px 24px;
+  margin-bottom: 12px;
+}
+
+.state-dropdown {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d0d0d0;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #333;
+  outline: none;
+  background: #fff;
+  cursor: pointer;
+}
+
+.checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.checkbox-row input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.checkbox-row label {
+  font-size: 13px;
+  color: #333;
+  cursor: pointer;
+}
+
+/* Offers Section */
+.offers-section {
+  background: #fff;
+  padding: 20px 24px;
+  margin-bottom: 12px;
+}
+
+.offers-scroll-container {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.offer-card-panel {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  background: #fff;
+  transition: all 0.2s ease;
+  cursor: default;
+}
+
+.offer-card-panel.applied {
+  border-color: #4caf50;
+  background: #f1f8f4;
+}
+
+.offer-content {
+  flex: 1;
+}
+
+.offer-code {
+  font-size: 15px;
+  font-weight: 700;
+  color: #000;
+  margin-bottom: 4px;
+}
+
+.offer-description {
+  font-size: 12px;
+  color: #666;
+  line-height: 1.4;
+}
+
+.save-text {
+  color: #2e7d32;
+  font-weight: 600;
+}
+
+.offer-action {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.discount-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: #2e7d32;
+  margin-right: 8px;
+}
+
+.appply-btn,
+.remove-btn,
+.login-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.appply-btn {
+  background: transparent;
+  color: #921515;
+  border: 1px solid transparent;
+  white-space: nowrap;
+
+}
+
+.appply-btn:hover {
+  text-decoration: underline;
+}
+
+.remove-btn {
+  background: transparent;
+  color: #cc2121;
+  border: 1px solid transparent;
+}
+
+.remove-btn:hover {
+  text-decoration: underline;
+}
+
+.login-btn {
+  background: transparent;
+  color: #921515;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+
+.login-btn:hover {
+  text-decoration: underline;
+}
+
+/* Price Details Section */
+.price-details-section {
+  background: #fff;
+  padding: 20px 24px;
+  margin-bottom: 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+}
+
+.price-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  font-size: 14px;
+}
+
+.price-row.total {
+  border-top: 1px solid #e0e0e0;
+  padding-top: 12px;
+  margin-top: 8px;
+  font-weight: 600;
+}
+
+.price-label {
+  color: #333;
+}
+
+.price-value {
+  font-weight: 600;
+  color: #000;
+}
+
+.price-value.discount {
+  color: #2e7d32;
+}
+
+.price-note {
+  font-size: 12px;
+  color: #666;
+  margin-top: 12px;
+  margin-bottom: 0;
+}
+
+/* Continue Button Panel */
+.continue-button-panel {
+  width: calc(100% - 48px);
+  margin: 0 24px 12px 24px;
+  padding: 14px;
+  background: radial-gradient(circle at top left, #851111, #fe6969);
+background-color: #c01313;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  letter-spacing: 0.5px;
+}
+
+.continue-button-panel:hover {
+  background: #f40606cf;
+}
+
+.terms-text {
+  font-size: 11px;
+  color: #666;
+  text-align: center;
+  margin: 0 24px 24px 24px;
+  line-height: 1.5;
+}
+
+.terms-text a {
+  color: #d21919;
+  text-decoration: none;
+}
+
+.terms-text a:hover {
+  text-decoration: underline;
+}
+
+/* Review Booking Button */
+.review-booking-btn {
+  width: calc(100% - 48px);
+  margin: 0 24px 24px 24px;
+  padding: 14px;
+  background: radial-gradient(circle at top left, #851111, #fe6969);
+background-color: #c01313;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.review-booking-btn:hover {
+  background: #f40606cf;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .passenger-details-panel {
+    width: 100%;
+  }
+}

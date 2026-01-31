@@ -36,6 +36,17 @@ function BusResults() {
   const [openBusDetails, setOpenBusDetails] = useState({});
   const [activeBusTab, setActiveBusTab] = useState({});
 
+  // Passenger Details Panel State
+  const [isPanelOpen, setIsPanelOpen] = useState(false);
+  const [currentBookingBus, setCurrentBookingBus] = useState(null);
+  const [travellerGenders, setTravellerGenders] = useState({});
+  
+  // Offers and Pricing State
+  const [appliedOffer, setAppliedOffer] = useState(null);
+  const baseFare = 899;
+  const discountAmount = appliedOffer ? appliedOffer.discount : 0;
+  const finalAmount = baseFare - discountAmount;
+
   // Sorting state management - 3 states: null (no sort), 'asc', 'desc'
   // Smart is 'active' by default
   const [sortStates, setSortStates] = useState({
@@ -171,6 +182,59 @@ function BusResults() {
   const isSeatSelected = (busId, seatId) => {
     return (selectedSeats[busId] || []).includes(seatId);
   };
+
+  // Validation logic for Continue button
+  const isContinueEnabled = (busId) => {
+    const hasSeats = (selectedSeats[busId] || []).length > 0;
+    const hasBoardingPoint = !!selectedBoardingPoint[busId];
+    const hasDroppingPoint = !!selectedDroppingPoint[busId];
+    return hasSeats && hasBoardingPoint && hasDroppingPoint;
+  };
+
+  // Handle Continue button click to open panel
+  const handleContinue = (busId, busData) => {
+    setCurrentBookingBus({ id: busId, ...busData });
+    setIsPanelOpen(true);
+    document.body.style.overflow = 'hidden'; // Prevent background scroll
+  };
+
+  // Close panel
+  const closePanel = () => {
+    setIsPanelOpen(false);
+    setCurrentBookingBus(null);
+    setTravellerGenders({});
+    document.body.style.overflow = 'auto'; // Restore scroll
+  };
+
+  // Handle gender selection
+  const handleGenderSelect = (seatId, gender) => {
+    setTravellerGenders(prev => ({
+      ...prev,
+      [seatId]: gender
+    }));
+  };
+
+  // Handle offer apply
+  const handleApplyOffer = (offer) => {
+    setAppliedOffer(offer);
+  };
+
+  // Handle offer remove
+  const handleRemoveOffer = () => {
+    setAppliedOffer(null);
+  };
+
+  // Available offers
+  const availableOffers = [
+    { code: 'MEGABUS', description: 'Get discount up to 10% on your bus bookings!', discount: 22, requiresLogin: false },
+    { code: 'IDBICC', description: 'Exclusive Offer - Get Flat 10% off (upto INR 500) on IDBI CC Users', discount: 89, requiresLogin: false },
+    { code: 'IDBIDC', description: 'Exclusive Offer - Get Flat 10% off (upto INR 500) on IDBI DC Users', discount: 89, requiresLogin: false },
+    { code: 'MMTCANARA', description: 'Get FLAT 10% OFF up to Rs', discount: 89, requiresLogin: true },
+    { code: 'MMTPNB', description: 'Get FLAT 8% OFF on your Bus booking using PNB credit cards', discount: 71, requiresLogin: true },
+    { code: 'BUSTRAINPASS', description: 'Travel Pass - Buy for Rs. 99 and get instant Rs. 50 off and 4 vouchers each worth Rs. 50 off on bus/Rs. 25 off on train bookings of Min. ATV Rs. 500.', discount: 89, requiresLogin: false },
+    { code: 'WELCOMEMMT', description: 'Get Flat 10% instant discount up to Rs 150 + Flat 10% cashback up to Rs 150 on first bus booking', discount: 89, requiresLogin: true }
+  ];
+
   const scrollRef = useRef(null);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(true);
@@ -1024,7 +1088,25 @@ function BusResults() {
                                   </div>
                                 </div>
 
-                                <button className="continue-btn">CONTINUE</button>
+                                <button 
+                                  className={`continue-btn ${!isContinueEnabled('bus1') ? 'disabled' : ''}`}
+                                  disabled={!isContinueEnabled('bus1')}
+                                  onClick={() => handleContinue('bus1', {
+                                    name: 'Yolo Bus',
+                                    type: 'Bharat Benz A/C Seater / Sleeper (2+1)',
+                                    departureTime: '19:30',
+                                    departureDate: '31 Jan \'26, Sat',
+                                    departureCity: 'Delhi',
+                                    arrivalTime: '04:19',
+                                    arrivalDate: '1 Feb\' 26, Sun',
+                                    arrivalCity: 'Kanpur (Uttar Pradesh)',
+                                    duration: '08h 49m',
+                                    boardingPoint: selectedBoardingPoint['bus1'],
+                                    droppingPoint: selectedDroppingPoint['bus1']
+                                  })}
+                                >
+                                  CONTINUE
+                                </button>
                               </div>
                             </div>
                           </div>
@@ -2142,6 +2224,217 @@ function BusResults() {
           </div>
         </div>
       </main>
+
+      {/* Passenger Details Panel */}
+      {isPanelOpen && currentBookingBus && (
+        <>
+          {/* Backdrop */}
+          <div className="panel-backdrop" onClick={closePanel}></div>
+          
+          {/* Side Panel */}
+          <div className="passenger-details-panel">
+            {/* Close Button */}
+            <button className="panel-close-btn" onClick={closePanel}>✕</button>
+            
+            {/* Panel Header */}
+            <div className="panel-header">
+              <h2>Passenger Details</h2>
+            </div>
+
+            {/* Panel Content */}
+            <div className="panel-content">
+              {/* Bus Journey Summary */}
+              <div className="journey-summary">
+                <div className="summary-header">
+                  <h3 className="operator-name">{currentBookingBus.name}</h3>
+                  <div className="seat-number">Seat No: {(selectedSeats[currentBookingBus.id] || []).join(', ')}</div>
+                </div>
+                <div className="bus-type-line">{currentBookingBus.type}</div>
+                
+                <div className="journey-timeline">
+                  <div className="journey-point">
+                    <div className="time-large">{currentBookingBus.departureTime}</div>
+                    <div className="date-small">{currentBookingBus.departureDate}</div>
+                    <div className="city-name">{currentBookingBus.departureCity}</div>
+                    <div className="location-detail">
+                      {selectedBoardingPoint[currentBookingBus.id] === 'bp1' && 'Dhaula Kuan'}
+                      {selectedBoardingPoint[currentBookingBus.id] === 'bp2' && 'Jhandewalan'}
+                      {selectedBoardingPoint[currentBookingBus.id] === 'bp3' && 'ISBT Kashmiri Gate'}
+                      {selectedBoardingPoint[currentBookingBus.id] === 'bp4' && 'Anand Vihar'}
+                    </div>
+                    <div className="location-detail">
+                      {selectedBoardingPoint[currentBookingBus.id] === 'bp1' && 'Akshardham Metro Station, Delhi'}
+                      {selectedBoardingPoint[currentBookingBus.id] === 'bp2' && 'Jhandewalan Metro Station'}
+                      {selectedBoardingPoint[currentBookingBus.id] === 'bp3' && 'Akshardham Metro Station, Delhi'}
+                      {selectedBoardingPoint[currentBookingBus.id] === 'bp4' && 'Anand Vihar ISBT'}
+                    </div>
+                  </div>
+
+                  <div className="journey-duration">{currentBookingBus.duration}</div>
+
+                  <div className="journey-point">
+                    <div className="time-large">{currentBookingBus.arrivalTime}</div>
+                    <div className="date-small">{currentBookingBus.arrivalDate}</div>
+                    <div className="city-name">{currentBookingBus.arrivalCity}</div>
+                    <div className="location-detail">
+                      {selectedDroppingPoint[currentBookingBus.id] === 'dp1' && 'Fazalganj'}
+                    </div>
+                    <div className="location-detail">
+                      {selectedDroppingPoint[currentBookingBus.id] === 'dp1' && 'Fazalganj'}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Traveller Details */}
+              <div className="traveller-details-section">
+                <h3 className="section-title">Traveller Details</h3>
+                {(selectedSeats[currentBookingBus.id] || []).map((seat, index) => (
+                  <div key={seat} className="traveller-form">
+                    <div className="seat-label">
+                      Seat {seat}
+                    </div>
+                    <div className="form-row">
+                      <div className="form-field name-field">
+                        <label>Name</label>
+                        <input type="text" placeholder="Type here" />
+                      </div>
+                      <div className="form-field age-field">
+                        <label>Age*</label>
+                        <input type="text" placeholder="eg : 24" />
+                      </div>
+                      <div className="form-field gender-field">
+                        <label>Gender</label>
+                        <div className="gender-toggle">
+                          <button 
+                            className={`gender-btn ${(!travellerGenders[seat] || travellerGenders[seat] === 'male') ? 'active' : ''}`}
+                            onClick={() => handleGenderSelect(seat, 'male')}
+                          >
+                            <img src="./logo/male.png" alt="Male" className="gender-icon" /> Male
+                          </button>
+                          <button 
+                            className={`gender-btn female ${travellerGenders[seat] === 'female' ? 'active' : ''}`}
+                            onClick={() => handleGenderSelect(seat, 'female')}
+                          >
+                            <img src="./logo/female.png" alt="Female" className="gender-icon" /> Female
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Contact Details */}
+              <div className="contact-details-section">
+                <h3 className="section-title">
+                  Contact Details <span className="subtitle">We'll send your ticket here</span>
+                </h3>
+                <div className="form-row">
+                  <div className="form-field">
+                    <label>Email Id*</label>
+                    <input type="email" placeholder="" />
+                  </div>
+                  <div className="form-field">
+                    <label>Mobile Number*</label>
+                    <input type="tel" placeholder="Type here" />
+                  </div>
+                </div>
+
+                {/* GST Toggle */}
+                <div className="gst-toggle-row">
+                  <label className="toggle-switch">
+                    <input type="checkbox" />
+                    <span className="toggle-slider"></span>
+                  </label>
+                  <span className="toggle-label">Enter GST details (optional)</span>
+                </div>
+              </div>
+
+              {/* State Selection */}
+              <div className="state-section">
+                <h3 className="section-title">
+                  Your pincode and state{' '}
+                  <span className="subtitle">(Required for GST purpose on your tax invoice. You can edit this anytime later in your profile section.)</span>
+                </h3>
+                <div className="form-field">
+                  <label>Select the State</label>
+                  <select className="state-dropdown">
+                    <option>Uttar Pradesh</option>
+                    <option>Delhi</option>
+                    <option>Maharashtra</option>
+                    <option>Karnataka</option>
+                  </select>
+                </div>
+                <div className="checkbox-row">
+                  <input type="checkbox" id="save-billing" />
+                  <label htmlFor="save-billing">Confirm and save billing details to your profile</label>
+                </div>
+              </div>
+
+              {/* Offers Section */}
+              <div className="offers-section">
+                <h3 className="section-title">Offers</h3>
+                <div className="offers-scroll-container">
+                  {availableOffers.map((offer) => (
+                    <div 
+                      key={offer.code} 
+                      className={`offer-card-panel ${appliedOffer?.code === offer.code ? 'applied' : ''}`}
+                    >
+                      <div className="offer-content">
+                        <div className="offer-code">{offer.code}</div>
+                        <div className="offer-description">
+                          <span className="save-text">Save ₹{offer.discount}.</span> {offer.description}
+                        </div>
+                      </div>
+                      <div className="offer-action">
+                        {appliedOffer?.code === offer.code ? (
+                          <>
+                            <span className="discount-value">-₹{offer.discount}</span>
+                            <button className="remove-btn" onClick={handleRemoveOffer}>Remove</button>
+                          </>
+                        ) : (
+                          offer.requiresLogin ? (
+                            <button className="login-btn">Login to avail offer</button>
+                          ) : (
+                            <button className="appply-btn" onClick={() => handleApplyOffer(offer)}>Apply</button>
+                          )
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Price Details Section */}
+              <div className="price-details-section">
+                <h3 className="section-title">Price details</h3>
+                <div className="price-row">
+                  <span className="price-label">Base Fare</span>
+                  <span className="price-value">₹{baseFare.toFixed(1)}</span>
+                </div>
+                {appliedOffer && (
+                  <div className="price-row">
+                    <span className="price-label">Discounts</span>
+                    <span className="price-value discount">-₹{discountAmount.toFixed(1)}</span>
+                  </div>
+                )}
+                <div className="price-row total">
+                  <span className="price-label">Amount</span>
+                  <span className="price-value">₹{finalAmount}</span>
+                </div>
+                <p className="price-note">Final payable amount will be updated on the next page</p>
+              </div>
+
+              {/* Continue Button */}
+              <button className="continue-button-panel">CONTINUE</button>
+              <p className="terms-text">By proceeding, I agree to MakeMyTrip's <a href="#">User Agreement</a>, <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></p>
+
+              {/* Review Booking Button - Hidden/Removed */}
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }
