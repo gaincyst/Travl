@@ -1055,3 +1055,348 @@
   color: #ff6b35;
   margin-top: -15px;
 }
+
+/* ============================================
+   FARE OPTIONS MODAL (Screenshot 1 Design)
+   ============================================ */
+
+.fare-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  z-index: 9998;
+  animation: fadeIn 0.3s ease;
+}
+
+.fare-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(1);
+  width: 92%;
+  max-width: 1100px;
+  max-height: 90vh;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  z-index: 9999;
+  overflow-y: auto;
+  animation: modalSlideIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -48%) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+.fare-modal-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: transparent;
+  border: none;
+  font-size: 28px;
+  color: #999;
+  cursor: pointer;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease;
+  z-index: 10;
+}
+
+.fare-modal-close:hover {
+  color: #333;
+}
+
+.fare-modal-header {
+  padding: 10px 20px 10px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.fare-modal-title {
+  font-size: 22px;
+  font-weight: 600;
+  color: #a81717;
+  margin: 0 0 12px 0;
+}
+
+.fare-modal-flight-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 15px;
+  color: #403d3d;
+  
+}
+
+.fare-modal-airline-logo {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  padding: 0px;
+  background: #f0f7ff;
+  border-radius: 0px;
+}
+
+.fare-modal-route {
+  font-weight: 600;
+  color: #000;
+}
+
+.fare-modal-separator {
+  color: #999;
+}
+
+.fare-modal-content {
+  padding: 30px 40px;
+}
+
+.fare-cards-wrapper {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.fare-card {
+  border: 1px solid #d4d4d4;
+  border-radius: 6px;
+  padding: 2px 10px;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.2s ease;
+}
+
+.fare-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.9);
+}
+
+
+.fare-card-price {
+  border-bottom: 1px solid #e8e8e8;
+  padding-bottom: 16px;
+  margin-bottom: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.fare-price-strikethrough {
+  font-size: 14px;
+  color: #999;
+  text-decoration: line-through;
+}
+
+.fare-price-amount {
+  font-size: 28px;
+  font-weight: 700;
+  color: #000;
+}
+
+.fare-price-label {
+  font-size: 13px;
+  color: #666;
+}
+
+.fare-type {
+  font-size: 12px;
+  font-weight: 700;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 4px;
+}
+
+.fare-special-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #1a1a1a;
+  color: #a94242;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 12px;
+  margin-top: 8px;
+  width: fit-content;
+}
+
+.fare-card-section {
+  margin-bottom: 18px;
+}
+
+.fare-section-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #000;
+  margin-bottom: 10px;
+}
+
+.fare-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-size: 13px;
+  color: #333;
+  line-height: 1.5;
+}
+
+.fare-check {
+  color: #4caf50;
+  font-weight: 700;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.fare-cross {
+  color: #e74c3c;
+  font-weight: 700;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.fare-minus {
+  color: #ff9800;
+  font-weight: 700;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.fare-warning {
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+.fare-highlight-text {
+  color: #3f8a13;
+  font-weight: 600;
+}
+
+.fare-offer-box {
+  background: #fce8e8;
+  border: 1px solid #ecc5c5;
+  border-radius: 4px;
+  padding: 12px;
+  margin-bottom: 18px;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 12px;
+  color: #333;
+  line-height: 1.5;
+}
+
+.fare-offer-special {
+  background: #fff8e1;
+  border-color: #ffd54f;
+  flex-direction: column;
+}
+
+.fare-offer-icon {
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+
+
+.fare-insurance {
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #4caf50;
+}
+
+.fare-card-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: auto;
+}
+
+.fare-btn-book {
+  flex: 1;
+  padding: 12px;
+   background: radial-gradient(circle at top left, #851111, #fe6969);
+background-color: #c01313;
+  color: white;
+  border: 2px solid #a52020;
+  border-radius: 24px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.fare-btn-book:hover {
+  background: #0066cc;
+  border-color: #0066cc;
+}
+
+.fare-btn-book-single {
+  width: 100%;
+  padding: 12px;
+  background: radial-gradient(circle at top left, #851111, #fe6969);
+background-color: #c01313;
+  color: white;
+  border: 2px solid #a63935;
+  border-radius: 24px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: auto;
+}
+
+.fare-btn-book-single:hover {
+   background: #f40606cf;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .fare-cards-wrapper {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .fare-modal {
+    width: 95%;
+    max-height: 95vh;
+  }
+  
+  .fare-modal-header {
+    padding: 20px;
+  }
+  
+  .fare-modal-content {
+    padding: 20px;
+  }
+  
+  .fare-cards-wrapper {
+    grid-template-columns: 1fr;
+  }
+}

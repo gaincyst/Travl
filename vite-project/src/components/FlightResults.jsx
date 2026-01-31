@@ -23,6 +23,10 @@ function FlightResults() {
   // ✅ FIX 1: dark mode state added
   const [darkMode, setDarkMode] = useState(false);
 
+  // Fare Modal State
+  const [isFareModalOpen, setIsFareModalOpen] = useState(false);
+  const [selectedFlightData, setSelectedFlightData] = useState(null);
+
   // Sorting state management - 3 states: null (no sort), 'asc', 'desc'
   const [sortStates, setSortStates] = useState({
     price: null,
@@ -89,6 +93,20 @@ function FlightResults() {
   const toggleTheme = () => {
     setDarkMode((prev) => !prev);
     document.body.classList.toggle("dark-theme");
+  };
+
+  // Open Fare Modal
+  const openFareModal = (flight) => {
+    setSelectedFlightData(flight);
+    setIsFareModalOpen(true);
+    document.body.style.overflow = 'hidden';
+  };
+
+  // Close Fare Modal
+  const closeFareModal = () => {
+    setIsFareModalOpen(false);
+    setSelectedFlightData(null);
+    document.body.style.overflow = 'auto';
   };
   const scrollRef = useRef(null);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
@@ -453,7 +471,7 @@ function FlightResults() {
                   </div>
 
                   <div className="flight-price-section">
-                    <button className="book-btn">Book</button>
+                    <button className="book-btn" onClick={() => openFareModal(flight)}>Book</button>
                     <div className="price-main">{flight.price}</div>
                     <button className="lock-price-btn">🔒 Lock Price @{flight.lockPrice}</button>
                   </div>
@@ -662,7 +680,193 @@ function FlightResults() {
       </section>
     </div>
   </div>
-</main> 
+</main>
+
+      {/* Fare Options Modal */}
+      {isFareModalOpen && selectedFlightData && (
+        <>
+          <div className="fare-modal-overlay" onClick={closeFareModal}></div>
+          <div className="fare-modal">
+            <button className="fare-modal-close" onClick={closeFareModal}>✕</button>
+            
+            <div className="fare-modal-header">
+              <h2 className="fare-modal-title">Flight Details and Fare Options available for you!</h2>
+              <div className="fare-modal-flight-info">
+                <img src={selectedFlightData.airlineLogo} alt={selectedFlightData.airline} className="fare-modal-airline-logo" />
+                <span className="fare-modal-route">
+                  {selectedFlightData.departureLocation} → {selectedFlightData.arrivalLocation}
+                </span>
+                <span className="fare-modal-separator">|</span>
+                <span>{selectedFlightData.airline}</span>
+                <span className="fare-modal-separator">|</span>
+                <span>Tue, 3 Feb 26</span>
+                <span className="fare-modal-separator">|</span>
+                <span>Departure at {selectedFlightData.departureTime} - Arrival at {selectedFlightData.arrivalTime}</span>
+              </div>
+            </div>
+
+            <div className="fare-modal-content">
+              <div className="fare-cards-wrapper">
+                {/* Saver Fare */}
+                <div className="fare-card">
+                  <div className="fare-card-price">
+                    <span className="fare-price-amount">₹ 5,315</span>
+                    <span className="fare-price-label">per adult</span>
+                    <span className="fare-type">SAVER</span>
+                  </div>
+
+                  <div className="fare-card-section">
+                    <div className="fare-section-title">Baggage</div>
+                    <div className="fare-item">
+                      <span className="fare-check">✔</span>
+                      <span>7 Kgs Cabin Baggage</span>
+                    </div>
+                    <div className="fare-item">
+                      <span className="fare-check">✔</span>
+                      <span>15 Kgs Check-in Baggage</span>
+                    </div>
+                  </div>
+
+                  <div className="fare-card-section">
+                    <div className="fare-section-title">Flexibility</div>
+                    <div className="fare-item">
+                      <span className="fare-cross">✖</span>
+                      <span>Cancellation fee starts at ₹ 3,999 (up to 24 hours before departure)</span>
+                    </div>
+                    <div className="fare-item">
+                      <span className="fare-cross">✖</span>
+                      <span>Date Change fee starts at ₹ 2,999 up to 3 hrs before departure</span>
+                    </div>
+                  </div>
+
+                  <div className="fare-card-section">
+                    <div className="fare-section-title">Seats, Meals & More</div>
+                    <div className="fare-item">
+                      <span className="fare-cross">✖</span>
+                      <span>Chargeable Seats</span>
+                    </div>
+                    <div className="fare-item">
+                      <span className="fare-cross">✖</span>
+                      <span>Chargeable Meals</span>
+                    </div>
+                  </div>
+
+                  <div className="fare-offer-box">
+                    <span className="fare-offer-icon">🎯</span>
+                    <span>FLAT ₹ 292 OFF using MMTSUPER | FLAT 10% OFF on KOTAK Credit cards using KOTAKEMI.</span>
+                  </div>
+
+                  <button className="fare-btn-book-single">BOOK NOW</button>
+                </div>
+
+                {/* Indigo Upfront */}
+                <div className="fare-card">
+                  <div className="fare-card-price">
+                    <span className="fare-price-amount">₹ 8,465</span>
+                    <span className="fare-price-label">per adult</span>
+                    <span className="fare-type">INDIGO UPFRONT</span>
+                  </div>
+
+                  <div className="fare-card-section">
+                    <div className="fare-section-title">Baggage</div>
+                    <div className="fare-item">
+                      <span className="fare-check">✔</span>
+                      <span>7 Kgs Cabin Baggage</span>
+                    </div>
+                    <div className="fare-item">
+                      <span className="fare-check">✔</span>
+                      <span>20 Kgs Check-in Baggage</span>
+                    </div>
+                  </div>
+
+                  <div className="fare-card-section">
+                    <div className="fare-section-title">Flexibility</div>
+                    <div className="fare-item">
+                      <span className="fare-minus">➖</span>
+                      <span>Lower Cancellation fee of ₹ 1,199 (up to 24 hours before departure)</span>
+                    </div>
+                    <div className="fare-item">
+                      <span className="fare-minus">➖</span>
+                      <span>Lower Date Change fee ₹ 299 up to 4 hrs before departure</span>
+                    </div>
+                  </div>
+
+                  <div className="fare-card-section">
+                    <div className="fare-section-title">Seats, Meals & More</div>
+                    <div className="fare-item">
+                      <span className="fare-check">✔</span>
+                      <span><span className="fare-highlight-text">Free</span> Seats</span>
+                    </div>
+                    <div className="fare-item">
+                      <span className="fare-check">✔</span>
+                      <span><span className="fare-highlight-text">Complimentary</span> Meals</span>
+                    </div>
+                  </div>
+
+                  <div className="fare-offer-box">
+                    <span className="fare-offer-icon">🪙</span>
+                    <span>₹ 423 OFF using RUNWAYDEAL | 600 OFF on ICICI Credit Cards using MMTICIFEST</span>
+                  </div>
+
+                  <button className="fare-btn-book-single">BOOK NOW</button>
+                </div>
+
+                {/* Indigo Upfront - Third Card */}
+                <div className="fare-card">
+                  <div className="fare-card-price">
+                    <span className="fare-price-amount">₹ 8,465</span>
+                    <span className="fare-price-label">per adult</span>
+                    <span className="fare-type">INDIGO UPFRONT</span>
+                  </div>
+
+                  <div className="fare-card-section">
+                    <div className="fare-section-title">Baggage</div>
+                    <div className="fare-item">
+                      <span className="fare-check">✔</span>
+                      <span>7 Kgs Cabin Baggage</span>
+                    </div>
+                    <div className="fare-item">
+                      <span className="fare-check">✔</span>
+                      <span>20 Kgs Check-in Baggage</span>
+                    </div>
+                  </div>
+
+                  <div className="fare-card-section">
+                    <div className="fare-section-title">Flexibility</div>
+                    <div className="fare-item">
+                      <span className="fare-minus">➖</span>
+                      <span>Lower Cancellation fee of ₹ 1,199 (up to 24 hours before departure)</span>
+                    </div>
+                    <div className="fare-item">
+                      <span className="fare-minus">➖</span>
+                      <span>Lower Date Change fee ₹ 299 up to 4 hrs before departure</span>
+                    </div>
+                  </div>
+
+                  <div className="fare-card-section">
+                    <div className="fare-section-title">Seats, Meals & More</div>
+                    <div className="fare-item">
+                      <span className="fare-check">✔</span>
+                      <span><span className="fare-highlight-text">Free</span> Seats</span>
+                    </div>
+                    <div className="fare-item">
+                      <span className="fare-check">✔</span>
+                      <span><span className="fare-highlight-text">Complimentary</span> Meals</span>
+                    </div>
+                  </div>
+
+                  <div className="fare-offer-box">
+                    <span className="fare-offer-icon">🪙</span>
+                    <span>₹ 423 OFF using RUNWAYDEAL | 600 OFF on ICICI Credit Cards using MMTICIFEST</span>
+                  </div>
+
+                  <button className="fare-btn-book-single">BOOK NOW</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }

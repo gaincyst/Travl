@@ -1956,6 +1956,21 @@ background-color: #c01313;
   font-size: 12px;
   color: #666;
   line-height: 1.4;
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.location-detail::before {
+  content: '';
+  width: 14px;
+  height: 14px;
+  background-image: url('/logo/location.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  flex-shrink: 0;
+  margin-top: 2px;
 }
 
 .journey-duration {
