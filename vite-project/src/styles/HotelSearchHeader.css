@@ -1,0 +1,212 @@
+/* Hotel Search Header (Header 2 - Editable) */
+.hotel-search-header {
+  background: #fafafa;
+  border-bottom: 1px solid var(--border-color, #e5e7eb);
+  padding: 0;
+  margin: 0;
+  position: sticky;
+  top: 80px;
+  z-index: 999;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+.hotel-search-header-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Individual Field Styles */
+.search-header-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+
+.search-header-field.city-field {
+  flex: 1.5;
+}
+
+.search-header-field.date-field {
+  flex: 1.2;
+}
+
+.search-header-field.guests-field {
+  flex: 1.3;
+  position: relative;
+}
+
+.search-header-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary, #6b7280);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 2px;
+}
+
+.search-header-input {
+  padding: 10px 14px;
+  border: 1px solid var(--border-color, #841818);
+  border-radius: 6px;
+  font-size: 14px;
+  color: var(--text-primary, #111827);
+  background: #ffefef;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.search-header-input:hover {
+  border-color: var(--primary-color, #e22f2f);
+}
+
+.search-header-input:focus-within {
+  outline: none;
+  border-color: var(--primary-color, #d91919);
+  box-shadow: 0 0 0 3px rgba(237, 127, 127, 0.1);
+}
+
+.search-header-input input[type="text"] {
+  border: none;
+  outline: none;
+  width: 100%;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary, #111827);
+  background: transparent;
+  padding: 0;
+}
+
+.search-header-input input[type="text"]::placeholder {
+  color: var(--text-tertiary, #cf4c4c);
+}
+
+/* Date Display */
+.date-display {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary, #111827);
+  cursor: pointer;
+}
+
+.date-display .calendar-icon {
+  font-size: 16px;
+  color: var(--text-secondary, #dd1717);
+}
+
+/* Guests Display */
+.guests-display {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary, #111827);
+  cursor: pointer;
+}
+
+.guests-display .dropdown-icon {
+  font-size: 12px;
+  color: var(--text-secondary, #d41f1f);
+}
+
+/* Guests Dropdown Positioning */
+.guests-dropdown-wrapper {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 1000;
+  background: var(--card-bg, #ffffff);
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  min-width: 300px;
+}
+
+/* Search Button */
+.search-header-btn {
+  padding: 10px 32px;
+  background: radial-gradient(circle at top left, #851111, #fe6969);
+background-color: #c01313;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  white-space: nowrap;
+  align-self: flex-end;
+  height: 42px;
+  margin-top: 17px;
+}
+
+.search-header-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(132, 8, 8, 0.3);
+}
+
+.search-header-btn:active {
+  transform: translateY(0);
+}
+
+/* React DatePicker Customization */
+.search-header-field .react-datepicker-wrapper {
+  display: block;
+  width: 100%;
+}
+
+.search-header-field .react-datepicker__input-container {
+  display: block;
+  width: 100%;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .hotel-search-header-container {
+    flex-wrap: wrap;
+  }
+
+  .search-header-field {
+    min-width: 200px;
+  }
+
+  .search-header-btn {
+    width: 100%;
+    margin-top: 8px;
+  }
+}
+
+@media (max-width: 768px) {
+  .hotel-search-header-container {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .search-header-field {
+    width: 100%;
+    flex: 1 1 100%;
+  }
+
+  .search-header-btn {
+    width: 100%;
+    margin-top: 0;
+  }
+
+  .guests-dropdown-wrapper {
+    min-width: 100%;
+  }
+}
+

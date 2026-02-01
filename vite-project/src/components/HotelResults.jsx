@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   FaPlane,
   FaHotel,
@@ -16,6 +16,7 @@ import "../styles/HotelResults.css";
 
 function HotelResults() {
   const location = useLocation();
+  const navigate = useNavigate();
   const searchData = location.state || {};
 
   const [darkMode, setDarkMode] = useState(false);
@@ -483,7 +484,31 @@ function HotelResults() {
                         <div className="hotel-tax-info">+ ₹{hotel.taxes} taxes & fees</div>
                         <div className="hotel-per-info">per night, per room</div>
                       </div>
-                      <button className="hotel-book-btn">Book Now</button>
+                      <button 
+                        className="hotel-book-btn"
+                        onClick={() => navigate('/hotel-booking', { 
+                          state: {
+                            hotelName: hotel.name,
+                            hotelLocation: hotel.location,
+                            hotelDistance: hotel.distance,
+                            rating: hotel.rating,
+                            ratingText: hotel.ratingText,
+                            stars: hotel.stars,
+                            price: hotel.price,
+                            taxes: hotel.taxes,
+                            image: hotel.image,
+                            amenities: hotel.amenities,
+                            city: searchData.city || "Goa",
+                            checkInDate: searchData.checkInDate || new Date(),
+                            checkOutDate: searchData.checkOutDate || new Date(new Date().setDate(new Date().getDate() + 1)),
+                            rooms: searchData.guests?.rooms || 1,
+                            adults: searchData.guests?.adults || 2,
+                            children: searchData.guests?.children || 0
+                          }
+                        })}
+                      >
+                        Book Now
+                      </button>
                     </div>
                   </div>
                 ))}

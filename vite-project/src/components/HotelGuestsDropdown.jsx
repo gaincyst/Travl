@@ -1,14 +1,27 @@
 import { useState } from "react";
 
-function HotelGuestsDropdown({ data, onApply }) {
+function HotelGuestsDropdown({ rooms, adults, children, onUpdate, onClose }) {
   // Local state to handle changes before "Apply" is clicked
-  const [temp, setTemp] = useState(data);
+  const [temp, setTemp] = useState({
+    rooms: rooms || 1,
+    adults: adults || 2,
+    children: children || 0
+  });
 
   const update = (key, val) => {
     setTemp((prev) => ({
       ...prev,
       [key]: Math.max(key === 'rooms' || key === 'adults' ? 1 : 0, prev[key] + val)
     }));
+  };
+
+  const handleApply = () => {
+    if (onUpdate) {
+      onUpdate(temp);
+    }
+    if (onClose) {
+      onClose();
+    }
   };
 
   return (
@@ -40,7 +53,7 @@ function HotelGuestsDropdown({ data, onApply }) {
       />
       
       <div className="apply-wrapper" style={{ marginTop: '15px', borderTop: '1px solid #eee', paddingTop: '10px' }}>
-        <button className="apply-btn" onClick={() => onApply(temp)}>
+        <button className="apply-btn" onClick={handleApply}>
           Apply
         </button>
       </div>

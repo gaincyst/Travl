@@ -3,6 +3,7 @@ import HomePage from "./pages/HomePage";
 import FlightResults from "./components/FlightResults";
 import BusResults from "./components/BusResults";
 import HotelResults from "./components/HotelResults";
+import HotelBooking from "./pages/HotelBooking";
 
 function App() {
   return (
@@ -29,6 +30,9 @@ function App() {
             
             {/* Hotel Results page */}
             <Route path="/hotel-results" element={<HotelResults />} />
+            
+            {/* Hotel Booking page */}
+            <Route path="/hotel-booking" element={<HotelBooking />} />
           </Routes>
         </div>
       </div>

@@ -2414,6 +2414,7 @@ background-color: #c01313;
 
 .continue-button-panel:hover {
   background: #f40606cf;
+  transform: translateY(0);
 }
 
 .terms-text {
@@ -2451,6 +2452,7 @@ background-color: #c01313;
 
 .review-booking-btn:hover {
   background: #f40606cf;
+  transform: translateY(0);
 }
 
 /* Responsive */
