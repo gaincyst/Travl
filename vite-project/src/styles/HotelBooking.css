@@ -1761,7 +1761,7 @@ font-family: cursive;
 
 .room-card {
   background-color: #f1dfd1;
-background-image: linear-gradient(315deg, #f1dfd1 0%, #f6f0ea 74%);
+background-image: linear-gradient(315deg, #f1d1d1 0%, #f6f0ea 74%);
   border: 1px solid #e5e7eb;
   border-radius: 12px;
   padding: 24px;
@@ -3359,4 +3359,480 @@ background: linear-gradient(135deg, #bc3737 0%, #e58787 100%);
   .policy-modal-title {
     font-size: 18px;
   }
+}
+
+
+/* --- Modal Overlay --- */
+.room-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.57);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 20px;
+  /* Prevents background scrolling when using body lock */
+  overflow: hidden; 
+}
+
+/* --- Modal Container --- */
+.room-modal-content {
+  background-color: #fff;
+  width: 100%;
+  max-width: 1350px; /* Rectangular landscape width */
+  max-height: 60vh;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.9);
+  overflow: hidden;
+}
+
+/* --- Header --- */
+.room-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  border-bottom: 1px solid #eee;
+}
+
+.room-modal-title {
+  font-size: 18px;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin: 0;
+  color: #000;
+  font-family: cursive;
+}
+
+.room-modal-close {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #333;
+}
+
+/* --- Body Layout --- */
+.room-modal-body {
+  display: flex;
+  flex: 1;
+  overflow: hidden; /* Important for independent scroll */
+}
+
+/* --- Left Column: Image Gallery (Fixed) --- */
+.room-modal-left {
+  flex: 0 0 45%; /* Fixed width for the image side */
+  padding: 20px;
+  background-color: #fff;
+}
+
+.room-modal-image-container {
+  position: relative;
+  width: 100%;
+  height: 280px; /* Fixed height to match reference */
+}
+
+.room-modal-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.room-modal-image-nav {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  color: #1a73e8;
+}
+
+/* --- Right Column: Details (Scrollable) --- */
+.room-modal-right {
+  flex: 1;
+  padding: 20px 24px;
+  overflow-y: auto; /* Only right side scrolls */
+  border-left: 1px solid #f0f0f0;
+}
+
+/* --- Meta Info Row --- */
+.room-modal-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  padding: 12px;
+  background: #f9f9f9;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.room-modal-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #1f1d1d;
+}
+
+.room-modal-meta-icon,
+.room-modal-meta-icon-bed {
+  font-size: 16px;
+  color: #211c1c;
+}
+
+/* --- Sections & Typography --- */
+.room-modal-section {
+  margin-bottom: 24px;
+}
+
+.room-modal-section-title {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: #000;
+}
+
+.room-modal-description {
+  font-size: 14px;
+  line-height: 1.5;
+  color: #595858;
+  margin: 0;
+  font-family: Arial, sans-serif  ;
+}
+
+/* --- Amenities Grid --- */
+.room-modal-amenity-group {
+  margin-bottom: 2px;
+}
+
+.room-modal-amenity-group-title {
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.room-modal-amenity-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.room-modal-amenity-list li {
+  font-size: 13px;
+  color: #333232;
+  padding: 4px 0;
+  position: relative;
+  padding-left: 15px;
+  font-weight: 400;
+}
+
+.room-modal-amenity-list li::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: #222121;
+}
+
+/* Two-column list for specific categories */
+.room-modal-amenity-list-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 20px;
+}
+
+/* --- Scrollbar Styling (Optional, for professional look) --- */
+.room-modal-right::-webkit-scrollbar {
+  width: 6px;
+}
+
+.room-modal-right::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.room-modal-right::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 10px;
+}
+
+/* --- Modal Overlay --- */
+.plan-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1100;
+  padding: 20px;
+}
+
+/* --- Modal Container --- */
+.plan-modal-content {
+  background-color: #fff;
+  width: 100%;
+  max-width: 720px;
+  max-height: 85vh;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+/* --- Modal Header --- */
+.plan-modal-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid #f0f0f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.plan-modal-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #a52727;
+  margin: 0 0 4px 0;
+  font-family: cursive;
+}
+
+.plan-modal-subtitle {
+  font-size: 13px;
+  color: #757575;
+  margin: 0;
+  text-transform: uppercase;
+  font-weight: 500;
+  font-family: cursive;
+}
+
+.plan-modal-close {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #333;
+  padding: 0;
+  line-height: 1;
+}
+
+/* --- Modal Body --- */
+.plan-modal-body {
+  padding: 10px 24px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* --- Benefits Section --- */
+.plan-modal-benefits {
+  margin-bottom: 30px;
+}
+
+.plan-modal-benefit-item {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.plan-modal-bullet {
+  font-size: 14px;
+  color: #bb1212;
+  margin-top: 3px;
+}
+
+.plan-modal-benefit-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #5b5a5a;
+  margin: 0 0 4px 0;
+}
+
+.plan-modal-benefit-text {
+  font-size: 12px;
+  color: #757575;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* --- Cancellation Timeline --- */
+.plan-modal-section {
+  margin-top: 25px;
+}
+
+.plan-modal-section-title {
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: #5b5a5a;
+}
+
+.plan-modal-timeline {
+  padding: 0 10px 40px 10px;
+  position: relative;
+}
+
+.plan-modal-timeline-bar {
+  display: flex;
+  height: 20px;
+  border-radius: 12px;
+  overflow: visible;
+  position: relative;
+}
+
+.plan-modal-timeline-green {
+  flex: 0 0 75%;
+  background-color: #2e7e78;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 600;
+  border-top-left-radius: 12px;
+  border-bottom-left-radius: 12px;
+  position: relative;
+}
+
+/* Vertical dashed separator */
+.plan-modal-timeline-green::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 40px;
+  border-right: 1px dashed #000;
+}
+
+.plan-modal-timeline-yellow {
+  flex: 1;
+  background-color: #fff4d5;
+  color: #b38c00;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: 10px;
+  line-height: 1.1;
+  font-weight: 700;
+  border-top-right-radius: 12px;
+  border-bottom-right-radius: 12px;
+}
+
+/* Timeline Markers */
+.plan-modal-timeline-markers {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  position: relative;
+}
+
+.plan-modal-timeline-marker {
+  display: flex;
+  flex-direction: column;
+  font-size: 11px;
+  color: #4a4a4a;
+}
+
+.plan-modal-timeline-marker-center {
+  position: absolute;
+  left: 75%;
+  transform: translateX(-50%);
+  text-align: center;
+}
+
+.plan-modal-timeline-marker-end {
+  text-align: right;
+  position: relative;
+}
+
+/* Dot on the far right */
+.plan-modal-timeline-marker-end::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  background: #fff;
+  border: 2px solid #ccc;
+  border-radius: 50%;
+  position: absolute;
+  top: -25px;
+  right: 0;
+}
+
+.plan-modal-marker-label {
+  font-weight: 600;
+  margin-top: 1px;
+}
+
+.plan-modal-marker-date {
+  font-weight: 700;
+}
+
+.plan-modal-marker-label-small {
+  font-size: 10px;
+  color: #9b9b9b;
+}
+
+/* --- Table Styling --- */
+.plan-modal-subsection-title {
+  font-size: 13px;
+  font-weight: 700;
+  margin: 30px 0 15px 0;
+  color: #5b5a5a;
+}
+
+.plan-modal-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  border: 1px solid #ebebeb;
+  border-radius: 4px;
+}
+
+.plan-modal-table th {
+  background-color: #fff2f2;
+  text-align: left;
+  padding: 12px;
+  color: #4a4a4a;
+  font-weight: 700;
+  border-bottom: 1px solid #ebebeb;
+}
+
+.plan-modal-table td {
+  padding: 12px;
+  border-bottom: 1px solid #ebebeb;
+  color: #1a1a1a;
+}
+
+.plan-modal-table tr:last-child td {
+  border-bottom: none;
+}
+
+/* --- Footer Note --- */
+.plan-modal-footer-note {
+  font-size: 11px;
+  color: #4a4a4a;
+  margin-top: 15px;
+  display: flex;
+  gap: 8px;
 }

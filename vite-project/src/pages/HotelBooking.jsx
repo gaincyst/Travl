@@ -1380,7 +1380,7 @@ function HotelBooking() {
                       <span className="cancellation-check">✓</span>
                       <span className="cancellation-text">Free Cancellation before 07 Feb 01:59 PM</span>
                     </div>
-                    <a href="#" className="view-plan-details" onClick={(e) => { e.preventDefault(); setSelectedPlan({ title: 'Free Breakfast | Free Cancellation', roomType: '1 KING BED' }); setShowPlanModal(true); }}>View plan details & policies</a>
+                    <a href="#" className="view-plan-details" onClick={(e) => { e.preventDefault(); setSelectedPlan({ ...selectedPlan, title: "Room With Free Cancellation", roomType: '1 KING BED' }); setShowPlanModal(true); }}>View plan details & policies</a>
                   </div>
 
                   {/* Room Plan 2 */}
@@ -1403,7 +1403,7 @@ function HotelBooking() {
                       <span className="cancellation-check">✓</span>
                       <span className="cancellation-text">Free Cancellation before 07 Feb 01:59 PM</span>
                     </div>
-                    <a href="#" className="view-plan-details" onClick={(e) => { e.preventDefault(); setSelectedPlan({ title: 'Free Breakfast | Free Cancellation', roomType: '1 KING BED' }); setShowPlanModal(true); }}>View plan details & policies</a>
+                    <a href="#" className="view-plan-details" onClick={(e) => { e.preventDefault(); setSelectedPlan({ ...selectedPlan, title: "Free Breakfast | Free Cancellation", roomType: '1 KING BED' }); setShowPlanModal(true); }}>View plan details & policies</a>
                   </div>
                 </div>
 
@@ -2497,7 +2497,7 @@ function HotelBooking() {
               {/* Modal Header */}
               <div className="plan-modal-header">
                 <div>
-                  <h2 className="plan-modal-title">{selectedPlan.title}</h2>
+                  <h2 className="plan-modal-title">{selectedPlan?.title || "Plan Details"}</h2>
                   <p className="plan-modal-subtitle">{selectedPlan.roomType}</p>
                 </div>
                 <button className="plan-modal-close" onClick={() => setShowPlanModal(false)}>✕</button>
