@@ -17,6 +17,7 @@ import {
   FaBed
 } from "react-icons/fa";
 import HotelSearchHeader from "../components/HotelSearchHeader";
+import AuthModal from "../components/AuthModal";
 import "../styles/HotelBooking.css";
 
 function HotelBooking() {
@@ -32,6 +33,14 @@ function HotelBooking() {
   const [showKeyLandmarks, setShowKeyLandmarks] = useState(true);
   const [showAttractions, setShowAttractions] = useState(true);
   const [showTransport, setShowTransport] = useState(true);
+  const [showPolicyModal, setShowPolicyModal] = useState(false);
+  const [showRoomModal, setShowRoomModal] = useState(false);
+  const [selectedRoom, setSelectedRoom] = useState(null);
+  const [roomModalImageIndex, setRoomModalImageIndex] = useState(0);
+  const [showPlanModal, setShowPlanModal] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState(null);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [isPropertyInfoPanelOpen, setIsPropertyInfoPanelOpen] = useState(false);
 
   const tabs = [
     "Description",
@@ -125,7 +134,7 @@ function HotelBooking() {
               {darkMode ? <FaSun className="sun-icon" /> : <FaMoon className="moon-icon" />}
             </button>
 
-            <div className="login-signup">
+            <div className="login-signup" onClick={() => setShowAuthModal(true)} style={{ cursor: 'pointer' }}>
               <FaUserCircle className="user-login-icon" />
               <span>Login / Signup</span>
             </div>
@@ -180,6 +189,7 @@ function HotelBooking() {
                 {bookingData.rating || "3.6"}/5
               </div>
               <button className="view-reviews-btn">View Reviews</button>
+              <button className="property-info-btn" onClick={() => setIsPropertyInfoPanelOpen(true)}>Property Info</button>
             </div>
           </div>
 
@@ -1276,16 +1286,616 @@ function HotelBooking() {
           </div>
         </section>
 
-        {/* Guest Reviews Section */}
-        <section id="guest-reviews" className="tab-section">
+        {/* Choose Room Section */}
+        <section id="choose-rooms" className="tab-section">
           <div className="tab-section-container">
-            <h2 className="tab-section-title">Choose Room</h2>
-            <div className="tab-section-content">
-              <p>Guest reviews content goes here...</p>
+            {/* Header Row */}
+            <div className="room-options-header">
+              <div className="room-types-dropdown">
+                <span>8 Room Types</span>
+                <FaChevronDown />
+              </div>
+              <div className="room-header-columns">
+                <span className="room-header-col">Room Options</span>
+                <span className="room-header-col">Price</span>
+              </div>
+            </div>
+
+            {/* Room Cards */}
+            <div className="room-cards-container">
+              {/* Room Card 1 - 2 TWIN BEDS */}
+              <div className="room-card">
+                <div className="room-card-left">
+                  <h3 className="room-type-title">2 TWIN BEDS</h3>
+                  <div className="room-image-container" onClick={() => {
+                    setSelectedRoom({
+                      name: 'TWIN SUITE',
+                      size: '450 sq.ft (42 sq.mt)',
+                      view: 'City View',
+                      bed: 'King Bed',
+                      bathroom: '1 Bathroom',
+                      images: ['/public/hotels/hhh1.jpeg', '/public/hotels/hhh6.jpeg', '/public/hotels/hhh3.jpeg'],
+                      description: 'Your discovery of Delhi starts from this chic and spacious room that puts you in the middle of the action in West Delhi'
+                    });
+                    setRoomModalImageIndex(0);
+                    setShowRoomModal(true);
+                  }} style={{ cursor: 'pointer' }}>
+                    <img src="/public/hotels/hhh1.jpeg" alt="2 Twin Beds Room" className="room-image" />
+                    <div className="room-photos-overlay">
+                      <span>+6 Photos</span>
+                      <FaChevronRight />
+                    </div>
+                  </div>
+                  <div className="room-specs">
+                    <div className="room-spec-item">
+                      <span className="room-spec-icon">🏠</span>
+                      <span>355 sq.ft (33 sq.mt)</span>
+                    </div>
+                    <div className="room-spec-item">
+                      <span className="room-spec-icon">🖼️</span>
+                      <span>City View</span>
+                    </div>
+                    <div className="room-spec-item">
+                      <FaBed className="room-spec-icon-bed" />
+                      <span>2 x Single Bed</span>
+                    </div>
+                    <div className="room-spec-item">
+                      <span className="room-spec-icon">🚿</span>
+                      <span>1 Bathroom</span>
+                    </div>
+                  </div>
+                  <a href="#" className="view-more-details" onClick={(e) => {
+                    e.preventDefault();
+                    setSelectedRoom({
+                      name: 'TWIN SUITE',
+                      size: '450 sq.ft (42 sq.mt)',
+                      view: 'City View',
+                      bed: 'King Bed',
+                      bathroom: '1 Bathroom',
+                      images: ['/public/hotels/hhh1.jpeg', '/public/hotels/hhh6.jpeg', '/public/hotels/hhh3.jpeg'],
+                      description: 'Your discovery of Delhi starts from this chic and spacious room that puts you in the middle of the action in West Delhi'
+                    });
+                    setRoomModalImageIndex(0);
+                    setShowRoomModal(true);
+                  }}>View More Details</a>
+                </div>
+
+                <div className="room-card-middle">
+                  {/* Room Plan 1 */}
+                  <div className="room-plan">
+                    <h4 className="room-plan-title">1. Room With Free Cancellation</h4>
+                    <div className="room-plan-book-badge">
+                      <span className="book-badge-icon">💰</span>
+                      <div>
+                        <span className="book-badge-text">Book @ ₹0 available</span>
+                        <span className="book-badge-subtext">Risk Free Booking!</span>
+                      </div>
+                    </div>
+                    <ul className="room-plan-benefits">
+                      <li>Book @ ₹0 available</li>
+                      <li>20% discount on a la carte menu and soft beverages at Kitchen District.</li>
+                      <li>Standard Rate</li>
+                    </ul>
+                    <div className="room-plan-cancellation">
+                      <span className="cancellation-check">✓</span>
+                      <span className="cancellation-text">Free Cancellation before 07 Feb 01:59 PM</span>
+                    </div>
+                    <a href="#" className="view-plan-details" onClick={(e) => { e.preventDefault(); setSelectedPlan({ title: 'Free Breakfast | Free Cancellation', roomType: '1 KING BED' }); setShowPlanModal(true); }}>View plan details & policies</a>
+                  </div>
+
+                  {/* Room Plan 2 */}
+                  <div className="room-plan">
+                    <h4 className="room-plan-title">2. Free Breakfast | Free Cancellation</h4>
+                    <div className="room-plan-book-badge">
+                      <span className="book-badge-icon">💰</span>
+                      <div>
+                        <span className="book-badge-text">Book @ ₹0 available</span>
+                        <span className="book-badge-subtext">Risk Free Booking!</span>
+                      </div>
+                    </div>
+                    <ul className="room-plan-benefits">
+                      <li>Book @ ₹0 available</li>
+                      <li>20% discount on a la carte menu and soft beverages at Kitchen District.</li>
+                      <li>Complimentary Breakfast</li>
+                      <li>Bed and Breakfast</li>
+                    </ul>
+                    <div className="room-plan-cancellation">
+                      <span className="cancellation-check">✓</span>
+                      <span className="cancellation-text">Free Cancellation before 07 Feb 01:59 PM</span>
+                    </div>
+                    <a href="#" className="view-plan-details" onClick={(e) => { e.preventDefault(); setSelectedPlan({ title: 'Free Breakfast | Free Cancellation', roomType: '1 KING BED' }); setShowPlanModal(true); }}>View plan details & policies</a>
+                  </div>
+                </div>
+
+                <div className="room-card-right">
+                  {/* Price Block 1 */}
+                  <div className="room-price-block">
+                    <div className="room-price">₹11,490</div>
+                    <div className="room-taxes">+ ₹ 2,068 taxes & fees</div>
+                    <div className="room-per-night">Per Night</div>
+                    <button className="select-room-btn">SELECT ROOM</button>
+                    <div className="room-login-prompt" onClick={() => setShowAuthModal(true)} style={{ cursor: 'pointer' }}>Login Now to unlock best deals and offers!</div>
+                  </div>
+
+                  {/* Price Block 2 */}
+                  <div className="room-price-block">
+                    <div className="room-price">₹13,090</div>
+                    <div className="room-taxes">+ ₹ 2,356 taxes & fees</div>
+                    <div className="room-per-night">Per Night</div>
+                    <button className="select-room-btn">SELECT ROOM</button>
+                    <div className="room-login-prompt" onClick={() => setShowAuthModal(true)} style={{ cursor: 'pointer' }}>Login Now to unlock best deals and offers!</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Room Card 2 - 1 KING BED */}
+              <div className="room-card">
+                <div className="room-card-left">
+                  <h3 className="room-type-title">1 KING BED</h3>
+                  <div className="room-image-container" onClick={() => {
+                    setSelectedRoom({
+                      name: '1 KING BED',
+                      size: '355 sq.ft (33 sq.mt)',
+                      view: 'City View',
+                      bed: 'King Bed',
+                      bathroom: '1 Bathroom',
+                      images: ['/public/hotels/hhh2.jpeg', '/public/hotels/hhh4.jpeg', '/public/hotels/hhh5.jpeg'],
+                      description: 'Your discovery of Delhi starts from this chic and spacious room that puts you in the middle of the action in West Delhi'
+                    });
+                    setRoomModalImageIndex(0);
+                    setShowRoomModal(true);
+                  }} style={{ cursor: 'pointer' }}>
+                    <img src="/public/hotels/hhh2.jpeg" alt="1 King Bed Room" className="room-image" />
+                    <div className="room-photos-overlay">
+                      <span>+6 Photos</span>
+                      <FaChevronRight />
+                    </div>
+                  </div>
+                  <div className="room-specs">
+                    <div className="room-spec-item">
+                      <span className="room-spec-icon">🏠</span>
+                      <span>355 sq.ft (33 sq.mt)</span>
+                    </div>
+                    <div className="room-spec-item">
+                      <span className="room-spec-icon">🖼️</span>
+                      <span>City View</span>
+                    </div>
+                    <div className="room-spec-item">
+                      <FaBed className="room-spec-icon-bed" />
+                      <span>King Bed</span>
+                    </div>
+                    <div className="room-spec-item">
+                      <span className="room-spec-icon">🚿</span>
+                      <span>1 Bathroom</span>
+                    </div>
+                  </div>
+                  <a href="#" className="view-more-details" onClick={(e) => {
+                    e.preventDefault();
+                    setSelectedRoom({
+                      name: '1 KING BED',
+                      size: '355 sq.ft (33 sq.mt)',
+                      view: 'City View',
+                      bed: 'King Bed',
+                      bathroom: '1 Bathroom',
+                      images: ['/public/hotels/hhh2.jpeg', '/public/hotels/hhh4.jpeg', '/public/hotels/hhh5.jpeg'],
+                      description: 'Your discovery of Delhi starts from this chic and spacious room that puts you in the middle of the action in West Delhi'
+                    });
+                    setRoomModalImageIndex(0);
+                    setShowRoomModal(true);
+                  }}>View More Details</a>
+                </div>
+
+                <div className="room-card-middle">
+                  {/* Room Plan 1 */}
+                  <div className="room-plan">
+                    <h4 className="room-plan-title">1. Room Only | Free Cancellation</h4>
+                    
+                    <ul className="room-plan-benefits">
+                      <li>Book @ ₹0 available</li>
+                      <li>20% discount on a la carte menu and soft beverages at Kitchen District.</li>
+                      <li>Standard Rate</li>
+                    </ul>
+                    <div className="room-plan-cancellation">
+                      <span className="cancellation-check">✓</span>
+                      <span className="cancellation-text">Free Cancellation before 07 Feb 01:59 PM</span>
+                    </div>
+                    <a href="#" className="view-plan-details" onClick={(e) => { e.preventDefault(); setSelectedPlan({ title: 'Free Breakfast | Free Cancellation', roomType: '1 KING BED' }); setShowPlanModal(true); }}>View plan details & policies</a>
+                  </div>
+
+                  {/* Room Plan 2 */}
+                  <div className="room-plan">
+                    <h4 className="room-plan-title">2. Free Breakfast | Free Cancellation</h4>
+                    
+                    <ul className="room-plan-benefits">
+                      <li>Book @ ₹0 available</li>
+                      <li>20% discount on a la carte menu and soft beverages at Kitchen District.</li>
+                      <li>Complimentary Breakfast</li>
+                      <li>Bed and Breakfast</li>
+                    </ul>
+                    <div className="room-plan-cancellation">
+                      <span className="cancellation-check">✓</span>
+                      <span className="cancellation-text">Free Cancellation before 07 Feb 01:59 PM</span>
+                    </div>
+                    <a href="#" className="view-plan-details" onClick={(e) => { e.preventDefault(); setSelectedPlan({ title: 'Free Breakfast | Free Cancellation', roomType: '1 KING BED' }); setShowPlanModal(true); }}>View plan details & policies</a>
+                  </div>
+                </div>
+
+                <div className="room-card-right">
+                  {/* Price Block 1 */}
+                  <div className="room-price-block">
+                    <div className="room-price">₹11,490</div>
+                    <div className="room-taxes">+ ₹ 2,068 taxes & fees</div>
+                    <div className="room-per-night">Per Night</div>
+                    <button className="select-room-btn">SELECT ROOM</button>
+                    <div className="room-login-prompt" onClick={() => setShowAuthModal(true)} style={{ cursor: 'pointer' }}>Login Now to unlock best deals and offers!</div>
+                  </div>
+
+                  {/* Price Block 2 */}
+                  <div className="room-price-block">
+                    <div className="room-price">₹13,090</div>
+                    <div className="room-taxes">+ ₹ 2,356 taxes & fees</div>
+                    <div className="room-per-night">Per Night</div>
+                    <button className="select-room-btn">SELECT ROOM</button>
+                    <div className="room-login-prompt" onClick={() => setShowAuthModal(true)} style={{ cursor: 'pointer' }}>Login Now to unlock best deals and offers!</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Room Card 3 - DELUXE ROOM */}
+              <div className="room-card">
+                <div className="room-card-left">
+                  <h3 className="room-type-title">DELUXE ROOM</h3>
+                  <div className="room-image-container" onClick={() => {
+                    setSelectedRoom({
+                      name: 'DELUXE ROOM',
+                      size: '400 sq.ft (37 sq.mt)',
+                      view: 'City View',
+                      bed: 'Queen Bed',
+                      bathroom: '1 Bathroom',
+                      images: ['/public/hotels/hhh7.jpeg', '/public/hotels/hhh3.jpeg', '/public/hotels/hhh6.jpeg'],
+                      description: 'Your discovery of Delhi starts from this chic and spacious room that puts you in the middle of the action in West Delhi'
+                    });
+                    setRoomModalImageIndex(0);
+                    setShowRoomModal(true);
+                  }} style={{ cursor: 'pointer' }}>
+                    <img src="/public/hotels/hhh7.jpeg" alt="Deluxe Room" className="room-image" />
+                    <div className="room-photos-overlay">
+                      <span>+6 Photos</span>
+                      <FaChevronRight />
+                    </div>
+                  </div>
+                  <div className="room-specs">
+                    <div className="room-spec-item">
+                      <span className="room-spec-icon">🏠</span>
+                      <span>400 sq.ft (37 sq.mt)</span>
+                    </div>
+                    <div className="room-spec-item">
+                      <span className="room-spec-icon">🖼️</span>
+                      <span>City View</span>
+                    </div>
+                    <div className="room-spec-item">
+                      <FaBed className="room-spec-icon-bed" />
+                      <span>Queen Bed</span>
+                    </div>
+                    <div className="room-spec-item">
+                      <span className="room-spec-icon">🚿</span>
+                      <span>1 Bathroom</span>
+                    </div>
+                  </div>
+                  <a href="#" className="view-more-details" onClick={(e) => {
+                    e.preventDefault();
+                    setSelectedRoom({
+                      name: 'DELUXE ROOM',
+                      size: '400 sq.ft (37 sq.mt)',
+                      view: 'City View',
+                      bed: 'Queen Bed',
+                      bathroom: '1 Bathroom',
+                      images: ['/public/hotels/hhh7.jpeg', '/public/hotels/hhh3.jpeg', '/public/hotels/hhh6.jpeg'],
+                      description: 'Your discovery of Delhi starts from this chic and spacious room that puts you in the middle of the action in West Delhi'
+                    });
+                    setRoomModalImageIndex(0);
+                    setShowRoomModal(true);
+                  }}>View More Details</a>
+                </div>
+
+                <div className="room-card-middle">
+                  {/* Room Plan 1 */}
+                  <div className="room-plan">
+                    <h4 className="room-plan-title">1. Room Only | Free Cancellation</h4>
+                    <div className="room-plan-book-badge">
+                      <span className="book-badge-icon">💰</span>
+                      <div>
+                        <span className="book-badge-text">Book @ ₹0 available</span>
+                        <span className="book-badge-subtext">Risk Free Booking!</span>
+                      </div>
+                    </div>
+                    <ul className="room-plan-benefits">
+                      <li>Book @ ₹0 available</li>
+                      <li>20% discount on a la carte menu and soft beverages at Kitchen District.</li>
+                      <li>Standard Rate</li>
+                    </ul>
+                    <div className="room-plan-cancellation">
+                      <span className="cancellation-check">✓</span>
+                      <span className="cancellation-text">Free Cancellation before 07 Feb 01:59 PM</span>
+                    </div>
+                    <a href="#" className="view-plan-details" onClick={(e) => { e.preventDefault(); setSelectedPlan({ title: 'Free Breakfast | Free Cancellation', roomType: '1 KING BED' }); setShowPlanModal(true); }}>View plan details & policies</a>
+                  </div>
+
+                  {/* Room Plan 2 */}
+                  <div className="room-plan">
+                    <h4 className="room-plan-title">2. Free Breakfast | Free Cancellation</h4>
+                    <div className="room-plan-book-badge">
+                      <span className="book-badge-icon">💰</span>
+                      <div>
+                        <span className="book-badge-text">Book @ ₹0 available</span>
+                        <span className="book-badge-subtext">Risk Free Booking!</span>
+                      </div>
+                    </div>
+                    <ul className="room-plan-benefits">
+                      <li>Book @ ₹0 available</li>
+                      <li>20% discount on a la carte menu and soft beverages at Kitchen District.</li>
+                      <li>Complimentary Breakfast</li>
+                      <li>Bed and Breakfast</li>
+                    </ul>
+                    <div className="room-plan-cancellation">
+                      <span className="cancellation-check">✓</span>
+                      <span className="cancellation-text">Free Cancellation before 07 Feb 01:59 PM</span>
+                    </div>
+                    <a href="#" className="view-plan-details" onClick={(e) => { e.preventDefault(); setSelectedPlan({ title: 'Free Breakfast | Free Cancellation', roomType: '1 KING BED' }); setShowPlanModal(true); }}>View plan details & policies</a>
+                  </div>
+                </div>
+
+                <div className="room-card-right">
+                  {/* Price Block 1 */}
+                  <div className="room-price-block">
+                    <div className="room-price">₹12,890</div>
+                    <div className="room-taxes">+ ₹ 2,320 taxes & fees</div>
+                    <div className="room-per-night">Per Night</div>
+                    <button className="select-room-btn">SELECT ROOM</button>
+                    <div className="room-login-prompt" onClick={() => setShowAuthModal(true)} style={{ cursor: 'pointer' }}>Login Now to unlock best deals and offers!</div>
+                  </div>
+
+                  {/* Price Block 2 */}
+                  <div className="room-price-block">
+                    <div className="room-price">₹14,590</div>
+                    <div className="room-taxes">+ ₹ 2,626 taxes & fees</div>
+                    <div className="room-per-night">Per Night</div>
+                    <button className="select-room-btn">SELECT ROOM</button>
+                    <div className="room-login-prompt" onClick={() => setShowAuthModal(true)} style={{ cursor: 'pointer' }}>Login Now to unlock best deals and offers!</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Room Card 4 - EXECUTIVE SUITE */}
+              <div className="room-card">
+                <div className="room-card-left">
+                  <h3 className="room-type-title">EXECUTIVE SUITE</h3>
+                  <div className="room-image-container" onClick={() => {
+                    setSelectedRoom({
+                      name: 'EXECUTIVE SUITE',
+                      size: '450 sq.ft (42 sq.mt)',
+                      view: 'City View',
+                      bed: 'King Bed',
+                      bathroom: '1 Bathroom',
+                      images: ['/public/hotels/hhh8.jpeg', '/public/hotels/hhh4.jpeg', '/public/hotels/hhh9.jpeg'],
+                      description: 'Your discovery of Delhi starts from this chic and spacious room that puts you in the middle of the action in West Delhi'
+                    });
+                    setRoomModalImageIndex(0);
+                    setShowRoomModal(true);
+                  }} style={{ cursor: 'pointer' }}>
+                    <img src="/public/hotels/hhh8.jpeg" alt="Executive Suite" className="room-image" />
+                    <div className="room-photos-overlay">
+                      <span>+6 Photos</span>
+                      <FaChevronRight />
+                    </div>
+                  </div>
+                  <div className="room-specs">
+                    <div className="room-spec-item">
+                      <span className="room-spec-icon">🏠</span>
+                      <span>550 sq.ft (51 sq.mt)</span>
+                    </div>
+                    <div className="room-spec-item">
+                      <span className="room-spec-icon">🖼️</span>
+                      <span>City View</span>
+                    </div>
+                    <div className="room-spec-item">
+                      <FaBed className="room-spec-icon-bed" />
+                      <span>King Bed</span>
+                    </div>
+                    <div className="room-spec-item">
+                      <span className="room-spec-icon">🚿</span>
+                      <span>1 Bathroom</span>
+                    </div>
+                  </div>
+                  <a href="#" className="view-more-details" onClick={(e) => {
+                    e.preventDefault();
+                    setSelectedRoom({
+                      name: 'EXECUTIVE SUITE',
+                      size: '450 sq.ft (42 sq.mt)',
+                      view: 'City View',
+                      bed: 'King Bed',
+                      bathroom: '1 Bathroom',
+                      images: ['/public/hotels/hhh1.jpeg', '/public/hotels/hhh2.jpeg', '/public/hotels/hhh3.jpeg'],
+                      description: 'Your discovery of Delhi starts from this chic and spacious room that puts you in the middle of the action in West Delhi'
+                    });
+                    setRoomModalImageIndex(0);
+                    setShowRoomModal(true);
+                  }}>View More Details</a>
+                </div>
+
+                <div className="room-card-middle">
+                  {/* Room Plan 1 */}
+                  <div className="room-plan">
+                    <h4 className="room-plan-title">1. Suite With Free Cancellation</h4>
+                    
+                    <ul className="room-plan-benefits">
+                      <li>Book @ ₹0 available</li>
+                      <li>20% discount on a la carte menu and soft beverages at Kitchen District.</li>
+                      <li>Standard Rate</li>
+                    </ul>
+                    <div className="room-plan-cancellation">
+                      <span className="cancellation-check">✓</span>
+                      <span className="cancellation-text">Free Cancellation before 07 Feb 01:59 PM</span>
+                    </div>
+                    <a href="#" className="view-plan-details" onClick={(e) => { e.preventDefault(); setSelectedPlan({ title: 'Free Breakfast | Free Cancellation', roomType: '1 KING BED' }); setShowPlanModal(true); }}>View plan details & policies</a>
+                  </div>
+
+                  {/* Room Plan 2 */}
+                  <div className="room-plan">
+                    <h4 className="room-plan-title">2. Free Breakfast | Free Cancellation</h4>
+                    
+                    <ul className="room-plan-benefits">
+                      <li>Book @ ₹0 available</li>
+                      <li>20% discount on a la carte menu and soft beverages at Kitchen District.</li>
+                      <li>Complimentary Breakfast</li>
+                      <li>Bed and Breakfast</li>
+                    </ul>
+                    <div className="room-plan-cancellation">
+                      <span className="cancellation-check">✓</span>
+                      <span className="cancellation-text">Free Cancellation before 07 Feb 01:59 PM</span>
+                    </div>
+                    <a href="#" className="view-plan-details" onClick={(e) => { e.preventDefault(); setSelectedPlan({ title: 'Free Breakfast | Free Cancellation', roomType: '1 KING BED' }); setShowPlanModal(true); }}>View plan details & policies</a>
+                  </div>
+                </div>
+
+                <div className="room-card-right">
+                  {/* Price Block 1 */}
+                  <div className="room-price-block">
+                    <div className="room-price">₹16,990</div>
+                    <div className="room-taxes">+ ₹ 3,058 taxes & fees</div>
+                    <div className="room-per-night">Per Night</div>
+                    <button className="select-room-btn">SELECT ROOM</button>
+                    <div className="room-login-prompt" onClick={() => setShowAuthModal(true)} style={{ cursor: 'pointer' }}>Login Now to unlock best deals and offers!</div>
+                  </div>
+
+                  {/* Price Block 2 */}
+                  <div className="room-price-block">
+                    <div className="room-price">₹18,790</div>
+                    <div className="room-taxes">+ ₹ 3,382 taxes & fees</div>
+                    <div className="room-per-night">Per Night</div>
+                    <button className="select-room-btn">SELECT ROOM</button>
+                    <div className="room-login-prompt" onClick={() => setShowAuthModal(true)} style={{ cursor: 'pointer' }}>Login Now to unlock best deals and offers!</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Room Card 5 - PREMIUM TWIN */}
+              <div className="room-card">
+                <div className="room-card-left">
+                  <h3 className="room-type-title">PREMIUM TWIN</h3>
+                  <div className="room-image-container" onClick={() => {
+                    setSelectedRoom({
+                      name: 'PREMIUM TWIN',
+                      size: '380 sq.ft (35 sq.mt)',
+                      view: 'City View',
+                      bed: '2 x Single Bed',
+                      bathroom: '1 Bathroom',
+                      images: ['/public/hotels/hhh9.jpeg', '/public/hotels/hhh1.jpeg', '/public/hotels/hhh5.jpeg'],
+                      description: 'Your discovery of Delhi starts from this chic and spacious room that puts you in the middle of the action in West Delhi'
+                    });
+                    setRoomModalImageIndex(0);
+                    setShowRoomModal(true);
+                  }} style={{ cursor: 'pointer' }}>
+                    <img src="/public/hotels/hhh9.jpeg" alt="Premium Twin Room" className="room-image" />
+                    <div className="room-photos-overlay">
+                      <span>+6 Photos</span>
+                      <FaChevronRight />
+                    </div>
+                  </div>
+                  <div className="room-specs">
+                    <div className="room-spec-item">
+                      <span className="room-spec-icon">🏠</span>
+                      <span>380 sq.ft (35 sq.mt)</span>
+                    </div>
+                    <div className="room-spec-item">
+                      <span className="room-spec-icon">🖼️</span>
+                      <span>City View</span>
+                    </div>
+                    <div className="room-spec-item">
+                      <FaBed className="room-spec-icon-bed" />
+                      <span>2 x Single Bed</span>
+                    </div>
+                    <div className="room-spec-item">
+                      <span className="room-spec-icon">🚿</span>
+                      <span>1 Bathroom</span>
+                    </div>
+                  </div>
+                  <a href="#" className="view-more-details" onClick={(e) => {
+                    e.preventDefault();
+                    setSelectedRoom({
+                      name: 'PREMIUM TWIN',
+                      size: '380 sq.ft (35 sq.mt)',
+                      view: 'City View',
+                      bed: '2 x Single Bed',
+                      bathroom: '1 Bathroom',
+                      images: ['/public/hotels/hhh9.jpeg', '/public/hotels/hhh1.jpeg', '/public/hotels/hhh5.jpeg'],
+                      description: 'Your discovery of Delhi starts from this chic and spacious room that puts you in the middle of the action in West Delhi'
+                    });
+                    setRoomModalImageIndex(0);
+                    setShowRoomModal(true);
+                  }}>View More Details</a>
+                </div>
+
+                <div className="room-card-middle">
+                  {/* Room Plan 1 */}
+                  <div className="room-plan">
+                    <h4 className="room-plan-title">1. Room With Free Cancellation</h4>
+                    
+                    <ul className="room-plan-benefits">
+                      <li>Book @ ₹0 available</li>
+                      <li>20% discount on a la carte menu and soft beverages at Kitchen District.</li>
+                      <li>Standard Rate</li>
+                    </ul>
+                    <div className="room-plan-cancellation">
+                      <span className="cancellation-check">✓</span>
+                      <span className="cancellation-text">Free Cancellation before 07 Feb 01:59 PM</span>
+                    </div>
+                    <a href="#" className="view-plan-details" onClick={(e) => { e.preventDefault(); setSelectedPlan({ title: 'Free Breakfast | Free Cancellation', roomType: '1 KING BED' }); setShowPlanModal(true); }}>View plan details & policies</a>
+                  </div>
+
+                  {/* Room Plan 2 */}
+                  <div className="room-plan">
+                    <h4 className="room-plan-title">2. Free Breakfast | Free Cancellation</h4>
+                    
+                    <ul className="room-plan-benefits">
+                      <li>Book @ ₹0 available</li>
+                      <li>20% discount on a la carte menu and soft beverages at Kitchen District.</li>
+                      <li>Complimentary Breakfast</li>
+                      <li>Bed and Breakfast</li>
+                    </ul>
+                    <div className="room-plan-cancellation">
+                      <span className="cancellation-check">✓</span>
+                      <span className="cancellation-text">Free Cancellation before 07 Feb 01:59 PM</span>
+                    </div>
+                    <a href="#" className="view-plan-details" onClick={(e) => { e.preventDefault(); setSelectedPlan({ title: 'Free Breakfast | Free Cancellation', roomType: '1 KING BED' }); setShowPlanModal(true); }}>View plan details & policies</a>
+                  </div>
+                </div>
+
+                <div className="room-card-right">
+                  {/* Price Block 1 */}
+                  <div className="room-price-block">
+                    <div className="room-price">₹12,190</div>
+                    <div className="room-taxes">+ ₹ 2,194 taxes & fees</div>
+                    <div className="room-per-night">Per Night</div>
+                    <button className="select-room-btn">SELECT ROOM</button>
+                    <div className="room-login-prompt" onClick={() => setShowAuthModal(true)} style={{ cursor: 'pointer' }}>Login Now to unlock best deals and offers!</div>
+                  </div>
+
+                  {/* Price Block 2 */}
+                  <div className="room-price-block">
+                    <div className="room-price">₹13,890</div>
+                    <div className="room-taxes">+ ₹ 2,500 taxes & fees</div>
+                    <div className="room-per-night">Per Night</div>
+                    <button className="select-room-btn">SELECT ROOM</button>
+                    <div className="room-login-prompt" onClick={() => setShowAuthModal(true)} style={{ cursor: 'pointer' }}>Login Now to unlock best deals and offers!</div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </section>
 
+     
 
         {/* Location Section */}
         <section id="location" className="tab-section">
@@ -1462,18 +2072,662 @@ function HotelBooking() {
           </div>
         </section>
 
-        {/*Guest- REview  Section */}
-        <section id="similar-properties" className="tab-section">
+        {/* Guest Reviews Section */}
+        <section id="guest-reviews" className="tab-section">
           <div className="tab-section-container">
-            <h2 className="tab-section-title">Guest Reviews</h2>
-            <div className="tab-section-content">
-              <p>Similar properties content goes here...</p>
+            {/* Reviews Header */}
+            <div className="reviews-header">
+              <h2 className="reviews-main-title">
+                Guest Reviews & Rating for {bookingData.hotelName || "Hyatt Centric Janakpuri, New Delhi"}
+              </h2>
+              <div className="reviews-sort">
+                <span className="reviews-sort-label">Sort By:</span>
+                <select className="reviews-sort-dropdown">
+                  <option>Latest first</option>
+                  <option>Highest rated</option>
+                  <option>Lowest rated</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Top Summary Area */}
+            <div className="reviews-summary-area">
+              {/* Left - Overall Rating Box */}
+              <div className="reviews-rating-card">
+                <div className="rating-card-label">goRating</div>
+                <div className="rating-card-score">3.7<span className="rating-card-max">/5</span></div>
+                <div className="rating-card-info">
+                  <div className="rating-card-count">763 Ratings</div>
+                  <div className="rating-card-reviews">151 Reviews</div>
+                </div>
+              </div>
+
+              {/* Middle - Star Rating Distribution */}
+              <div className="reviews-distribution">
+                <div className="distribution-row">
+                  <span className="distribution-label">5 <FaStar className="distribution-star" /></span>
+                  <div className="distribution-bar-container">
+                    <div className="distribution-bar distribution-bar-5" style={{ width: '40%' }}></div>
+                  </div>
+                  <span className="distribution-count">298</span>
+                </div>
+                <div className="distribution-row">
+                  <span className="distribution-label">4 <FaStar className="distribution-star" /></span>
+                  <div className="distribution-bar-container">
+                    <div className="distribution-bar distribution-bar-4" style={{ width: '18%' }}></div>
+                  </div>
+                  <span className="distribution-count">132</span>
+                </div>
+                <div className="distribution-row">
+                  <span className="distribution-label">3 <FaStar className="distribution-star" /></span>
+                  <div className="distribution-bar-container">
+                    <div className="distribution-bar distribution-bar-3" style={{ width: '19%' }}></div>
+                  </div>
+                  <span className="distribution-count">144</span>
+                </div>
+                <div className="distribution-row">
+                  <span className="distribution-label">2 <FaStar className="distribution-star" /></span>
+                  <div className="distribution-bar-container">
+                    <div className="distribution-bar distribution-bar-2" style={{ width: '11%' }}></div>
+                  </div>
+                  <span className="distribution-count">80</span>
+                </div>
+                <div className="distribution-row">
+                  <span className="distribution-label">1 <FaStar className="distribution-star" /></span>
+                  <div className="distribution-bar-container">
+                    <div className="distribution-bar distribution-bar-1" style={{ width: '15%' }}></div>
+                  </div>
+                  <span className="distribution-count">109</span>
+                </div>
+              </div>
+
+              {/* Right - What our guests say */}
+              <div className="reviews-guests-say">
+                <h3 className="guests-say-title">What our guests say?</h3>
+                <div className="guests-say-tags">
+                  <span className="guest-tag guest-tag-positive">cooperative staff (19)</span>
+                  <span className="guest-tag guest-tag-positive">spacious room (14)</span>
+                  <span className="guest-tag guest-tag-negative">poor service (13)</span>
+                  <span className="guest-tag guest-tag-negative">worst experience (12)</span>
+                  <span className="guest-tag guest-tag-positive">fine stay (11)</span>
+                  <span className="guest-tag guest-tag-positive">perfect location (9)</span>
+                  <span className="guest-tag guest-tag-more">+ 6 more</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Highlighted Review Section */}
+            <div className="reviews-highlighted">
+              <div className="highlighted-review-title">Bathroom Review:</div>
+              <div className="highlighted-review-text">
+                Clean, running water available, Smelled fresh and pleasant, No bugs, pests, or insects.
+              </div>
+              <div className="highlighted-review-images">
+                <img src="/public/hotels/bath1.jpg" alt="Bathroom" className="highlighted-review-img" />
+                <img src="/public/hotels/bath2.jpg" alt="Bathroom" className="highlighted-review-img" />
+                <div className="highlighted-review-more">+5 more</div>
+              </div>
+            </div>
+
+            {/* Individual Review Cards */}
+            <div className="reviews-list">
+              {/* Review Card 1 */}
+              <div className="review-card">
+                <div className="review-card-header">
+                  <div className="review-user-info">
+                    <div className="review-avatar">RB</div>
+                    <div className="review-user-details">
+                      <div className="review-user-name">Rahul Banjara <span className="review-stay-date">(Stayed 30 Jan, 2026)</span></div>
+                      <div className="review-user-type">Family Traveller | 37 Reviews Written</div>
+                    </div>
+                  </div>
+                  <div className="review-rating review-rating-5">5/5</div>
+                </div>
+                <div className="review-text">
+                  great stay , nice hotel.
+                </div>
+              </div>
+
+              {/* Review Card 2 */}
+              <div className="review-card">
+                <div className="review-card-header">
+                  <div className="review-user-info">
+                    <div className="review-avatar">MK</div>
+                    <div className="review-user-details">
+                      <div className="review-user-name">Manjeet Kaushik <span className="review-stay-date">(Stayed 21 Jan, 2026)</span></div>
+                      <div className="review-user-type">Friends Traveller</div>
+                    </div>
+                  </div>
+                  <div className="review-rating review-rating-1">1/5</div>
+                </div>
+                <div className="review-text">
+                  seriously it's Hyatt I don't believe that's I check in yesterday near about 3:30 pm check in was good once I entered in the I called reception that it's hot in the room ac is not efficitive they told the hotel ac chiller is not working since morning 😡 I was surprised they place a fan in my room like seriously it's very disappointing
+                </div>
+              </div>
+
+              {/* Review Card 3 */}
+              <div className="review-card">
+                <div className="review-card-header">
+                  <div className="review-user-info">
+                    <div className="review-avatar">PJ</div>
+                    <div className="review-user-details">
+                      <div className="review-user-name">Pankaj Jain <span className="review-stay-date">(Stayed 2 Oct, 2025)</span></div>
+                      <div className="review-user-type">ALL Traveller | 1 Reviews Written</div>
+                    </div>
+                  </div>
+                  <div className="review-rating review-rating-3">3/5</div>
+                </div>
+                <div className="review-text">
+                  3
+                </div>
+              </div>
+            </div>
+
+            {/* Pagination */}
+            <div className="reviews-pagination">
+              <button className="pagination-btn pagination-first">&lt;&lt;</button>
+              <button className="pagination-btn pagination-prev">&lt;</button>
+              <button className="pagination-btn pagination-number pagination-active">1</button>
+              <button className="pagination-btn pagination-number">2</button>
+              <button className="pagination-btn pagination-number">3</button>
+              <button className="pagination-btn pagination-number">4</button>
+              <button className="pagination-btn pagination-number">5</button>
+              <button className="pagination-btn pagination-number">6</button>
+              <button className="pagination-btn pagination-next">&gt;</button>
+              <button className="pagination-btn pagination-last">&gt;&gt;</button>
             </div>
           </div>
         </section>
+
+        {/* Property Policy Section */}
+        <section id="property-policy" className="tab-section">
+          <div className="tab-section-container">
+            <div className="property-policies-container">
+              {/* Header with Title and Time Badges */}
+              <div className="property-policies-header">
+                <h2 className="property-policies-title">Property Policies</h2>
+                <div className="property-time-badges">
+                  <span className="time-badge">Check-in Time: <strong>2 PM</strong></span>
+                  <span className="time-badge">Check-out Time: <strong>12 PM</strong></span>
+                </div>
+              </div>
+
+              {/* Key Policies List */}
+              <div className="property-policies-list">
+                <div className="policy-item">
+                  <div className="policy-icon-check">✓</div>
+                  <span className="policy-text">Primary Guest should be atleast 18 years of age.</span>
+                </div>
+                <div className="policy-item">
+                  <div className="policy-icon-check">✓</div>
+                  <span className="policy-text">Passport, Aadhaar and Govt. ID are accepted as ID proof(s)</span>
+                </div>
+                <div className="policy-item">
+                  <div className="policy-icon-check">✓</div>
+                  <span className="policy-text">Pets are not allowed</span>
+                </div>
+                <div className="policy-item">
+                  <div className="policy-icon-check">✓</div>
+                  <span className="policy-text">Outside food is not allowed</span>
+                </div>
+                <div className="policy-item">
+                  <div className="policy-icon-check">✓</div>
+                  <span className="policy-text">Smoking within the premises is not allowed</span>
+                </div>
+              </div>
+
+              {/* View All Link */}
+              <div className="property-view-all-link" onClick={() => setShowPolicyModal(true)}>
+                View all 22 property policies
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Property Policies Modal */}
+        {showPolicyModal && (
+          <div className="policy-modal-overlay" onClick={() => setShowPolicyModal(false)}>
+            <div className="policy-modal-content" onClick={(e) => e.stopPropagation()}>
+              {/* Modal Header */}
+              <div className="policy-modal-header">
+                <h2 className="policy-modal-title">Property Policies</h2>
+                <button className="policy-modal-close" onClick={() => setShowPolicyModal(false)}>✕</button>
+              </div>
+
+              {/* Modal Body */}
+              <div className="policy-modal-body">
+                {/* Must Read Rules */}
+                <div className="policy-modal-section">
+                  <h3 className="policy-modal-section-title">Must Read Rules</h3>
+                  <div className="policy-modal-list">
+                    <div className="policy-modal-item">
+                      <div className="policy-modal-icon">ⓘ</div>
+                      <span>Primary Guest should be atleast 18 years of age.</span>
+                    </div>
+                    <div className="policy-modal-item">
+                      <div className="policy-modal-icon">ⓘ</div>
+                      <span>Passport, Aadhaar and Govt. ID are accepted as ID proof(s)</span>
+                    </div>
+                    <div className="policy-modal-item">
+                      <div className="policy-modal-icon">ⓘ</div>
+                      <span>Pets are not allowed</span>
+                    </div>
+                    <div className="policy-modal-item">
+                      <div className="policy-modal-icon">ⓘ</div>
+                      <span>Outside food is not allowed</span>
+                    </div>
+                    <div className="policy-modal-item">
+                      <div className="policy-modal-icon">ⓘ</div>
+                      <span>Smoking within the premises is not allowed</span>
+                    </div>
+                    <div className="policy-modal-item">
+                      <div className="policy-modal-icon">ⓘ</div>
+                      <span>Optional : Fee for buffet breakfast: approximately INR 899 per person|Early check-in is available for a fee (subject to availability)|Late check-out is available for a fee (subject to availability)|Crib (infant bed) fee: INR 1500.0 per night|Rollaway bed fee: INR 1500.0 per night</span>
+                    </div>
+                    <div className="policy-modal-item">
+                      <div className="policy-modal-icon">ⓘ</div>
+                      <span>Extra-person charges may apply and vary depending on property policy|Government-issued photo identification and a credit card may be required at check-in for incidental charges|Special requests are subject to availability upon check-in and may incur additional charges; special requests cannot be guaranteed|This property accepts credit cards; cash is not accepted|Please note that cultural norms and guest policies may differ by country and by property; the policies listed are provided by the property|This property does not permit outside food or liquor on the premises.</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Guest Profile */}
+                <div className="policy-modal-section">
+                  <h3 className="policy-modal-section-title">Guest Profile</h3>
+                  <div className="policy-modal-list">
+                    <div className="policy-modal-item">
+                      <div className="policy-modal-icon">✓</div>
+                      <span>Unmarried couples allowed</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Event/Party (Housing) */}
+                <div className="policy-modal-section">
+                  <h3 className="policy-modal-section-title">Event/Party (Housing)</h3>
+                  <div className="policy-modal-list">
+                    <div className="policy-modal-item">
+                      <div className="policy-modal-icon">ⓘ</div>
+                      <span>Events and parties are not allowed</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Room Details Modal */}
+        {showRoomModal && selectedRoom && (
+          <div className="room-modal-overlay" onClick={() => setShowRoomModal(false)}>
+            <div className="room-modal-content" onClick={(e) => e.stopPropagation()}>
+              {/* Modal Header */}
+              <div className="room-modal-header">
+                <h2 className="room-modal-title">{selectedRoom.name}</h2>
+                <button className="room-modal-close" onClick={() => setShowRoomModal(false)}>✕</button>
+              </div>
+
+              {/* Modal Body - Two Column Layout */}
+              <div className="room-modal-body">
+                {/* Left Column - Image Gallery */}
+                <div className="room-modal-left">
+                  <div className="room-modal-image-container">
+                    <img 
+                      src={selectedRoom.images[roomModalImageIndex]} 
+                      alt={selectedRoom.name}
+                      className="room-modal-image"
+                    />
+                    {selectedRoom.images.length > 1 && (
+                      <button 
+                        className="room-modal-image-nav"
+                        onClick={() => setRoomModalImageIndex((roomModalImageIndex + 1) % selectedRoom.images.length)}
+                      >
+                        <FaChevronRight />
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {/* Right Column - Room Details */}
+                <div className="room-modal-right">
+                  {/* Room Meta Info */}
+                  <div className="room-modal-meta">
+                    <div className="room-modal-meta-item">
+                      <span className="room-modal-meta-icon">🏠</span>
+                      <span>{selectedRoom.size}</span>
+                    </div>
+                    <div className="room-modal-meta-item">
+                      <span className="room-modal-meta-icon">🖼️</span>
+                      <span>{selectedRoom.view}</span>
+                    </div>
+                    <div className="room-modal-meta-item">
+                      <FaBed className="room-modal-meta-icon-bed" />
+                      <span>{selectedRoom.bed}</span>
+                    </div>
+                    <div className="room-modal-meta-item">
+                      <span className="room-modal-meta-icon">🚿</span>
+                      <span>{selectedRoom.bathroom}</span>
+                    </div>
+                  </div>
+
+                  {/* About the Room */}
+                  <div className="room-modal-section">
+                    <h3 className="room-modal-section-title">About the room</h3>
+                    <p className="room-modal-description">{selectedRoom.description}</p>
+                  </div>
+
+                  {/* Amenities */}
+                  <div className="room-modal-section">
+                    <h3 className="room-modal-section-title">Amenities</h3>
+
+                    {/* Signature Amenities */}
+                    <div className="room-modal-amenity-group">
+                      <h4 className="room-modal-amenity-group-title">Signature Amenities</h4>
+                      <ul className="room-modal-amenity-list">
+                        <li>Hairdryer</li>
+                      </ul>
+                    </div>
+
+                    {/* Popular with Guests */}
+                    <div className="room-modal-amenity-group">
+                      <h4 className="room-modal-amenity-group-title">Popular with Guests</h4>
+                      <ul className="room-modal-amenity-list room-modal-amenity-list-columns">
+                        <li>Heater</li>
+                        <li>Mineral Water</li>
+                        <li>Laundry Service</li>
+                        <li>Air Conditioning</li>
+                        <li>Housekeeping</li>
+                        <li>Iron/Ironing Board</li>
+                        <li>Wi-Fi</li>
+                        <li>Bathroom</li>
+                        <li>Room Service</li>
+                      </ul>
+                    </div>
+
+                    {/* Room Features */}
+                    <div className="room-modal-amenity-group">
+                      <h4 className="room-modal-amenity-group-title">Room Features</h4>
+                      <ul className="room-modal-amenity-list room-modal-amenity-list-columns">
+                        <li>Telephone</li>
+                        <li>Charging Points</li>
+                        <li>Sofa</li>
+                        <li>Closet</li>
+                        <li>Mini Fridge</li>
+                        <li>Chair</li>
+                        <li>Centre Table</li>
+                        <li>Work Desk</li>
+                      </ul>
+                    </div>
+
+                    {/* Basic Facilities */}
+                    <div className="room-modal-amenity-group">
+                      <h4 className="room-modal-amenity-group-title">Basic Facilities</h4>
+                      <ul className="room-modal-amenity-list">
+                        <li>Kettle</li>
+                      </ul>
+                    </div>
+
+                    {/* Beds and Blanket */}
+                    <div className="room-modal-amenity-group">
+                      <h4 className="room-modal-amenity-group-title">Beds and Blanket</h4>
+                      <ul className="room-modal-amenity-list">
+                        <li>Blanket</li>
+                      </ul>
+                    </div>
+
+                    {/* Safety and Security */}
+                    <div className="room-modal-amenity-group">
+                      <h4 className="room-modal-amenity-group-title">Safety and Security</h4>
+                      <ul className="room-modal-amenity-list room-modal-amenity-list-columns">
+                        <li>Safe</li>
+                        <li>Cupboards with Locks</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Plan Details Modal */}
+        {showPlanModal && selectedPlan && (
+          <div className="plan-modal-overlay" onClick={() => setShowPlanModal(false)}>
+            <div className="plan-modal-content" onClick={(e) => e.stopPropagation()}>
+              {/* Modal Header */}
+              <div className="plan-modal-header">
+                <div>
+                  <h2 className="plan-modal-title">{selectedPlan.title}</h2>
+                  <p className="plan-modal-subtitle">{selectedPlan.roomType}</p>
+                </div>
+                <button className="plan-modal-close" onClick={() => setShowPlanModal(false)}>✕</button>
+              </div>
+
+              {/* Modal Body */}
+              <div className="plan-modal-body">
+                {/* Benefits List */}
+                <div className="plan-modal-benefits">
+                  <div className="plan-modal-benefit-item">
+                    <div className="plan-modal-bullet">●</div>
+                    <div className="plan-modal-benefit-content">
+                      <h4 className="plan-modal-benefit-title">Book @ ₹0 available</h4>
+                      <p className="plan-modal-benefit-text">Pay the remaining amount using any payment option before 06 Feb, 2026. Your booking will get automatically cancelled if the payment is not received before 06 Feb, 2026.</p>
+                    </div>
+                  </div>
+
+                  <div className="plan-modal-benefit-item">
+                    <div className="plan-modal-bullet">●</div>
+                    <div className="plan-modal-benefit-content">
+                      <h4 className="plan-modal-benefit-title">Book @ ₹0 available</h4>
+                      <p className="plan-modal-benefit-text">Book @ ₹0 available</p>
+                    </div>
+                  </div>
+
+                  <div className="plan-modal-benefit-item">
+                    <div className="plan-modal-bullet">●</div>
+                    <div className="plan-modal-benefit-content">
+                      <h4 className="plan-modal-benefit-title">20% discount on a la carte menu and soft beverages at Kitchen District.</h4>
+                      <p className="plan-modal-benefit-text">20% discount on a la carte menu and soft beverages at Kitchen District.</p>
+                    </div>
+                  </div>
+
+                  <div className="plan-modal-benefit-item">
+                    <div className="plan-modal-bullet">●</div>
+                    <div className="plan-modal-benefit-content">
+                      <h4 className="plan-modal-benefit-title">Complimentary Breakfast</h4>
+                      <p className="plan-modal-benefit-text">Complimentary Breakfast is available.</p>
+                    </div>
+                  </div>
+
+                  <div className="plan-modal-benefit-item">
+                    <div className="plan-modal-bullet">●</div>
+                    <div className="plan-modal-benefit-content">
+                      <h4 className="plan-modal-benefit-title">Bed and Breakfast</h4>
+                      <p className="plan-modal-benefit-text">Bed and Breakfast</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Cancellation Policy */}
+                <div className="plan-modal-section">
+                  <h3 className="plan-modal-section-title">Cancellation Policy</h3>
+                  
+                  <div className="plan-modal-timeline">
+                    <div className="plan-modal-timeline-bar">
+                      <div className="plan-modal-timeline-green">100% Refund</div>
+                      <div className="plan-modal-timeline-yellow">
+                        <span>Non</span>
+                        <span>Refundable</span>
+                      </div>
+                    </div>
+                    <div className="plan-modal-timeline-markers">
+                      <div className="plan-modal-timeline-marker">
+                        <span className="plan-modal-marker-label">Now</span>
+                      </div>
+                      <div className="plan-modal-timeline-marker plan-modal-timeline-marker-center">
+                        <span className="plan-modal-marker-date">07 Feb</span>
+                        <span className="plan-modal-marker-time">01 59 PM</span>
+                      </div>
+                      <div className="plan-modal-timeline-marker plan-modal-timeline-marker-end">
+                        <span className="plan-modal-marker-date">08 Feb</span>
+                        <span className="plan-modal-marker-time">01 59 PM</span>
+                        <span className="plan-modal-marker-label-small">Check-in</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Cancellation Charges Table */}
+                <div className="plan-modal-section">
+                  <h4 className="plan-modal-subsection-title">Cancellations post that will be subject to a fee as follows</h4>
+                  
+                  <table className="plan-modal-table">
+                    <thead>
+                      <tr>
+                        <th>DATE</th>
+                        <th>FEE</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>04 Feb, 7.50 PM to 07 Feb, 1:59 PM</td>
+                        <td>Booking amount for 0.0 nights</td>
+                      </tr>
+                      <tr>
+                        <td>07 Feb, 2.00 PM to 08 Feb, 1:59 PM</td>
+                        <td>Booking amount for 1.0 nights</td>
+                      </tr>
+                      <tr>
+                        <td>After 08 Feb, 2.00 PM</td>
+                        <td>100.0% of booking amount</td>
+                      </tr>
+                    </tbody>
+                  </table>
+
+                  <p className="plan-modal-footer-note">● Cancellations are only allowed before the Check-In Time. All time mentioned above is in Destination Time</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Auth Modal */}
+        {showAuthModal && <AuthModal onClose={() => setShowAuthModal(false)} />}
+
+        {/* Property Info Panel */}
+        {isPropertyInfoPanelOpen && (
+          <>
+            {/* Backdrop */}
+            <div className="panel-backdrop" onClick={() => setIsPropertyInfoPanelOpen(false)}></div>
+            
+            {/* Side Panel */}
+            <div className="property-info-panel">
+              {/* Close Button */}
+              <button className="panel-close-btn" onClick={() => setIsPropertyInfoPanelOpen(false)}>✕</button>
+              
+              {/* Panel Header */}
+              <div className="panel-header">
+                <h2>Property Info</h2>
+              </div>
+
+              {/* Panel Content */}
+              <div className="panel-content">
+                {/* Hotel Block */}
+                <div className="property-hotel-block">
+                  <div className="property-hotel-image-wrapper">
+                    <img 
+                      src={hotelImages[0]} 
+                      alt={bookingData.hotelName || "Hotel"} 
+                      className="property-hotel-thumbnail"
+                    />
+                  </div>
+                  <div className="property-hotel-details">
+                    <div className="property-hotel-badge">
+                      <span className="property-stars">5</span>
+                      <FaStar className="property-star-icon" />
+                      <span className="property-type">• Hotel</span>
+                    </div>
+                    <h3 className="property-hotel-name">
+                      {bookingData.hotelName || "Hyatt Centric Janakpuri, New Delhi"}
+                    </h3>
+                    <div className="property-hotel-address">
+                      <FaMapMarkerAlt className="property-location-icon" />
+                      <span>
+                        {bookingData.hotelAddress || "Janakpuri District Centre Complex, New Delhi, Delhi, India, 110058"}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Date & Guest Row */}
+                <div className="property-date-guest-row">
+                  <div className="property-date-block">
+                    <div className="property-date-label">Check In</div>
+                    <div className="property-date-value">
+                      {bookingData.checkInDate || "Sun, 08 Feb, 2026"}
+                    </div>
+                    <div className="property-time-value">2 PM</div>
+                  </div>
+                  
+                  <div className="property-date-block">
+                    <div className="property-date-label">Check Out</div>
+                    <div className="property-date-value">
+                      {bookingData.checkOutDate || "Mon, 09 Feb, 2026"}
+                    </div>
+                    <div className="property-time-value">12 PM</div>
+                  </div>
+                  
+                  <div className="property-date-block">
+                    <div className="property-date-label">Guests</div>
+                    <div className="property-date-value">
+                      {bookingData.adults || 2} Adults
+                    </div>
+                    <div className="property-time-value">
+                      {bookingData.nights || 1} Night
+                    </div>
+                  </div>
+                </div>
+
+                {/* Room Summary Card */}
+                <div className="property-room-card">
+                  <div className="property-room-badge">Great Choice!</div>
+                  <div className="property-room-header">Room</div>
+                  
+                  <div className="property-room-content">
+                    <div className="property-room-left">
+                      <div className="property-room-type">
+                        <FaBed className="property-bed-icon" />
+                        <span className="property-room-type-text">1 x 2 TWIN BEDS</span>
+                      </div>
+                      <div className="property-room-guests">
+                        <FaUser className="property-user-icon" />
+                        <FaUser className="property-user-icon" />
+                        <span>2 Adults</span>
+                      </div>
+                      <div className="property-room-meal">Room with Breakfast</div>
+                      <div className="property-room-cancellation">Free Cancellation before 07 Feb 01:59 PM</div>
+                      <a href="#" className="property-booking-policy" onClick={(e) => { e.preventDefault(); setShowPolicyModal(true); setIsPropertyInfoPanelOpen(false); }}>View Booking & Cancellation Policy</a>
+                    </div>
+                    
+                    <div className="property-room-right">
+                      <ul className="property-room-benefits">
+                        <li>• Book @ ₹0 available</li>
+                        <li>• Room With Free Cancellation | Breakfast only</li>
+                        <li>• 20% discount on a la carte menu and soft beverages at Kitchen District.</li>
+                      </ul>
+                      <a href="#" className="property-view-more" onClick={(e) => e.preventDefault()}>View more (1)</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
 }
 
 export default HotelBooking;
+
+
