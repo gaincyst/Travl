@@ -41,6 +41,11 @@ function HotelBooking() {
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [isPropertyInfoPanelOpen, setIsPropertyInfoPanelOpen] = useState(false);
+  const [selectedRoomData, setSelectedRoomData] = useState(null);
+  const [showMoreBenefits, setShowMoreBenefits] = useState(false);
+
+  
+
 
   const tabs = [
     "Description",
@@ -95,6 +100,22 @@ function HotelBooking() {
   const prevImage = () => {
     setCurrentImageIndex((prev) => (prev - 1 + hotelImages.length) % hotelImages.length);
   };
+
+  // Near your other useState hooks
+
+
+
+// Update your room selection handler
+const handleSelectRoom = (room) => {
+  setSelectedRoomData(room);
+  setIsPropertyInfoPanelOpen(true);
+  document.body.style.overflow = 'hidden'; // Disable background scroll
+};
+
+const closePanel = () => {
+  setIsPropertyInfoPanelOpen(false);
+  document.body.style.overflow = 'unset'; // Enable scroll
+};
 
   return (
     <div className="hotel-booking-page">
@@ -188,8 +209,6 @@ function HotelBooking() {
               <div className="rating-badge-green">
                 {bookingData.rating || "3.6"}/5
               </div>
-              <button className="view-reviews-btn">View Reviews</button>
-              <button className="property-info-btn" onClick={() => setIsPropertyInfoPanelOpen(true)}>Property Info</button>
             </div>
           </div>
 
@@ -1406,6 +1425,8 @@ function HotelBooking() {
                     <a href="#" className="view-plan-details" onClick={(e) => { e.preventDefault(); setSelectedPlan({ ...selectedPlan, title: "Free Breakfast | Free Cancellation", roomType: '1 KING BED' }); setShowPlanModal(true); }}>View plan details & policies</a>
                   </div>
                 </div>
+                {/* Find this button in your room card mapping/rendering section */}
+
 
                 <div className="room-card-right">
                   {/* Price Block 1 */}
@@ -1413,7 +1434,17 @@ function HotelBooking() {
                     <div className="room-price">₹11,490</div>
                     <div className="room-taxes">+ ₹ 2,068 taxes & fees</div>
                     <div className="room-per-night">Per Night</div>
-                    <button className="select-room-btn">SELECT ROOM</button>
+                    <button className="select-room-btn"
+                     onClick={() => handleSelectRoom({
+                      name: 'TWIN SUITE',
+                      size: '450 sq.ft (42 sq.mt)',
+                      view: 'City View',
+                      bed: 'King Bed',
+                      bathroom: '1 Bathroom',
+                      images: ['/public/hotels/hhh1.jpeg', '/public/hotels/hhh6.jpeg', '/public/hotels/hhh3.jpeg'],
+                      description: 'Your discovery of Delhi starts from this chic and spacious room that puts you in the middle of the action in West Delhi'
+                     })} >
+                      SELECT ROOM</button>
                     <div className="room-login-prompt" onClick={() => setShowAuthModal(true)} style={{ cursor: 'pointer' }}>Login Now to unlock best deals and offers!</div>
                   </div>
 
@@ -1422,7 +1453,15 @@ function HotelBooking() {
                     <div className="room-price">₹13,090</div>
                     <div className="room-taxes">+ ₹ 2,356 taxes & fees</div>
                     <div className="room-per-night">Per Night</div>
-                    <button className="select-room-btn">SELECT ROOM</button>
+                    <button className="select-room-btn" onClick={() => handleSelectRoom({
+                      name: 'TWIN SUITE',
+                      size: '450 sq.ft (42 sq.mt)',
+                      view: 'City View',
+                      bed: 'King Bed',
+                      bathroom: '1 Bathroom',
+                      images: ['/public/hotels/hhh1.jpeg', '/public/hotels/hhh6.jpeg', '/public/hotels/hhh3.jpeg'],
+                      description: 'Your discovery of Delhi starts from this chic and spacious room that puts you in the middle of the action in West Delhi'
+                     })}>SELECT ROOM</button>
                     <div className="room-login-prompt" onClick={() => setShowAuthModal(true)} style={{ cursor: 'pointer' }}>Login Now to unlock best deals and offers!</div>
                   </div>
                 </div>
@@ -1526,7 +1565,15 @@ function HotelBooking() {
                     <div className="room-price">₹11,490</div>
                     <div className="room-taxes">+ ₹ 2,068 taxes & fees</div>
                     <div className="room-per-night">Per Night</div>
-                    <button className="select-room-btn">SELECT ROOM</button>
+                    <button className="select-room-btn" onClick={() => handleSelectRoom({
+                      name: '1 KING BED',
+                      size: '355 sq.ft (33 sq.mt)',
+                      view: 'City View',
+                      bed: 'King Bed',
+                      bathroom: '1 Bathroom',
+                      images: ['/public/hotels/hhh2.jpeg', '/public/hotels/hhh4.jpeg', '/public/hotels/hhh5.jpeg'],
+                      description: 'Your discovery of Delhi starts from this chic and spacious room that puts you in the middle of the action in West Delhi'
+                     })}>SELECT ROOM</button>
                     <div className="room-login-prompt" onClick={() => setShowAuthModal(true)} style={{ cursor: 'pointer' }}>Login Now to unlock best deals and offers!</div>
                   </div>
 
@@ -1535,7 +1582,15 @@ function HotelBooking() {
                     <div className="room-price">₹13,090</div>
                     <div className="room-taxes">+ ₹ 2,356 taxes & fees</div>
                     <div className="room-per-night">Per Night</div>
-                    <button className="select-room-btn">SELECT ROOM</button>
+                    <button className="select-room-btn" onClick={() => handleSelectRoom({
+                      name: '1 KING BED',
+                      size: '355 sq.ft (33 sq.mt)',
+                      view: 'City View',
+                      bed: 'King Bed',
+                      bathroom: '1 Bathroom',
+                      images: ['/public/hotels/hhh2.jpeg', '/public/hotels/hhh4.jpeg', '/public/hotels/hhh5.jpeg'],
+                      description: 'Your discovery of Delhi starts from this chic and spacious room that puts you in the middle of the action in West Delhi'
+                     })}>SELECT ROOM</button>
                     <div className="room-login-prompt" onClick={() => setShowAuthModal(true)} style={{ cursor: 'pointer' }}>Login Now to unlock best deals and offers!</div>
                   </div>
                 </div>
@@ -1651,7 +1706,15 @@ function HotelBooking() {
                     <div className="room-price">₹12,890</div>
                     <div className="room-taxes">+ ₹ 2,320 taxes & fees</div>
                     <div className="room-per-night">Per Night</div>
-                    <button className="select-room-btn">SELECT ROOM</button>
+                    <button className="select-room-btn" onClick={() => handleSelectRoom({
+                      name: 'DELUXE ROOM',
+                      size: '400 sq.ft (37 sq.mt)',
+                      view: 'City View',
+                      bed: 'Queen Bed',
+                      bathroom: '1 Bathroom',
+                      images: ['/public/hotels/hhh7.jpeg', '/public/hotels/hhh3.jpeg', '/public/hotels/hhh6.jpeg'],
+                      description: 'Your discovery of Delhi starts from this chic and spacious room that puts you in the middle of the action in West Delhi'
+                     })}>SELECT ROOM</button>
                     <div className="room-login-prompt" onClick={() => setShowAuthModal(true)} style={{ cursor: 'pointer' }}>Login Now to unlock best deals and offers!</div>
                   </div>
 
@@ -1660,7 +1723,15 @@ function HotelBooking() {
                     <div className="room-price">₹14,590</div>
                     <div className="room-taxes">+ ₹ 2,626 taxes & fees</div>
                     <div className="room-per-night">Per Night</div>
-                    <button className="select-room-btn">SELECT ROOM</button>
+                    <button className="select-room-btn" onClick={() => handleSelectRoom({
+                      name: 'DELUXE ROOM',
+                      size: '400 sq.ft (37 sq.mt)',
+                      view: 'City View',
+                      bed: 'Queen Bed',
+                      bathroom: '1 Bathroom',
+                      images: ['/public/hotels/hhh7.jpeg', '/public/hotels/hhh3.jpeg', '/public/hotels/hhh6.jpeg'],
+                      description: 'Your discovery of Delhi starts from this chic and spacious room that puts you in the middle of the action in West Delhi'
+                     })}>SELECT ROOM</button>
                     <div className="room-login-prompt" onClick={() => setShowAuthModal(true)} style={{ cursor: 'pointer' }}>Login Now to unlock best deals and offers!</div>
                   </div>
                 </div>
@@ -1764,7 +1835,15 @@ function HotelBooking() {
                     <div className="room-price">₹16,990</div>
                     <div className="room-taxes">+ ₹ 3,058 taxes & fees</div>
                     <div className="room-per-night">Per Night</div>
-                    <button className="select-room-btn">SELECT ROOM</button>
+                    <button className="select-room-btn" onClick={() => handleSelectRoom({
+                      name: 'EXECUTIVE SUITE',
+                      size: '450 sq.ft (42 sq.mt)',
+                      view: 'City View',
+                      bed: 'King Bed',
+                      bathroom: '1 Bathroom',
+                      images: ['/public/hotels/hhh8.jpeg', '/public/hotels/hhh4.jpeg', '/public/hotels/hhh9.jpeg'],
+                      description: 'Your discovery of Delhi starts from this chic and spacious room that puts you in the middle of the action in West Delhi'
+                     })}>SELECT ROOM</button>
                     <div className="room-login-prompt" onClick={() => setShowAuthModal(true)} style={{ cursor: 'pointer' }}>Login Now to unlock best deals and offers!</div>
                   </div>
 
@@ -1773,7 +1852,15 @@ function HotelBooking() {
                     <div className="room-price">₹18,790</div>
                     <div className="room-taxes">+ ₹ 3,382 taxes & fees</div>
                     <div className="room-per-night">Per Night</div>
-                    <button className="select-room-btn">SELECT ROOM</button>
+                    <button className="select-room-btn" onClick={() => handleSelectRoom({
+                      name: 'EXECUTIVE SUITE',
+                      size: '450 sq.ft (42 sq.mt)',
+                      view: 'City View',
+                      bed: 'King Bed',
+                      bathroom: '1 Bathroom',
+                      images: ['/public/hotels/hhh8.jpeg', '/public/hotels/hhh4.jpeg', '/public/hotels/hhh9.jpeg'],
+                      description: 'Your discovery of Delhi starts from this chic and spacious room that puts you in the middle of the action in West Delhi'
+                     })}>SELECT ROOM</button>
                     <div className="room-login-prompt" onClick={() => setShowAuthModal(true)} style={{ cursor: 'pointer' }}>Login Now to unlock best deals and offers!</div>
                   </div>
                 </div>
@@ -1877,7 +1964,15 @@ function HotelBooking() {
                     <div className="room-price">₹12,190</div>
                     <div className="room-taxes">+ ₹ 2,194 taxes & fees</div>
                     <div className="room-per-night">Per Night</div>
-                    <button className="select-room-btn">SELECT ROOM</button>
+                    <button className="select-room-btn" onClick={() => handleSelectRoom({
+                      name: 'PREMIUM TWIN',
+                      size: '380 sq.ft (35 sq.mt)',
+                      view: 'City View',
+                      bed: '2 x Single Bed',
+                      bathroom: '1 Bathroom',
+                      images: ['/public/hotels/hhh9.jpeg', '/public/hotels/hhh1.jpeg', '/public/hotels/hhh5.jpeg'],
+                      description: 'Your discovery of Delhi starts from this chic and spacious room that puts you in the middle of the action in West Delhi'
+                     })}>SELECT ROOM</button>
                     <div className="room-login-prompt" onClick={() => setShowAuthModal(true)} style={{ cursor: 'pointer' }}>Login Now to unlock best deals and offers!</div>
                   </div>
 
@@ -1886,7 +1981,15 @@ function HotelBooking() {
                     <div className="room-price">₹13,890</div>
                     <div className="room-taxes">+ ₹ 2,500 taxes & fees</div>
                     <div className="room-per-night">Per Night</div>
-                    <button className="select-room-btn">SELECT ROOM</button>
+                    <button className="select-room-btn" onClick={() => handleSelectRoom({
+                      name: 'PREMIUM TWIN',
+                      size: '380 sq.ft (35 sq.mt)',
+                      view: 'City View',
+                      bed: '2 x Single Bed',
+                      bathroom: '1 Bathroom',
+                      images: ['/public/hotels/hhh9.jpeg', '/public/hotels/hhh1.jpeg', '/public/hotels/hhh5.jpeg'],
+                      description: 'Your discovery of Delhi starts from this chic and spacious room that puts you in the middle of the action in West Delhi'
+                     })}>SELECT ROOM</button>
                     <div className="room-login-prompt" onClick={() => setShowAuthModal(true)} style={{ cursor: 'pointer' }}>Login Now to unlock best deals and offers!</div>
                   </div>
                 </div>
@@ -2611,118 +2714,282 @@ function HotelBooking() {
           </div>
         )}
 
-        {/* Auth Modal */}
-        {showAuthModal && <AuthModal onClose={() => setShowAuthModal(false)} />}
+      
+        
+        {/* Right-Side Sliding Panel */}
+<div className={`side-drawer-overlay ${isPropertyInfoPanelOpen ? 'active' : ''}`} onClick={closePanel}>
+  <div className={`side-drawer-panel ${isPropertyInfoPanelOpen ? 'open' : ''}`} onClick={(e) => e.stopPropagation()}>
+    
+    {/* Header */}
+    <div className="drawer-header">
+      <h2 className="drawer-title">Review your Booking</h2>
+      <button className="drawer-close-btn" onClick={closePanel}>✕</button>
+    </div>
 
-        {/* Property Info Panel */}
-        {isPropertyInfoPanelOpen && (
-          <>
-            {/* Backdrop */}
-            <div className="panel-backdrop" onClick={() => setIsPropertyInfoPanelOpen(false)}></div>
-            
-            {/* Side Panel */}
-            <div className="property-info-panel">
-              {/* Close Button */}
-              <button className="panel-close-btn" onClick={() => setIsPropertyInfoPanelOpen(false)}>✕</button>
-              
-              {/* Panel Header */}
-              <div className="panel-header">
-                <h2>Property Info</h2>
-              </div>
+    <div className="drawer-content">
+      {/* 3. Top Section - Property Info */}
+<div className="drawer-card property-info-section hotel-summary-card">
 
-              {/* Panel Content */}
-              <div className="panel-content">
-                {/* Hotel Block */}
-                <div className="property-hotel-block">
-                  <div className="property-hotel-image-wrapper">
-                    <img 
-                      src={hotelImages[0]} 
-                      alt={bookingData.hotelName || "Hotel"} 
-                      className="property-hotel-thumbnail"
-                    />
-                  </div>
-                  <div className="property-hotel-details">
-                    <div className="property-hotel-badge">
-                      <span className="property-stars">5</span>
-                      <FaStar className="property-star-icon" />
-                      <span className="property-type">• Hotel</span>
-                    </div>
-                    <h3 className="property-hotel-name">
-                      {bookingData.hotelName || "Hyatt Centric Janakpuri, New Delhi"}
-                    </h3>
-                    <div className="property-hotel-address">
-                      <FaMapMarkerAlt className="property-location-icon" />
-                      <span>
-                        {bookingData.hotelAddress || "Janakpuri District Centre Complex, New Delhi, Delhi, India, 110058"}
-                      </span>
-                    </div>
-                  </div>
-                </div>
+  {/* Left Image */}
+  <img
+    src={selectedRoomData?.images[0]}
+    alt="hotel"
+    className="property-thumb"
+  />
 
-                {/* Date & Guest Row */}
-                <div className="property-date-guest-row">
-                  <div className="property-date-block">
-                    <div className="property-date-label">Check In</div>
-                    <div className="property-date-value">
-                      {bookingData.checkInDate || "Sun, 08 Feb, 2026"}
-                    </div>
-                    <div className="property-time-value">2 PM</div>
-                  </div>
-                  
-                  <div className="property-date-block">
-                    <div className="property-date-label">Check Out</div>
-                    <div className="property-date-value">
-                      {bookingData.checkOutDate || "Mon, 09 Feb, 2026"}
-                    </div>
-                    <div className="property-time-value">12 PM</div>
-                  </div>
-                  
-                  <div className="property-date-block">
-                    <div className="property-date-label">Guests</div>
-                    <div className="property-date-value">
-                      {bookingData.adults || 2} Adults
-                    </div>
-                    <div className="property-time-value">
-                      {bookingData.nights || 1} Night
-                    </div>
-                  </div>
-                </div>
+  {/* Right Details */}
+  <div className="hotel-summary-details">
 
-                {/* Room Summary Card */}
-                <div className="property-room-card">
-                  <div className="property-room-badge">Great Choice!</div>
-                  <div className="property-room-header">Room</div>
-                  
-                  <div className="property-room-content">
-                    <div className="property-room-left">
-                      <div className="property-room-type">
-                        <FaBed className="property-bed-icon" />
-                        <span className="property-room-type-text">1 x 2 TWIN BEDS</span>
-                      </div>
-                      <div className="property-room-guests">
-                        <FaUser className="property-user-icon" />
-                        <FaUser className="property-user-icon" />
-                        <span>2 Adults</span>
-                      </div>
-                      <div className="property-room-meal">Room with Breakfast</div>
-                      <div className="property-room-cancellation">Free Cancellation before 07 Feb 01:59 PM</div>
-                      <a href="#" className="property-booking-policy" onClick={(e) => { e.preventDefault(); setShowPolicyModal(true); setIsPropertyInfoPanelOpen(false); }}>View Booking & Cancellation Policy</a>
-                    </div>
-                    
-                    <div className="property-room-right">
-                      <ul className="property-room-benefits">
-                        <li>• Book @ ₹0 available</li>
-                        <li>• Room With Free Cancellation | Breakfast only</li>
-                        <li>• 20% discount on a la carte menu and soft beverages at Kitchen District.</li>
-                      </ul>
-                      <a href="#" className="property-view-more" onClick={(e) => e.preventDefault()}>View more (1)</a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </>
-        )}
+    <h3>{bookingData.hotelName || "Hyatt Centric Janakpuri, New Delhi"}</h3>
+
+    <div className="hotel-summary-location">
+      <span>📍</span>
+      <span>Janakpuri District Center, New Delhi</span>
+    </div>
+
+    <div className="hotel-date-strip booking-date-strip">
+
+      <div className="hotel-date-item date-box">
+        <span>Check In</span>
+        <strong>{bookingData.checkIn || "08 Feb, 2026"}</strong>
+        <small>02:00 PM</small>
+      </div>
+
+      <div className="hotel-night-count stay-duration">
+        <span>1 Night</span>
+      </div>
+
+      <div className="hotel-date-item date-box">
+        <span>Check Out</span>
+        <strong>{bookingData.checkOut || "09 Feb, 2026"}</strong>
+        <small>12:00 PM</small>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+      {/* 4. Selected Room Summary Card */}
+  
+<div className="drawer-card room-summary-card">
+
+  <div className="room-choice-tag">Great Choice!</div>
+
+  <div className="room-summary-wrapper">
+
+    {/* LEFT SIDE */}
+    <div className="room-summary-left">
+
+      <h4 className="room-title">
+        {selectedRoomData?.name || "1 x 2 TWIN BEDS"}
+      </h4>
+
+      <div className="room-meta">
+        <span><FaBed /> 1 King Bed</span>
+        <span><FaUser /> 2 Adults</span>
+      </div>
+
+      <p className="meal-plan">Room with Breakfast</p>
+
+      <p className="cancel-text-green">
+        Free Cancellation before 07 Feb 01:59 PM
+      </p>
+
+      <button className="policy-link">
+        View Booking & Cancellation Policy
+      </button>
+    </div>
+
+    {/* DIVIDER */}
+    <div className="room-divider"></div>
+
+    {/* RIGHT SIDE */}
+    <div className="room-summary-right">
+  <ul className="benefit-bullets">
+    <li>Book @ ₹0 available</li>
+    <li>Room With Free Cancellation | Breakfast only</li>
+    <li>20% discount on a la carte menu and soft beverages</li>
+
+    {/* Extra point – hidden by default */}
+    {showMoreBenefits && (
+      <li>
+        Complimentary access to fitness center & swimming pool
+      </li>
+    )}
+  </ul>
+
+  <span
+    className="view-more-link"
+    onClick={() => setShowMoreBenefits(!showMoreBenefits)}
+  >
+    {showMoreBenefits ? "View less" : "View more (1)"}
+  </span>
+</div>
+
+  </div>
+</div>
+
+    
+      {/* 5. Guest Details Section */}
+<div className="drawer-card guest-details-form">
+
+  <div className="section-header">
+    <h4>Guest Details</h4>
+    <span className="collapse-icon">⌃</span>
+  </div>
+
+  {/* Name Row */}
+  <div className="form-row">
+    <div className="form-group small">
+      <label>Title</label>
+      <select className="form-input">
+        <option>Mr</option>
+        <option>Ms</option>
+      </select>
+    </div>
+
+    <div className="form-group">
+      <label>First Name</label>
+      <input type="text" placeholder="Enter First Name" className="form-input" />
+    </div>
+
+    <div className="form-group">
+      <label>Last Name</label>
+      <input type="text" placeholder="Enter Last Name" className="form-input" />
+    </div>
+  </div>
+
+  {/* Email */}
+  <div className="form-group">
+    <label>
+      Email Address
+      <span className="helper-text">
+        (Your booking voucher will be sent to this email address)
+      </span>
+    </label>
+    <input type="email" placeholder="Enter Email Address" className="form-input" />
+  </div>
+
+  {/* Mobile */}
+  <div className="form-group">
+    <label>Mobile Number</label>
+    <div className="mobile-input-wrap">
+      <select className="country-code">
+        <option>+91 India</option>
+      </select>
+      <input
+        type="text"
+        placeholder="Enter Phone Number"
+        className="form-input"
+      />
+    </div>
+  </div>
+
+  {/* Divider */}
+  <div className="section-divider"></div>
+
+  {/* GST */}
+  <div className="checkbox-row">
+    <input type="checkbox" />
+    <label>Enter GST Details <span>(Optional)</span></label>
+  </div>
+
+  {/* Billing */}
+  <h4 className="sub-section-heading">Your Pincode and State</h4>
+  <p className="sub-helper">
+    (Required for GST purpose on your tax invoice. You can edit this anytime later in your profile section.)
+  </p>
+
+  <div className="form-row">
+    <input className="form-input" placeholder="Enter Billing Address" />
+    <input className="form-input" placeholder="Enter Pincode" />
+    <select className="form-input">
+      <option>Uttar Pradesh</option>
+    </select>
+  </div>
+
+  <div className="checkbox-row">
+    <input type="checkbox" />
+    <label>Confirm and save billing details to your profile</label>
+  </div>
+
+</div>
+
+      
+
+      {/* 7. Price Breakdown */}
+<div className="drawer-card price-details-section">
+{/* Alert Tags INSIDE price card */}
+  <div className="price-alert-tags">
+    <div className="alert-tag red-tag">
+      <span>⚠️ We have limited availability at this price – book now!</span>
+    </div>
+
+    <div className="alert-tag green-tag">
+      <span>✅ You saved Rs. 12,490 on this booking!</span>
+    </div>
+  </div>
+  <div className="price-header">
+    <h4>Price Details</h4>
+   
+  </div>
+
+  <div className="price-row strike">
+    <span>Original price (1 room x 1 night)</span>
+    <span>₹24,980</span>
+  </div>
+
+  <div className="price-row">
+    <span>Room price (1 room x 1 night)</span>
+    <span>₹12,490</span>
+  </div>
+
+  <div className="price-row">
+    <span>Extra charges</span>
+    <span>₹300</span>
+  </div>
+
+  <div className="price-divider dotted"></div>
+
+  <div className="price-row bold">
+    <span>Price Before Taxes</span>
+    <span>₹12,790</span>
+  </div>
+
+  <div className="price-row">
+    <span>Taxes and fees</span>
+    <span>₹2,248</span>
+  </div>
+
+  <div className="price-row green">
+    <span>Booking fees</span>
+    <span>FREE</span>
+  </div>
+
+  <div className="price-divider"></div>
+
+  <div className="price-row final">
+    <span>Price</span>
+    <span>₹14,738</span>
+  </div>
+
+  <p className="price-note">
+    Included in price: Extra Person Fee ₹300, Tax 18%
+  </p>
+
+</div>
+
+    </div>
+
+   
+   {/* Continue Button */}
+              <button className="continue-button-panel">CONTINUE</button>
+              <p className="terms-text">By proceeding, I agree to MakeMyTrip's <a href="#">User Agreement</a>, <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></p>
+
+  </div>
+</div>
+       
       </div>
     </div>
   );
