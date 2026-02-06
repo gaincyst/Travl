@@ -43,6 +43,7 @@ function HotelBooking() {
   const [isPropertyInfoPanelOpen, setIsPropertyInfoPanelOpen] = useState(false);
   const [selectedRoomData, setSelectedRoomData] = useState(null);
   const [showMoreBenefits, setShowMoreBenefits] = useState(false);
+  const [showPriceDetails, setShowPriceDetails] = useState(false);
 
   
 
@@ -107,14 +108,22 @@ function HotelBooking() {
 
 // Update your room selection handler
 const handleSelectRoom = (room) => {
+  console.log('Room selected:', room);
   setSelectedRoomData(room);
   setIsPropertyInfoPanelOpen(true);
-  document.body.style.overflow = 'hidden'; // Disable background scroll
+  if (typeof document !== 'undefined') {
+    document.body.style.overflow = 'hidden'; // Disable background scroll
+  }
 };
 
 const closePanel = () => {
   setIsPropertyInfoPanelOpen(false);
-  document.body.style.overflow = 'unset'; // Enable scroll
+  setSelectedRoomData(null);
+  setShowMoreBenefits(false);
+  setShowPriceDetails(false);
+  if (typeof document !== 'undefined') {
+    document.body.style.overflow = 'auto'; // Enable scroll
+  }
 };
 
   return (
@@ -2714,282 +2723,255 @@ const closePanel = () => {
           </div>
         )}
 
-      
+        {/* Passenger Details Panel */}
+        {isPropertyInfoPanelOpen && (
+          <>
+            {/* Backdrop */}
+            <div className="panel-backdrop" onClick={closePanel}></div>
+            
+            {/* Side Panel */}
+            <div className="passenger-details-panel">
+              {/* Close Button */}
+              <button className="panel-close-btn" onClick={closePanel}>✕</button>
+              
+              {/* Panel Header */}
+              <div className="panel-header">
+                <h2>Passenger Details</h2>
+              </div>
+
+              {/* Panel Content */}
+              <div className="panel-content">
+                {/* Hotel Summary */}
+                <div className="hotel-summary">
+                  <div className="hotel-summary-header">
+                    <div className="hotel-info-left">
+                      <div className="hotel-star-badge">
+                        <span className="stars-count">5</span>
+                        <FaStar className="star-icon-mini" />
+                        <span className="hotel-label-mini">• Hotel</span>
+                      </div>
+                      <h3 className="hotel-name-panel">Hyatt Centric Janakpuri, New Delhi</h3>
+                      <div className="hotel-address">
+                        <FaMapMarkerAlt className="location-icon-tiny" />
+                        <span>Janakpuri District Centre Complex, New Delhi, Delhi, India, 110058</span>
+                      </div>
+                    </div>
+                    <div className="hotel-thumbnail">
+                      <img src="/hotels/hh1.jpeg" alt="Hotel" />
+                    </div>
+                  </div>
+
+                  <div className="booking-dates-info">
+                    <div className="date-info-item">
+                      <div className="date-label">Check In</div>
+                      <div className="date-value">Sun, 08 Feb, 2026</div>
+                      <div className="time-value">2 PM</div>
+                    </div>
+                    <div className="date-info-item">
+                      <div className="date-label">Check Out</div>
+                      <div className="date-value">Mon, 09 Feb, 2026</div>
+                      <div className="time-value">12 PM</div>
+                    </div>
+                    <div className="date-info-item">
+                      <div className="date-label">Guests</div>
+                      <div className="date-value">2 Adults</div>
+                      <div className="time-value">1 Night</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Room Summary Card */}
+                <div className="room-summary-card">
+                  <div className="room-summary-header-panel">
+                    <div className="great-choice-badge">Great Choice!</div>
+                    <h4 className="room-title-panel">Room</h4>
+                  </div>
+
+                  <div className="room-details-grid">
+                    {/* Left Side - Room Info */}
+                    <div className="room-info-left">
+                      <div className="room-bed-type">1 x 2 TWIN BEDS</div>
+                      <div className="room-adults">
+                        <FaUser className="user-icon-tiny" />
+                        <FaUser className="user-icon-tiny" />
+                        <span className="adults-text">2 Adults</span>
+                      </div>
+                      <div className="room-meal-plan">
+                        Room with Breakfast
+                        <span className="cancellation-text">Free Cancellation before 07 Feb 01:59 PM</span>
+                      </div>
+                      <a href="#" className="view-policy-link">View Booking &amp; Cancellation Policy</a>
+                    </div>
+
+                    {/* Right Side - Benefits */}
+                    <div className="room-benefits-right">
+                      <div className="benefit-item">• Book @ ₹0 available</div>
+                      <div className="benefit-item">• Room With Free Cancellation | Breakfast only</div>
+                      <div className="benefit-item">• 20% discount on a la carte menu and soft beverages at Kitchen District.</div>
+                      {showMoreBenefits && (
+                        <div className="benefit-item">• Complimentary Breakfast</div>
+                      )}
+                      <a 
+                        href="#" 
+                        className="view-more-link"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setShowMoreBenefits(!showMoreBenefits);
+                        }}
+                      >
+                        {showMoreBenefits ? 'View less' : 'View more (1)'}
+                      </a>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Guest Details Section */}
+                <div className="guest-details-section">
+                  <div className="section-header-collapsible">
+                    <h3 className="section-title-bold">GUEST DETAILS</h3>
+                    <button className="collapse-btn">▲</button>
+                  </div>
+
+                  <div className="guest-form-content">
+                    {/* Title, First Name, Last Name Row */}
+                    <div className="form-row-guest">
+                      <div className="form-field-guest title-field">
+                        <label>Title</label>
+                        <select className="input-select">
+                          <option>Mr</option>
+                          <option>Mrs</option>
+                          <option>Ms</option>
+                        </select>
+                      </div>
+                      <div className="form-field-guest">
+                        <label>First Name</label>
+                        <input type="text" placeholder="Enter First Name" />
+                      </div>
+                      <div className="form-field-guest">
+                        <label>Last Name</label>
+                        <input type="text" placeholder="Enter Last Name" />
+                      </div>
+                    </div>
+
+                    {/* Email Address */}
+                    <div className="form-field-guest full-width">
+                      <label>Email Address <span className="field-note">(Your booking voucher will be sent to this email address)</span></label>
+                      <input type="email" placeholder="Enter Email Address" />
+                    </div>
+
+                    {/* Mobile Number */}
+                    <div className="form-field-guest full-width">
+                      <label>Mobile Number</label>
+                      <div className="phone-input-group">
+                        <select className="country-code-select">
+                          <option>+91 India</option>
+                          <option>+1 USA</option>
+                          <option>+44 UK</option>
+                        </select>
+                        <input type="tel" placeholder="Enter Phone Number" className="phone-input" />
+                      </div>
+                    </div>
+
+                    {/* GST Checkbox */}
+                    <div className="checkbox-field">
+                      <input type="checkbox" id="gst-checkbox" />
+                      <label htmlFor="gst-checkbox">Enter GST Details <span className="optional-text">(Optional)</span></label>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Pincode and State Section */}
+                <div className="pincode-state-section">
+                  <h3 className="section-title-bold">YOUR PINCODE AND STATE</h3>
+                  <p className="section-subtitle">(Required for GST purpose on your tax invoice. You can edit this anytime later in your profile section.)</p>
+
+                  <div className="form-row-address">
+                    <div className="form-field-guest">
+                      <label className="state-label">&nbsp;</label>
+                      <input type="text" placeholder="Enter Billing Address" />
+                    </div>
+                    <div className="form-field-guest">
+                      <label className="state-label">&nbsp;</label>
+                      <input type="text" placeholder="Enter Pincode" />
+                    </div>
+                    <div className="form-field-guest">
+                      <label className="state-label">State</label>
+                      <select className="input-select">
+                        <option>Uttar Pradesh</option>
+                        <option>Delhi</option>
+                        <option>Maharashtra</option>
+                        <option>Karnataka</option>
+                        <option>Tamil Nadu</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Confirm Checkbox */}
+                  <div className="checkbox-field">
+                    <input type="checkbox" id="save-billing-checkbox" />
+                    <label htmlFor="save-billing-checkbox">Confirm and save billing details to your profile</label>
+                  </div>
+                </div>
+
+                {/* Price Details Section */}
+                <div className="price-details-panel-section">
+                  <div className="price-header-collapsible" onClick={() => setShowPriceDetails(!showPriceDetails)}>
+                    <h3 className="section-title-bold">Price Details</h3>
+                    <button className="collapse-arrow-btn">{showPriceDetails ? '▲' : '▼'}</button>
+                  </div>
+
+                  {/* Collapsible Price Breakdown */}
+                  {showPriceDetails && (
+                    <div className="price-breakdown-content">
+                      <div className="price-row-item strike-through">
+                        <span>Original price (1 room x 1 night)</span>
+                        <span>Rs. 18,848.07</span>
+                      </div>
+                      <div className="price-row-item">
+                        <span>Room price (1 room x 1 night)</span>
+                        <span>Rs. 9,249.00</span>
+                      </div>
+                      <div className="price-row-item">
+                        <span>Extra charges</span>
+                        <span>Rs. 300.00</span>
+                      </div>
+                      <div className="price-divider-line"></div>
+                      <div className="price-row-item bold-row">
+                        <span>Price Before Taxes</span>
+                        <span>Rs. 9,549.00</span>
+                      </div>
+                      <div className="price-row-item">
+                        <span>Taxes and fees</span>
+                        <span>Rs. 1,718.82</span>
+                      </div>
+                      <div className="price-row-item green-text">
+                        <span>Booking fees</span>
+                        <span>FREE</span>
+                      </div>
+                      <div className="price-divider-line"></div>
+                    </div>
+                  )}
+
+                  {/* Final Price - Always Visible */}
+                  <div className="price-final-row">
+                    <div className="price-final-label">
+                      <span>Price</span>
+                      <span className="info-icon">ⓘ</span>
+                    </div>
+                    <span className="price-final-amount">Rs. 11,267.82</span>
+                  </div>
+                  <p className="price-included-note">Included in price: Extra Person Fee Rs. 300.00, Tax 18%</p>
+                </div>
+
+                {/* Continue Button */}
+                <button className="continue-button-hotel-panel">CONTINUE</button>
+                <p className="terms-text-hotel">By proceeding, I agree to MakeMyTrip's <a href="#">User Agreement</a>, <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></p>
+              </div>
+            </div>
+          </>
+        )}
         
-        {/* Right-Side Sliding Panel */}
-<div className={`side-drawer-overlay ${isPropertyInfoPanelOpen ? 'active' : ''}`} onClick={closePanel}>
-  <div className={`side-drawer-panel ${isPropertyInfoPanelOpen ? 'open' : ''}`} onClick={(e) => e.stopPropagation()}>
-    
-    {/* Header */}
-    <div className="drawer-header">
-      <h2 className="drawer-title">Review your Booking</h2>
-      <button className="drawer-close-btn" onClick={closePanel}>✕</button>
-    </div>
-
-    <div className="drawer-content">
-      {/* 3. Top Section - Property Info */}
-<div className="drawer-card property-info-section hotel-summary-card">
-
-  {/* Left Image */}
-  <img
-    src={selectedRoomData?.images[0]}
-    alt="hotel"
-    className="property-thumb"
-  />
-
-  {/* Right Details */}
-  <div className="hotel-summary-details">
-
-    <h3>{bookingData.hotelName || "Hyatt Centric Janakpuri, New Delhi"}</h3>
-
-    <div className="hotel-summary-location">
-      <span>📍</span>
-      <span>Janakpuri District Center, New Delhi</span>
-    </div>
-
-    <div className="hotel-date-strip booking-date-strip">
-
-      <div className="hotel-date-item date-box">
-        <span>Check In</span>
-        <strong>{bookingData.checkIn || "08 Feb, 2026"}</strong>
-        <small>02:00 PM</small>
-      </div>
-
-      <div className="hotel-night-count stay-duration">
-        <span>1 Night</span>
-      </div>
-
-      <div className="hotel-date-item date-box">
-        <span>Check Out</span>
-        <strong>{bookingData.checkOut || "09 Feb, 2026"}</strong>
-        <small>12:00 PM</small>
-      </div>
-
-    </div>
-  </div>
-</div>
-
-
-      {/* 4. Selected Room Summary Card */}
-  
-<div className="drawer-card room-summary-card">
-
-  <div className="room-choice-tag">Great Choice!</div>
-
-  <div className="room-summary-wrapper">
-
-    {/* LEFT SIDE */}
-    <div className="room-summary-left">
-
-      <h4 className="room-title">
-        {selectedRoomData?.name || "1 x 2 TWIN BEDS"}
-      </h4>
-
-      <div className="room-meta">
-        <span><FaBed /> 1 King Bed</span>
-        <span><FaUser /> 2 Adults</span>
-      </div>
-
-      <p className="meal-plan">Room with Breakfast</p>
-
-      <p className="cancel-text-green">
-        Free Cancellation before 07 Feb 01:59 PM
-      </p>
-
-      <button className="policy-link">
-        View Booking & Cancellation Policy
-      </button>
-    </div>
-
-    {/* DIVIDER */}
-    <div className="room-divider"></div>
-
-    {/* RIGHT SIDE */}
-    <div className="room-summary-right">
-  <ul className="benefit-bullets">
-    <li>Book @ ₹0 available</li>
-    <li>Room With Free Cancellation | Breakfast only</li>
-    <li>20% discount on a la carte menu and soft beverages</li>
-
-    {/* Extra point – hidden by default */}
-    {showMoreBenefits && (
-      <li>
-        Complimentary access to fitness center & swimming pool
-      </li>
-    )}
-  </ul>
-
-  <span
-    className="view-more-link"
-    onClick={() => setShowMoreBenefits(!showMoreBenefits)}
-  >
-    {showMoreBenefits ? "View less" : "View more (1)"}
-  </span>
-</div>
-
-  </div>
-</div>
-
-    
-      {/* 5. Guest Details Section */}
-<div className="drawer-card guest-details-form">
-
-  <div className="section-header">
-    <h4>Guest Details</h4>
-    <span className="collapse-icon">⌃</span>
-  </div>
-
-  {/* Name Row */}
-  <div className="form-row">
-    <div className="form-group small">
-      <label>Title</label>
-      <select className="form-input">
-        <option>Mr</option>
-        <option>Ms</option>
-      </select>
-    </div>
-
-    <div className="form-group">
-      <label>First Name</label>
-      <input type="text" placeholder="Enter First Name" className="form-input" />
-    </div>
-
-    <div className="form-group">
-      <label>Last Name</label>
-      <input type="text" placeholder="Enter Last Name" className="form-input" />
-    </div>
-  </div>
-
-  {/* Email */}
-  <div className="form-group">
-    <label>
-      Email Address
-      <span className="helper-text">
-        (Your booking voucher will be sent to this email address)
-      </span>
-    </label>
-    <input type="email" placeholder="Enter Email Address" className="form-input" />
-  </div>
-
-  {/* Mobile */}
-  <div className="form-group">
-    <label>Mobile Number</label>
-    <div className="mobile-input-wrap">
-      <select className="country-code">
-        <option>+91 India</option>
-      </select>
-      <input
-        type="text"
-        placeholder="Enter Phone Number"
-        className="form-input"
-      />
-    </div>
-  </div>
-
-  {/* Divider */}
-  <div className="section-divider"></div>
-
-  {/* GST */}
-  <div className="checkbox-row">
-    <input type="checkbox" />
-    <label>Enter GST Details <span>(Optional)</span></label>
-  </div>
-
-  {/* Billing */}
-  <h4 className="sub-section-heading">Your Pincode and State</h4>
-  <p className="sub-helper">
-    (Required for GST purpose on your tax invoice. You can edit this anytime later in your profile section.)
-  </p>
-
-  <div className="form-row">
-    <input className="form-input" placeholder="Enter Billing Address" />
-    <input className="form-input" placeholder="Enter Pincode" />
-    <select className="form-input">
-      <option>Uttar Pradesh</option>
-    </select>
-  </div>
-
-  <div className="checkbox-row">
-    <input type="checkbox" />
-    <label>Confirm and save billing details to your profile</label>
-  </div>
-
-</div>
-
-      
-
-      {/* 7. Price Breakdown */}
-<div className="drawer-card price-details-section">
-{/* Alert Tags INSIDE price card */}
-  <div className="price-alert-tags">
-    <div className="alert-tag red-tag">
-      <span>⚠️ We have limited availability at this price – book now!</span>
-    </div>
-
-    <div className="alert-tag green-tag">
-      <span>✅ You saved Rs. 12,490 on this booking!</span>
-    </div>
-  </div>
-  <div className="price-header">
-    <h4>Price Details</h4>
-   
-  </div>
-
-  <div className="price-row strike">
-    <span>Original price (1 room x 1 night)</span>
-    <span>₹24,980</span>
-  </div>
-
-  <div className="price-row">
-    <span>Room price (1 room x 1 night)</span>
-    <span>₹12,490</span>
-  </div>
-
-  <div className="price-row">
-    <span>Extra charges</span>
-    <span>₹300</span>
-  </div>
-
-  <div className="price-divider dotted"></div>
-
-  <div className="price-row bold">
-    <span>Price Before Taxes</span>
-    <span>₹12,790</span>
-  </div>
-
-  <div className="price-row">
-    <span>Taxes and fees</span>
-    <span>₹2,248</span>
-  </div>
-
-  <div className="price-row green">
-    <span>Booking fees</span>
-    <span>FREE</span>
-  </div>
-
-  <div className="price-divider"></div>
-
-  <div className="price-row final">
-    <span>Price</span>
-    <span>₹14,738</span>
-  </div>
-
-  <p className="price-note">
-    Included in price: Extra Person Fee ₹300, Tax 18%
-  </p>
-
-</div>
-
-    </div>
-
-   
-   {/* Continue Button */}
-              <button className="continue-button-panel">CONTINUE</button>
-              <p className="terms-text">By proceeding, I agree to MakeMyTrip's <a href="#">User Agreement</a>, <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></p>
-
-  </div>
-</div>
-       
+         
       </div>
     </div>
   );
