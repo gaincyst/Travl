@@ -62,6 +62,13 @@ function SearchBox({ preFilledData, hideServiceTabs, activeService }) {
     }
   };
 
+  // Update activeTab when activeService prop changes
+  useEffect(() => {
+    if (activeService) {
+      setActiveTab(activeService);
+    }
+  }, [activeService]);
+
   useEffect(() => {
     function handleClickOutside(e) {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {

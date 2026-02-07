@@ -64,11 +64,11 @@ function HotelBooking() {
 
   const scrollToSection = (tabName) => {
     setActiveTab(tabName);
-    const sectionId = tabName.toLowerCase().replace(/\s+/g, "-").replace(/&/g, "and");
-    const element = document.getElementById(sectionId);
-    if (element) {
-      const offset = 180;
-      const elementPosition = element.getBoundingClientRect().top;
+    // Scroll to tab navigation area
+    const tabNavigation = document.querySelector('.tab-navigation-container');
+    if (tabNavigation) {
+      const offset = 90; // Account for navbar height
+      const elementPosition = tabNavigation.getBoundingClientRect().top;
       const offsetPosition = elementPosition + window.pageYOffset - offset;
       
       window.scrollTo({
@@ -145,13 +145,13 @@ const closePanel = () => {
 
           {/* Menu */}
           <ul className="nav-menu">
-            <li onClick={() => navigate("/")}>
+            <li onClick={() => navigate("/", { state: { searchBoxType: "flights" } })}>
               <FaPlane className="menu-icon" /> Flights
             </li>
             <li className="active">
               <FaHotel className="menu-icon" /> Hotels
             </li>
-            <li onClick={() => navigate("/")}>
+            <li onClick={() => navigate("/", { state: { searchBoxType: "bus" } })}>
               <FaBus className="menu-icon" /> Buses
             </li>
             <li>
@@ -291,7 +291,7 @@ const closePanel = () => {
                   </div>
 
                   {/* CTA Button */}
-                  <button className="view-room-options-btn">
+                  <button className="view-room-options-btn" onClick={() => scrollToSection("Choose Rooms")}>
                     Book Now <FaChevronDown className="btn-arrow" />
                   </button>
                 </div>
@@ -325,7 +325,8 @@ const closePanel = () => {
       {/* TAB CONTENT SECTIONS */}
       <div className="tab-content-wrapper">
         {/* Description Section */}
-        <section id="room-options" className="tab-section">
+        {activeTab === "Description" && (
+        <section id="description" className="tab-section">
           <div className="tab-section-container">
             <div className="description-layout">
               {/* LEFT COLUMN - Hotel Information */}
@@ -521,19 +522,19 @@ const closePanel = () => {
                     <h3 className="landmarks-title">Popular landmarks</h3>
                     <div className="landmarks-list">
                       <div className="landmark-item">
-                        <FaMapMarkerAlt className="landmark-icon" />
+                        <FaMapMarkerAlt className="landmark-icons" />
                         <span className="landmark-name">Qutub Minar</span>
-                        <span className="landmark-distance">17.3 km</span>
+                        <span className="landmarks-distance">17.3 km</span>
                       </div>
                       <div className="landmark-item">
-                        <FaMapMarkerAlt className="landmark-icon" />
+                        <FaMapMarkerAlt className="landmark-icons" />
                         <span className="landmark-name">Lotus Temple</span>
-                        <span className="landmark-distance">25.1 km</span>
+                        <span className="landmarks-distance">25.1 km</span>
                       </div>
                       <div className="landmark-item">
-                        <FaMapMarkerAlt className="landmark-icon" />
+                        <FaMapMarkerAlt className="landmark-icons" />
                         <span className="landmark-name">Lodhi Garden</span>
-                        <span className="landmark-distance">25.5 km</span>
+                        <span className="landmarks-distance">25.5 km</span>
                       </div>
                     
                     </div>
@@ -544,20 +545,20 @@ const closePanel = () => {
                     <h3 className="landmarks-title">Closest landmarks</h3>
                     <div className="landmarks-list">
                       <div className="landmark-item">
-                        <FaMapMarkerAlt className="landmark-icon" />
+                        <FaMapMarkerAlt className="landmark-icons" />
                         <span className="landmark-name">Block B Market</span>
-                        <span className="landmark-distance">770 m</span>
+                        <span className="landmarks-distance">770 m</span>
                       </div>
                       <div className="landmark-item">
-                        <FaMapMarkerAlt className="landmark-icon" />
+                        <FaMapMarkerAlt className="landmark-icons" />
                         <span className="landmark-name">kunaic mandi mart</span>
-                        <span className="landmark-distance">1.0 km</span>
+                        <span className="landmarks-distance">1.0 km</span>
                       </div>
                       
                       <div className="landmark-item">
-                        <FaMapMarkerAlt className="landmark-icon" />
+                        <FaMapMarkerAlt className="landmark-icons" />
                         <span className="landmark-name">Imperia Towers Park</span>
-                        <span className="landmark-distance">1.1 km</span>
+                        <span className="landmarks-distance">1.1 km</span>
                       </div>
                     </div>
                   </div>
@@ -569,8 +570,10 @@ const closePanel = () => {
             </div>
           </div>
         </section>
+        )}
 
        {/* Gallery Section */}
+       {activeTab === "Gallery" && (
 <section id="gallery" className="tab-section">
   <div className="tab-section-container">
       <h2 className="tab-section-title">Gallery</h2>
@@ -611,8 +614,10 @@ const closePanel = () => {
     </div>
   </div>
 </section>
+        )}
 
         {/* Amenities Section */}
+        {activeTab === "Amenities" && (
         <section id="amenities" className="tab-section">
           <div className="tab-section-container">
             <div className="amenities-header">
@@ -1280,8 +1285,10 @@ const closePanel = () => {
             </div>
           </div>
         </section>
+        )}
 
         {/* Food & Dining Section */}
+        {activeTab === "Food & Dining" && (
         <section id="food-and-dining" className="tab-section">
           <div className="tab-section-container">
             <h2 className="food-dining-title">Food & Dining</h2>
@@ -1314,8 +1321,10 @@ const closePanel = () => {
             </div>
           </div>
         </section>
+        )}
 
         {/* Choose Room Section */}
+        {activeTab === "Choose Rooms" && (
         <section id="choose-rooms" className="tab-section">
           <div className="tab-section-container">
             {/* Header Row */}
@@ -2007,10 +2016,12 @@ const closePanel = () => {
             </div>
           </div>
         </section>
+        )}
 
      
 
         {/* Location Section */}
+        {activeTab === "Location" && (
         <section id="location" className="tab-section">
           <div className="tab-section-container">
             <div className="location-header">
@@ -2184,8 +2195,10 @@ const closePanel = () => {
             </div>
           </div>
         </section>
+        )}
 
         {/* Guest Reviews Section */}
+        {activeTab === "Guest Reviews" && (
         <section id="guest-reviews" className="tab-section">
           <div className="tab-section-container">
             {/* Reviews Header */}
@@ -2351,9 +2364,11 @@ const closePanel = () => {
             </div>
           </div>
         </section>
+        )}
 
         {/* Property Policy Section */}
-        <section id="property-policy" className="tab-section">
+        {activeTab === "Property Policies" && (
+        <section id="property-policies" className="tab-section">
           <div className="tab-section-container">
             <div className="property-policies-container">
               {/* Header with Title and Time Badges */}
@@ -2396,6 +2411,7 @@ const closePanel = () => {
             </div>
           </div>
         </section>
+        )}
 
         {/* Property Policies Modal */}
         {showPolicyModal && (
@@ -3022,6 +3038,14 @@ const closePanel = () => {
               </div>
             </div>
           </>
+        )}
+
+        {/* Auth Modal */}
+        {showAuthModal && (
+          <AuthModal 
+            isOpen={showAuthModal} 
+            onClose={() => setShowAuthModal(false)} 
+          />
         )}
         
          

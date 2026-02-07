@@ -271,7 +271,7 @@
 .guest-icon,
 .room-icon {
   font-size: 14px;
-  color: #999;
+  color: #c81717;
 }
 
 .hotel-tags {
@@ -702,7 +702,7 @@ background-color: #c01313;
 .tab-item.active {
   color: #111827;
   font-weight: 600;
-  border-bottom-color: #3b82f6;
+  border-bottom-color: #d21919;
 }
 
 /* TAB CONTENT SECTIONS */
@@ -954,7 +954,7 @@ background-color: #c01313;
 .highlight-icon-wrapper {
   width: 20px;
   height: 20px;
-  background: #f3f4f6;
+  background: #fbebeb;
   border-radius: 100%;
   display: flex;
   align-items: center;
@@ -1282,7 +1282,7 @@ background-color: #c01313;
   font-size: 14px;
 }
 
-.landmark-icon {
+.landmark-icons {
   font-size: 14px;
   color: #f61616;
   flex-shrink: 0;
@@ -1293,7 +1293,7 @@ background-color: #c01313;
   color: #374151;
 }
 
-.landmark-distance {
+.landmarks-distance {
   color: #6b7280;
   font-weight: 500;
   white-space: nowrap;
@@ -1303,7 +1303,7 @@ background-color: #c01313;
 .see-nearby-link {
   display: inline-block;
   font-size: 14px;
-  color: #5b5feb;
+  color: #eb5b5b;
   font-weight: 600;
   text-decoration: none;
   margin-top: 8px;
@@ -1732,13 +1732,13 @@ font-family: cursive;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #fae3e3;
+  background: #fcf8f8;
   padding: 6px 14px;
   margin: 0 120px 24px 120px;
 }
 
 .room-types-dropdown {
-  background: #d21919;
+  background: #cd5959;
   color: #ffffff;
   padding: 6px 14px;
   border-radius: 24px;
@@ -1771,8 +1771,8 @@ font-family: cursive;
 }
 
 .room-card {
-  background-color: #f1dfd1;
-background-image: linear-gradient(315deg, #f1d1d1 0%, #f6f0ea 74%);
+  background-color: #fffcfa;
+background: -webkit-repeating-linear-gradient(#8e8d8d 0%, #f9e9e9 5%, #fdfdfd 100%);
   border: 1px solid #e5e7eb;
   border-radius: 12px;
   padding: 24px;

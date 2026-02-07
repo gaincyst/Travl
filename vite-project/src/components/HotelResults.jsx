@@ -12,6 +12,7 @@ import {
 
 import SearchBox from "./SearchBox";
 import HotelFiltersPanel from "./HotelFiltersPanel";
+import AuthModal from "./AuthModal";
 import "../styles/HotelResults.css";
 
 function HotelResults() {
@@ -20,6 +21,7 @@ function HotelResults() {
   const searchData = location.state || {};
 
   const [darkMode, setDarkMode] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
 
   // Hotel Sorting state management - 3 states: null (no sort), 'asc', 'desc'
   // Smart is 'active' by default
@@ -244,18 +246,20 @@ function HotelResults() {
               src="/logos.png"
               alt="Travl Logo"
               className="nav-logo"
+              onClick={() => navigate("/")}
+              style={{ cursor: "pointer" }}
             />
           </div>
 
           {/* Menu */}
           <ul className="nav-menu">
-            <li>
+            <li onClick={() => navigate("/", { state: { searchBoxType: "flights" } })}>
               <FaPlane className="menu-icon" /> Flights
             </li>
             <li className="active">
               <FaHotel className="menu-icon" /> Hotels
             </li>
-            <li>
+            <li onClick={() => navigate("/", { state: { searchBoxType: "bus" } })}>
               <FaBus className="menu-icon" /> Buses
             </li>
             <li>
@@ -269,7 +273,7 @@ function HotelResults() {
               {darkMode ? <FaSun className="sun-icon" /> : <FaMoon className="moon-icon" />}
             </button>
 
-            <div className="login-signup">
+            <div className="login-signup" onClick={() => setShowAuthModal(true)} style={{ cursor: 'pointer' }}>
               <FaUserCircle className="user-login-icon" />
               <span>Login / Signup</span>
             </div>
@@ -517,6 +521,14 @@ function HotelResults() {
           </div>
         </div>
       </main>
+
+      {/* Auth Modal */}
+      {showAuthModal && (
+        <AuthModal 
+          isOpen={showAuthModal} 
+          onClose={() => setShowAuthModal(false)} 
+        />
+      )}
     </div>
   );
 }

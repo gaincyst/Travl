@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   FaPlane,
   FaHotel,
@@ -16,13 +16,16 @@ import { PiDeviceMobileSpeaker } from "react-icons/pi";
 import SearchBox from "./SearchBox";
 import BusFiltersPanel from "./BusFiltersPanel";
 import DatePriceStrip from "./DatePriceStrip";
+import AuthModal from "./AuthModal";
 import "../styles/BusResults.css";
 
 function BusResults() {
   const location = useLocation();
+  const navigate = useNavigate();
   const searchData = location.state || {};
 
   const [darkMode, setDarkMode] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
 
   // Dropdown state for each bus card
   const [openDropdowns, setOpenDropdowns] = useState({});
@@ -282,15 +285,17 @@ function BusResults() {
               src="/logos.png"
               alt="Travl Logo"
               className="nav-logo"
+              onClick={() => navigate("/")}
+              style={{ cursor: "pointer" }}
             />
           </div>
 
           {/* Menu */}
           <ul className="nav-menu">
-            <li>
+            <li onClick={() => navigate("/", { state: { searchBoxType: "flights" } })}>
               <FaPlane className="menu-icon" /> Flights
             </li>
-            <li>
+            <li onClick={() => navigate("/", { state: { searchBoxType: "hotel" } })}>
               <FaHotel className="menu-icon" /> Hotels
             </li>
             <li className="active">
@@ -307,7 +312,7 @@ function BusResults() {
               {darkMode ? <FaSun className="sun-icon" /> : <FaMoon className="moon-icon" />}
             </button>
 
-            <div className="login-signup">
+            <div className="login-signup" onClick={() => setShowAuthModal(true)} style={{ cursor: 'pointer' }}>
               <FaUserCircle className="user-login-icon" />
               <span>Login / Signup</span>
             </div>
@@ -2434,6 +2439,14 @@ function BusResults() {
             </div>
           </div>
         </>
+      )}
+
+      {/* Auth Modal */}
+      {showAuthModal && (
+        <AuthModal 
+          isOpen={showAuthModal} 
+          onClose={() => setShowAuthModal(false)} 
+        />
       )}
     </div>
   );

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   FaPlane,
   FaHotel,
@@ -14,14 +14,17 @@ import {
 import FiltersPanel from "./FiltersPanel";
 import DatePriceStrip from "./DatePriceStrip";
 import SearchBox from "./SearchBox";
+import AuthModal from "./AuthModal";
 import "../styles/FlightResults.css";
 
 function FlightResults() {
   const location = useLocation();
+  const navigate = useNavigate();
   const searchData = location.state || {};
 
   // ✅ FIX 1: dark mode state added
   const [darkMode, setDarkMode] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
 
   // Fare Modal State
   const [isFareModalOpen, setIsFareModalOpen] = useState(false);
@@ -263,6 +266,8 @@ function FlightResults() {
               src="/logos.png"   /* ✅ public folder image */
               alt="Travl Logo"
               className="nav-logo"
+              onClick={() => navigate("/")}
+              style={{ cursor: "pointer" }}
             />
           </div>
 
@@ -271,10 +276,10 @@ function FlightResults() {
             <li className="active">
               <FaPlane className="menu-icon" /> Flights
             </li>
-            <li>
+            <li onClick={() => navigate("/", { state: { searchBoxType: "hotel" } })}>
               <FaHotel className="menu-icon" /> Hotels
             </li>
-            <li>
+            <li onClick={() => navigate("/", { state: { searchBoxType: "bus" } })}>
               <FaBus className="menu-icon" /> Buses
             </li>
             <li>
@@ -288,7 +293,7 @@ function FlightResults() {
               {darkMode ? <FaSun className="sun-icon" /> : <FaMoon className="moon-icon" />}
             </button>
 
-            <div className="login-signup">
+            <div className="login-signup" onClick={() => setShowAuthModal(true)} style={{ cursor: 'pointer' }}>
               <FaUserCircle className="user-login-icon" />
               <span>Login / Signup</span>
             </div>
@@ -866,6 +871,14 @@ function FlightResults() {
             </div>
           </div>
         </>
+      )}
+
+      {/* Auth Modal */}
+      {showAuthModal && (
+        <AuthModal 
+          isOpen={showAuthModal} 
+          onClose={() => setShowAuthModal(false)} 
+        />
       )}
     </div>
   );

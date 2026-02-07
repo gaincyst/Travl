@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react"; // Added hooks
+import { useLocation } from "react-router-dom"; // Import useLocation
 import Navbar from "../components/Navbar";
 import SearchBox from "../components/SearchBox";
 import OffersSection from "../components/OffersSection";
@@ -11,7 +12,11 @@ import Footer from "../components/Footer";
 import { FaCompass, FaMapMarkedAlt, FaGift, FaChevronDown } from "react-icons/fa";
 
 function HomePage() {
+  const location = useLocation();
   const [currentImg, setCurrentImg] = useState(0);
+
+  // Get searchBoxType from navigation state (if any)
+  const searchBoxType = location.state?.searchBoxType;
 
   // List your 5 JPG images here (ensure they are in public/images/)
   const images = [
@@ -52,7 +57,7 @@ function HomePage() {
         <div className="hero-content">
           <h1>Welcome to Travel2</h1>
           <p>Book flights, hotels, and buses at the best prices</p>
-          <SearchBox />
+          <SearchBox activeService={searchBoxType} />
         </div>
 
         {/* THE EDGE WRAPPER */}
