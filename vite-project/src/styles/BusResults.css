@@ -2087,6 +2087,17 @@ background-color: #c01313;
   color: #999;
 }
 
+.form-field select option:checked,
+.form-field select option[selected] {
+  background-color: #d21919;
+  color: #fff;
+}
+
+.form-field select option:hover {
+  background-color: #d21919;
+  color: #fff;
+}
+
 /* Gender Toggle */
 .gender-toggle {
   display: flex;
@@ -2216,6 +2227,17 @@ background-color: #c01313;
   outline: none;
   background: #fff;
   cursor: pointer;
+}
+
+.state-dropdown option:checked,
+.state-dropdown option[selected] {
+  background-color: #d21919;
+  color: #fff;
+}
+
+.state-dropdown option:hover {
+  background-color: #d21919;
+  color: #fff;
 }
 
 .checkbox-row {

@@ -3931,7 +3931,7 @@ background: linear-gradient(135deg, #bc3737 0%, #e58787 100%);
 /* Hotel Summary Section */
 .hotel-summary {
   background: #fff;
-  padding: 20px 24px;
+  padding: 10px 24px;
   margin-bottom: 12px;
 }
 
@@ -3939,7 +3939,7 @@ background: linear-gradient(135deg, #bc3737 0%, #e58787 100%);
   display: flex;
   justify-content: space-between;
   gap: 16px;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 
 .hotel-info-left {
@@ -3950,7 +3950,7 @@ background: linear-gradient(135deg, #bc3737 0%, #e58787 100%);
   display: flex;
   align-items: center;
   gap: 4px;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
 .stars-count {
@@ -3988,13 +3988,13 @@ background: linear-gradient(135deg, #bc3737 0%, #e58787 100%);
 
 .location-icon-tiny {
   flex-shrink: 0;
-  margin-top: 2px;
-  color: #999;
+  margin-top: 4px;
+  color: #b61414;
   font-size: 12px;
 }
 
 .hotel-thumbnail {
-  width: 120px;
+  width: 180px;
   height: 100px;
   border-radius: 8px;
   overflow: hidden;
@@ -4011,7 +4011,7 @@ background: linear-gradient(135deg, #bc3737 0%, #e58787 100%);
   display: flex;
   justify-content: space-between;
   gap: 16px;
-  padding-top: 16px;
+  padding-top: 8px;
   border-top: 1px solid #e5e7eb;
 }
 
@@ -4040,20 +4040,21 @@ background: linear-gradient(135deg, #bc3737 0%, #e58787 100%);
 /* Room Summary Card */
 .room-summary-card {
   background: #fff;
-  padding: 20px 24px;
+  padding: 10px 24px;
   margin-bottom: 12px;
 }
 
 .room-summary-header-panel {
-  margin-bottom: 16px;
+  margin-bottom: 6px;
 }
 
 .great-choice-badge {
   display: inline-block;
   color: #16a34a;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 400;
   margin-bottom: 8px;
+  font-family: cursive;
 }
 
 .room-title-panel {
@@ -4067,7 +4068,7 @@ background: linear-gradient(135deg, #bc3737 0%, #e58787 100%);
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 24px;
-  padding-top: 16px;
+  padding-top: 10px;
   border-top: 1px solid #e5e7eb;
 }
 
@@ -4089,11 +4090,12 @@ background: linear-gradient(135deg, #bc3737 0%, #e58787 100%);
   gap: 6px;
   font-size: 13px;
   color: #666;
+  font-weight: 500;
 }
 
 .user-icon-tiny {
   font-size: 12px;
-  color: #666;
+  color: #ac1010;
 }
 
 .adults-text {
@@ -4115,7 +4117,7 @@ background: linear-gradient(135deg, #bc3737 0%, #e58787 100%);
 
 .view-policy-link {
   font-size: 13px;
-  color: #2563eb;
+  color: #e71717;
   text-decoration: none;
   display: inline-block;
 }
@@ -4138,7 +4140,7 @@ background: linear-gradient(135deg, #bc3737 0%, #e58787 100%);
 
 .view-more-link {
   font-size: 13px;
-  color: #2563eb;
+  color: #eb2525;
   text-decoration: none;
   display: inline-block;
   margin-top: 4px;
@@ -4151,7 +4153,7 @@ background: linear-gradient(135deg, #bc3737 0%, #e58787 100%);
 /* Guest Details Section */
 .guest-details-section {
   background: #fff;
-  padding: 20px 24px;
+  padding: 10px 24px;
   margin-bottom: 12px;
 }
 
@@ -4173,13 +4175,13 @@ background: linear-gradient(135deg, #bc3737 0%, #e58787 100%);
   background: transparent;
   border: none;
   font-size: 14px;
-  color: #666;
+  color: #df6c6c;
   cursor: pointer;
   padding: 4px 8px;
 }
 
 .collapse-btn:hover {
-  color: #000;
+  color: #ae1717;
 }
 
 .guest-form-content {
@@ -4207,13 +4209,14 @@ background: linear-gradient(135deg, #bc3737 0%, #e58787 100%);
 .form-field-guest label {
   font-size: 13px;
   font-weight: 500;
-  color: #374151;
+  color: #513737;
 }
+
 
 .field-note {
   font-size: 11px;
   font-weight: 400;
-  color: #6b7280;
+  color: #806b6b;
 }
 
 .form-field-guest input[type="text"],
@@ -4232,9 +4235,24 @@ background: linear-gradient(135deg, #bc3737 0%, #e58787 100%);
   color: #9ca3af;
 }
 
+.form-field-guest input:focus {
+  outline: none;
+  border-color: #d21919;
+}
 .input-select {
   cursor: pointer;
-  background-color: #e0f2fe;
+  background-color: #fee0e0a1;
+}
+
+.input-select option:checked,
+.input-select option[selected] {
+  background-color: #d21919;
+  color: #fff;
+}
+
+.input-select option:hover {
+  background-color: #d21919;
+  color: #fff;
 }
 
 .title-field .input-select {
@@ -4252,8 +4270,19 @@ background: linear-gradient(135deg, #bc3737 0%, #e58787 100%);
   border: 1px solid #d1d5db;
   border-radius: 4px;
   font-size: 14px;
-  background-color: #e0f2fe;
+  background-color: #fee0e0a1;
   cursor: pointer;
+}
+
+.country-code-select option:checked,
+.country-code-select option[selected] {
+  background-color: #d21919;
+  color: #fff;
+}
+
+.country-code-select option:hover {
+  background-color: #d21919;
+  color: #fff;
 }
 
 .phone-input {
@@ -4280,7 +4309,7 @@ background: linear-gradient(135deg, #bc3737 0%, #e58787 100%);
 
 .checkbox-field label {
   font-size: 13px;
-  color: #374151;
+  color: #513737;
   cursor: pointer;
 }
 
@@ -4291,7 +4320,7 @@ background: linear-gradient(135deg, #bc3737 0%, #e58787 100%);
 /* Pincode and State Section */
 .pincode-state-section {
   background: #fff;
-  padding: 20px 24px;
+  padding: 10px 24px;
   margin-bottom: 12px;
 }
 
@@ -4306,7 +4335,7 @@ background: linear-gradient(135deg, #bc3737 0%, #e58787 100%);
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   gap: 12px;
-  margin-bottom: 12px;
+  margin-bottom: 1px;
 }
 
 .state-label {
@@ -4318,7 +4347,7 @@ background: linear-gradient(135deg, #bc3737 0%, #e58787 100%);
 /* Price Details Section */
 .price-details-panel-section {
   background: #fff;
-  padding: 20px 24px;
+  padding: 10px 24px;
   margin-bottom: 12px;
 }
 
@@ -4334,16 +4363,18 @@ background: linear-gradient(135deg, #bc3737 0%, #e58787 100%);
   background: transparent;
   border: none;
   font-size: 14px;
-  color: #666;
+  color: #ee5151;
   cursor: pointer;
   padding: 0;
 }
-
+.collapse-arrow-btn:hover {
+  color: #ae1717;
+}
 .price-breakdown-content {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  margin-bottom: 16px;
+  gap: 6px;
+  margin-bottom: 1px;
 }
 
 .price-row-item {
@@ -4360,7 +4391,7 @@ background: linear-gradient(135deg, #bc3737 0%, #e58787 100%);
 
 .price-row-item.bold-row {
   font-weight: 600;
-  color: #000;
+  color: #b01313;
 }
 
 .price-row-item.green-text span:last-child {
@@ -4369,7 +4400,7 @@ background: linear-gradient(135deg, #bc3737 0%, #e58787 100%);
 }
 
 .price-divider-line {
-  height: 1px;
+  height: 0px;
   background: #e5e7eb;
   margin: 4px 0;
 }
@@ -4394,7 +4425,7 @@ background: linear-gradient(135deg, #bc3737 0%, #e58787 100%);
 
 .info-icon {
   font-size: 14px;
-  color: #6b7280;
+  color: #704d4d;
 }
 
 .price-final-amount {
@@ -4447,4 +4478,86 @@ background: linear-gradient(135deg, #bc3737 0%, #e58787 100%);
 
 .terms-text-hotel a:hover {
   text-decoration: underline;
+}
+
+/* GST Details Form Section */
+.gst-details-form {
+  margin-top: 20px;
+  padding-top: 10px;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.gst-form-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #000;
+  margin: 0 0 8px 0;
+  letter-spacing: 0.5px;
+}
+
+.gst-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.gst-form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.gst-form-field.gst-full-width {
+  width: 100%;
+}
+
+.gst-form-field label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.gst-form-field input[type="text"],
+.gst-form-field input[type="email"],
+.gst-form-field input[type="tel"] {
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  font-size: 14px;
+  color: #374151;
+  background: #f9fafb;
+  transition: border-color 0.2s ease;
+}
+
+.gst-form-field input:focus {
+  outline: none;
+  border-color: #d21919;
+}
+
+.gst-form-field input::placeholder {
+  color: #9ca3af;
+}
+
+.gst-textarea {
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  font-size: 14px;
+  color: #513737;
+  background: #f9fafb;
+  font-family: inherit;
+  resize: vertical;
+  transition: border-color 0.2s ease;
+}
+
+.gst-textarea:focus {
+  outline: none;
+  border-color: #d21919;
+}
+
+.gst-textarea::placeholder {
+  color: #9ca3af;
 }

@@ -44,6 +44,7 @@ function HotelBooking() {
   const [selectedRoomData, setSelectedRoomData] = useState(null);
   const [showMoreBenefits, setShowMoreBenefits] = useState(false);
   const [showPriceDetails, setShowPriceDetails] = useState(false);
+  const [showGSTDetails, setShowGSTDetails] = useState(false);
 
   
 
@@ -2736,7 +2737,7 @@ const closePanel = () => {
               
               {/* Panel Header */}
               <div className="panel-header">
-                <h2>Passenger Details</h2>
+                <h2>Continue booking</h2>
               </div>
 
               {/* Panel Content */}
@@ -2874,9 +2875,61 @@ const closePanel = () => {
 
                     {/* GST Checkbox */}
                     <div className="checkbox-field">
-                      <input type="checkbox" id="gst-checkbox" />
+                      <input 
+                        type="checkbox" 
+                        id="gst-checkbox"
+                        checked={showGSTDetails}
+                        onChange={(e) => setShowGSTDetails(e.target.checked)}
+                      />
                       <label htmlFor="gst-checkbox">Enter GST Details <span className="optional-text">(Optional)</span></label>
                     </div>
+
+                    {/* GST Details Form - Shown when checkbox is checked */}
+                    {showGSTDetails && (
+                      <div className="gst-details-form">
+                        <h4 className="gst-form-title">BUSINESS PROFILE</h4>
+                        
+                        {/* GST Number and Company Name Row */}
+                        <div className="gst-form-row">
+                          <div className="gst-form-field">
+                            <label>GST Number</label>
+                            <input type="text" placeholder="EG: 06BZAHM6385P6Z2" />
+                          </div>
+                          <div className="gst-form-field">
+                            <label>Company Name</label>
+                            <input type="text" placeholder="Enter Company Name" />
+                          </div>
+                        </div>
+
+                        {/* Business Email ID */}
+                        <div className="gst-form-field gst-full-width">
+                          <label>Business Email ID</label>
+                          <input type="email" placeholder="Enter Email Address" />
+                        </div>
+
+                        {/* Company Address */}
+                        <div className="gst-form-field gst-full-width">
+                          <label>Company Address</label>
+                          <textarea 
+                            placeholder="Enter Company Address" 
+                            rows="3"
+                            className="gst-textarea"
+                          ></textarea>
+                        </div>
+
+                        {/* Company Phone Number and Admin Email ID Row */}
+                        <div className="gst-form-row">
+                          <div className="gst-form-field">
+                            <label>Company Phone Number</label>
+                            <input type="tel" placeholder="Enter Phone Number" />
+                          </div>
+                          <div className="gst-form-field">
+                            <label>Admin Email ID</label>
+                            <input type="email" placeholder="Enter Email Address" />
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
 
