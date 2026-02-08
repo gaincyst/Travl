@@ -18,6 +18,7 @@ import {
 } from "react-icons/fa";
 import HotelSearchHeader from "../components/HotelSearchHeader";
 import AuthModal from "../components/AuthModal";
+import Footer from "../components/Footer";
 import "../styles/HotelBooking.css";
 
 function HotelBooking() {
@@ -3048,6 +3049,8 @@ const closePanel = () => {
           />
         )}
         
+        {/* Footer */}
+        <Footer />
          
       </div>
     </div>

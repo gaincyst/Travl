@@ -1606,15 +1606,42 @@ font-size: 13px;
 }
 
 .site-footer {
-  background-color: transparent; /* Pure white background */
+  background: #f5f9fc;
+  position: relative;
+  overflow: hidden;
   padding: 80px 0 30px;
   border-top: 2px solid var(--footer-separator) !important;
   color:var(--text-sub);
   border-width: 10px;
-  margin-top: 40px; /* Space above the line */
-  display: block;   /* Ensures it takes up full width */
+  margin-top: 0 !important;
+  display: block;
   width:100%;
   z-index: 10;
+}
+
+/* Override glass-card styling for footer to make it full-width section */
+.site-footer.glass-card {
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  padding: 80px 0 30px !important;
+  margin: 0 !important;
+  max-width: 100% !important;
+}
+
+/* Wave Background Pattern */
+.site-footer::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(ellipse 800px 600px at top right, rgba(79, 77, 77, 0.85) 0%, transparent 90%),
+    radial-gradient(ellipse 900px 700px at bottom left, rgba(68, 66, 66, 0.82) 0%, transparent 95%);
+  pointer-events: none;
+  z-index: 1;
 }
 
 /* This creates the dark separator line */
@@ -1636,11 +1663,13 @@ font-size: 13px;
   display: grid;
   grid-template-columns: 1.2fr 0.8fr 1fr 1.2fr;
   gap: 40px;
-  padding: 0 20px;
+  padding: 0;
+  position: relative;
+  z-index: 2;
 }
 
 .footer-col h3 {
-  color: #1a1a1a;
+  color: #000000;
   font-size: 20px;
   font-weight: 700;
   margin-bottom: 25px;
@@ -1655,10 +1684,19 @@ font-size: 13px;
 }
 
 /* Brand Info */
+.brand-info {
+  color: #374151;
+  line-height: 1.8;
+}
+
+.brand-info p {
+  color: #374151;
+}
+
 .footer-logo {
   font-size: 28px;
   font-weight: 800;
-  color: #1a1a1a;
+  color: #000000;
   margin-bottom: 15px;
 }
 
@@ -1671,13 +1709,21 @@ font-size: 13px;
 .social-links a {
   width: 35px;
   height: 35px;
-  background: #f8e0e0;
+  background: rgba(220, 38, 38, 0.1);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #9b2121;
+  color: #dc2626;
   text-decoration: none;
+  border: 1px solid rgba(220, 38, 38, 0.2);
+  transition: all 0.3s ease;
+}
+
+.social-links a:hover {
+  background: rgba(220, 38, 38, 0.2);
+  color: #b91c1c;
+  transform: translateY(-2px);
 }
 
 /* Quick Links */
@@ -1704,25 +1750,39 @@ font-size: 13px;
   margin-bottom: 15px;
 }
 
+.contact-item span {
+  color: #374151;
+}
+
 .contact-icon {
-  color: #ad1818; /* Theme Accent Color */
+  color: #ef4444; /* Theme Accent Color */
 }
 
 .reply-note {
   font-style: italic;
   font-size: 14px;
   margin-top: 10px;
+  color: #6b7280;
 }
 
 /* Newsletter Card */
 .newsletter-card {
-  background:var(--newsletter-bg) !important;
+  background: rgba(255, 255, 255, 0.9) !important;
   padding: 30px;
   border-radius: 16px;
-  box-shadow: 0 4px 25px rgba(197, 27, 27, 0.05); /* Soft shadow on white */
+  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.08);
   text-align: center;
-  color: var(--newsletter-text) !important;
-  transition: all 0.3s ease; /* Smooth transition when toggling */
+  color: #1f2937 !important;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(220, 38, 38, 0.15);
+}
+
+.newsletter-card h4 {
+  color: #000000 !important;
+}
+
+.newsletter-card p {
+  color: #6b7280 !important;
 }
 
 .subscribe-form {
@@ -1736,37 +1796,55 @@ font-size: 13px;
   border-radius: 8px;
   margin-bottom: 10px;
   outline: none;
-  background: var(--input-bg) !important;
-  color: var(--newsletter-text) !important;
+  background: #ffffff !important;
+  color: #1f2937 !important;
+}
+
+.subscribe-form input::placeholder {
+  color: #9ca3af;
 }
 
 .subscribe-form button {
   width: 100%;
   padding: 12px;
-  background: linear-gradient(135deg, #e94d59, #5c1416); /* Theme Gradient */
+  background: linear-gradient(135deg, #dc2626, #7f1d1d);
   color: white;
   border: none;
   border-radius: 8px;
   font-weight: 700;
   cursor: pointer;
-  color: var(--text-main) !important; 
+  transition: all 0.3s ease;
+}
+
+.subscribe-form button:hover {
+  background: linear-gradient(135deg, #ef4444, #991b1b);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
 }
 
 /* Footer Bottom */
 .footer-bottom {
   max-width: 1250px;
   margin: 60px auto 0;
-  padding: 30px 20px 0;
-  border-top:3px solid var(--footer-separator);
+  padding: 30px 0 0;
+  border-top:3px solid rgba(220, 38, 38, 0.3);
   display: flex;
   justify-content: space-between;
   font-size: 14px;
+  position: relative;
+  z-index: 2;
+  color: #4b5563;
 }
 
 .footer-legal a {
   margin-left: 20px;
   color: #4b5563;
   text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.footer-legal a:hover {
+  color: #ef4444;
 }
 /* Quick Links Specific Styles */
 .footer-links {
@@ -1789,12 +1867,11 @@ font-size: 13px;
   position: relative;
   /* Smooth transition for the color and the slight shift */
   transition: all 0.3s ease-in-out;
-  color: var(--text-sub) !important;
 }
 
 /* 1. The Right Shift Effect */
 .footer-links li a:hover {
-  color: #a50a0a; /* Theme primary color */
+  color: #ef4444; /* Theme primary color */
   transform: translateX(8px); /* Shifts the text 8px to the right */
 }
 
@@ -1811,7 +1888,7 @@ font-size: 13px;
   left: 0;
   width: 0; /* Starts at zero width */
   height: 2px;
-  background-color: #b21414; /* Matches hover color */
+  background-color: #ef4444; /* Matches hover color */
   transition: width 0.3s ease-in-out;
 }
 
@@ -1826,7 +1903,7 @@ font-size: 13px;
   left: -20px;
   opacity: 0;
   transition: all 0.3s ease;
-  color: #bb1111;
+  color: #ef4444;
 }
 
 .footer-links li a:hover::before {
@@ -2159,7 +2236,7 @@ body.dark-theme .label {
   color: black;
 }
 
-/* Footer Visibility */
+/* Footer Visibility - Keep same styling in dark theme */
 body.dark-theme .site-footer {
   color: var(--text-main);
 }
@@ -2182,14 +2259,14 @@ body.dark-theme .segments-main-title {
 }
 
 body.dark-theme .footer-logo{
-  color: var(--text-main);
+  color: #000000;
 }
 body.dark-theme .footer-col h3{
-  color: var(--text-main);
+  color: #000000;
 }
 
 body.dark-theme .subscribe-form input {
-  border-color: rgba(219, 201, 201, 0.1);
+  border-color: rgba(220, 38, 38, 0.3);
 }
 body.dark-theme .collections-header h2 {
  color: var(--text-main);
