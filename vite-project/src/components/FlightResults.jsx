@@ -15,6 +15,7 @@ import FiltersPanel from "./FiltersPanel";
 import DatePriceStrip from "./DatePriceStrip";
 import SearchBox from "./SearchBox";
 import AuthModal from "./AuthModal";
+import FlightBookingPanel from "./FlightBookingPanel";
 import "../styles/FlightResults.css";
 
 function FlightResults() {
@@ -29,6 +30,10 @@ function FlightResults() {
   // Fare Modal State
   const [isFareModalOpen, setIsFareModalOpen] = useState(false);
   const [selectedFlightData, setSelectedFlightData] = useState(null);
+
+  // Flight Booking Panel State
+  const [isBookingPanelOpen, setIsBookingPanelOpen] = useState(false);
+  const [bookingFlightData, setBookingFlightData] = useState(null);
 
   // Sorting state management - 3 states: null (no sort), 'asc', 'desc'
   const [sortStates, setSortStates] = useState({
@@ -111,6 +116,21 @@ function FlightResults() {
     setSelectedFlightData(null);
     document.body.style.overflow = 'auto';
   };
+
+  // Open Booking Panel
+  const openBookingPanel = (flight) => {
+    setBookingFlightData(flight);
+    setIsBookingPanelOpen(true);
+    setIsFareModalOpen(false); // Close fare modal if open
+    document.body.style.overflow = 'hidden';
+  };
+
+  // Close Booking Panel
+  const closeBookingPanel = () => {
+    setIsBookingPanelOpen(false);
+    setBookingFlightData(null);
+    document.body.style.overflow = 'auto';
+  };
   const scrollRef = useRef(null);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(true);
@@ -182,7 +202,7 @@ function FlightResults() {
       flightCode: "6E - 677",
       departureTime: "16:05",
       departureLocation: "DEL",
-      departureCity: "MUMBAI",
+      departureCity: "DELHI",
       departureTerminal: "Terminal: 2",
       arrivalTime: "02:50",
       arrivalLocation: "LKO",
@@ -208,11 +228,11 @@ function FlightResults() {
       flightCode: "QP1401",
       departureTime: "18:30",
       departureLocation: "DEL",
-      departureCity: "MUMBAI",
+      departureCity: "DELHI",
       departureTerminal: "Terminal: 2",
       arrivalTime: "21:15",
-      arrivalLocation: "BOM",
-      arrivalCity: "BANGALORE",
+      arrivalLocation: "LKO",
+      arrivalCity: "LUCKNOW",
       arrivalTerminal: "Terminal: 1",
       arrivalDate: "15 Oct 2025 at 21:15",
       departureDate: "14 Oct 2025 at 18:30",
@@ -234,11 +254,11 @@ function FlightResults() {
       flightCode: "AI803",
       departureTime: "09:00",
       departureLocation: "DEL",
-      departureCity: "MUMBAI",
+      departureCity: "DELHI",
       departureTerminal: "Terminal: 3",
       arrivalTime: "11:30",
-      arrivalLocation: "BOM",
-      arrivalCity: "BANGALORE",
+      arrivalLocation: "LKO",
+      arrivalCity: "LUCKNOW",
       arrivalTerminal: "Terminal: 2",
       arrivalDate: "15 Oct 2025 at 11:30",
       departureDate: "14 Oct 2025 at 09:00",
@@ -761,7 +781,7 @@ function FlightResults() {
                     <span>FLAT ₹ 292 OFF using MMTSUPER | FLAT 10% OFF on KOTAK Credit cards using KOTAKEMI.</span>
                   </div>
 
-                  <button className="fare-btn-book-single">BOOK NOW</button>
+                  <button className="fare-btn-book-single" onClick={() => openBookingPanel(selectedFlightData)}>BOOK NOW</button>
                 </div>
 
                 {/* Indigo Upfront */}
@@ -813,7 +833,7 @@ function FlightResults() {
                     <span>₹ 423 OFF using RUNWAYDEAL | 600 OFF on ICICI Credit Cards using MMTICIFEST</span>
                   </div>
 
-                  <button className="fare-btn-book-single">BOOK NOW</button>
+                  <button className="fare-btn-book-single" onClick={() => openBookingPanel(selectedFlightData)}>BOOK NOW</button>
                 </div>
 
                 {/* Indigo Upfront - Third Card */}
@@ -865,7 +885,7 @@ function FlightResults() {
                     <span>₹ 423 OFF using RUNWAYDEAL | 600 OFF on ICICI Credit Cards using MMTICIFEST</span>
                   </div>
 
-                  <button className="fare-btn-book-single">BOOK NOW</button>
+                  <button className="fare-btn-book-single" onClick={() => openBookingPanel(selectedFlightData)}>BOOK NOW</button>
                 </div>
               </div>
             </div>
@@ -880,6 +900,13 @@ function FlightResults() {
           onClose={() => setShowAuthModal(false)} 
         />
       )}
+
+      {/* Flight Booking Panel */}
+      <FlightBookingPanel 
+        isOpen={isBookingPanelOpen}
+        onClose={closeBookingPanel}
+        flightData={bookingFlightData}
+      />
     </div>
   );
 }
