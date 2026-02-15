@@ -1430,9 +1430,9 @@ background-color: #c01313;
 .tab-section-title {
   font-size: 24px;
   font-weight: 700;
-  color: #47494d;
+  color: #be0a0a;
   margin-bottom: 20px;
-  font-family: cursive;
+  margin-left: 120px;
   margin-top: -20px;
 }
 
@@ -1448,11 +1448,11 @@ background-color: #c01313;
 .amenities-title {
   font-size: 24px;
   font-weight: 700;
-  color: #1a1a1a;
+  color: #be0a0a;
   margin: 0;
-font-family: cursive;
+
   margin-top: -20px;
-  margin-left: -120px;
+  margin-left: 0px;
 }
 
 .amenities-rating {
@@ -1614,9 +1614,9 @@ font-family: cursive;
   color: #1a1a1a;
   margin: 0 0 24px 0;
   padding: 0 1px;
-  font-family: cursive;
+color: #be0a0a;
   margin-top: -20px;
-
+margin-left: 120px; 
 }
 
 .restaurant-card {
@@ -1794,7 +1794,7 @@ background: -webkit-repeating-linear-gradient(#8e8d8d 0%, #f9e9e9 5%, #fdfdfd 10
   color: #1a1a1a;
   margin: 0;
   letter-spacing: 0.5px;
-  font-family: cursive;
+  color: #be0a0a;
 }
 
 .room-image-container {
@@ -2099,8 +2099,9 @@ background-color: #c01313;
   font-weight: 700;
   color: #1a1a1a;
   margin: 0 0 12px 0;
-  font-family: cursive;
+ color: #be0a0a;
   margin-top: -20px;
+margin-left: 120px;
 }
 
 .location-address {
@@ -2379,8 +2380,9 @@ background-color: #c01313;
   font-weight: 700;
   color: #1a1a1a;
   margin: 0 0 12px 0;
-  font-family: cursive;
+  color: #be0a0a;
   margin-top: -20px;
+  margin-left: 120px;
   
 }
 
@@ -2396,6 +2398,7 @@ background-color: #c01313;
   font-size: 16px;
   margin-top: 2px;
   flex-shrink: 0;
+  margin-left: 120px;
 }
 
 .location-address-text {
@@ -2647,9 +2650,9 @@ background-color: #c01313;
   color: #111827;
   
   padding: 0 10px;
-  font-family: cursive;
+  color: #be0a0a;
   margin-top: -20px;
-  margin-left: -120px;
+  margin-left: 0px;
 }
 
 .reviews-sort {
@@ -2693,8 +2696,9 @@ background-color: #c01313;
 
 /* Overall Rating Card */
 .reviews-rating-card {
-  background: linear-gradient(135deg, #c91313 0%, #d5b481 100%);
-  border-radius: 12px;
+ background: radial-gradient(circle at top left, #851111, #fe6969);
+background-color: #c01313;
+  color: white; border-radius: 12px;
   padding: 2px;
   color: #ffffff;
   text-align: center;
@@ -3138,9 +3142,9 @@ background: linear-gradient(135deg, #bc3737 0%, #e58787 100%);
   font-weight: 700;
   color: #111827;
 
-  font-family: cursive;
+  color: #be0a0a;
   margin-top: -40px;
-  margin-left: -120px;
+  margin-left: 0px;
 }
 
 .property-time-badges {
