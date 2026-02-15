@@ -46,7 +46,7 @@ function SearchBox({ preFilledData, hideServiceTabs, activeService }) {
     console.log("Active Tab:", activeTab); // Debug log
     if (activeTab === "flights") {
       navigate("/flight-results", { 
-        state: { fromCity, toCity, startDate, returnDate, displayValue, tripType } 
+        state: { fromCity, toCity, startDate, returnDate, displayValue, tripType, adults: tempSelection.adults, children: tempSelection.children, infants: tempSelection.infants } 
       });
     } else if (activeTab === "bus") {
       navigate("/bus-results", { 
@@ -98,7 +98,7 @@ function SearchBox({ preFilledData, hideServiceTabs, activeService }) {
       </div>
       )}
 
-      {activeTab !== 'hotel' && (
+      {activeTab === 'flights' && (
         <div className="trip-type">
           <label>
             <input type="radio" name="trip" checked={tripType === "oneWay"} onChange={() => setTripType("oneWay")} /> One Way

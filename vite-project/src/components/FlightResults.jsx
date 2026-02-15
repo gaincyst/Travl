@@ -119,7 +119,12 @@ function FlightResults() {
 
   // Open Booking Panel
   const openBookingPanel = (flight) => {
-    setBookingFlightData(flight);
+    // Add adults count from searchData to flight data
+    const flightWithTravellers = {
+      ...flight,
+      adults: searchData.adults || 1 // Default to 1 if not specified
+    };
+    setBookingFlightData(flightWithTravellers);
     setIsBookingPanelOpen(true);
     setIsFareModalOpen(false); // Close fare modal if open
     document.body.style.overflow = 'hidden';

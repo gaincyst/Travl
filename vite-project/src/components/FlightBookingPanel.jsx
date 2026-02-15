@@ -1,6 +1,396 @@
 import React, { useState, useRef } from "react";
 import "../styles/FlightBookingPanel.css";
 
+// Seats and Meals Section Component
+function SeatsAndMealsSection({ flightData, selectedSeats, setSelectedSeats, selectedMeal, setSelectedMeal }) {
+  const [activeTab, setActiveTab] = useState('seats'); // 'seats' or 'meals'
+  const [vegOnly, setVegOnly] = useState(false);
+  const maxSeats = 1; // Based on passenger count
+
+  // Meal data
+  const mealsData = [
+    { id: 1, name: 'SHONDESH TIRAMISU', price: 250, isVeg: true, image: '/meals/images.jfif' },
+    { id: 2, name: 'PANEER MAKHANI WITH JEERA ALOO & VEGETABLE PULAO', price: 600, isVeg: true, image: '/meals/images (1).jfif' },
+    { id: 3, name: 'VEGETABLE MANCHURIAN WITH FRIED RICE', price: 600, isVeg: true, image: '/meals/images (2).jfif' },
+    { id: 4, name: 'MINI IDLIS, MEDU VADA AND UPMA', price: 600, isVeg: true, image: '/meals/images (3).jfif' },
+    { id: 5, name: 'HERB ROAST VEGETABLE ROLL', price: 400, isVeg: true, image: '/meals/images (4).jfif' },
+    { id: 6, name: 'SEASONAL FRESH FRUIT PLATTER', price: 300, isVeg: true, image: '/meals/images (5).jfif' },
+    { id: 7, name: 'CHICKEN JUNGLEE SANDWICH', price: 400, isVeg: false, image: '/meals/images (6).jfif' },
+    { id: 8, name: 'AWADHI CHICKEN BIRYANI WITH MIRCH SALAN', price: 600, isVeg: false, image: '/meals/images (7).jfif' }
+  ];
+
+  const filteredMeals = vegOnly ? mealsData.filter(m => m.isVeg) : mealsData;
+
+  // Generate seat data - rows 1 to 31, columns A-F
+  const generateSeats = () => {
+    const seats = [];
+    const unavailableSeats = ['1A', '1B', '1C', '1D', '1E', '1F', '2A', '2B', '2C', '2D', '2E', '2F',
+      '3A', '3F', '5A', '5B', '5C', '21A', '21F', '26A', '26B', '26C', '27B', '27C', '28A', '28E', '28F', '29B', '30D', '30E', '30F'];
+    const exitRowSeats = ['12A', '12B', '12C', '12D', '12E', '12F', '13A', '13B', '13C', '13D', '13E', '13F'];
+    const xlSeats = ['12C', '12D', '12E', '12F', '13A', '13B', '13C', '13D', '13E', '13F'];
+    const nonRecliningSeats = ['11C', '11D', '11E', '11F'];
+    const premiumSeats = ['3B', '3C', '3D', '3E', '4A', '4B', '4C', '4D', '4E', '4F', '5D', '5E', '5F'];
+    const midPriceSeats = ['7B', '8A', '8B', '8C', '8D', '8E', '9A', '9B', '9C', '9D', '9E', '9F', 
+      '10A', '10B', '10C', '10D', '10E', '10F', '14A', '14B', '14C', '14D', '14E', '14F',
+      '15A', '15B', '15C', '15D', '15E', '15F', '16A', '16B', '16C', '16D', '16E', '16F',
+      '17A', '17B', '17C', '17D', '17E', '17F', '18A', '18B', '18C', '18D', '18E', '18F',
+      '19A', '19B', '19C', '19D', '19E', '19F', '20A', '20B', '20C', '20D', '20E', '20F',
+      '21B', '21C', '21D', '21E', '22B', '22C', '22D', '23A', '23B', '23C', '23D', '23E', '23F',
+      '24A', '24B', '24C', '24D', '24E', '24F', '25A', '25B', '25C', '25D', '25E', '25F',
+      '26D', '26E', '26F', '27A', '27D', '27E', '27F', '28B', '28C', '28D', '29A', '29C', '29D', '29E', '29F'];
+    const freeSeats = ['30B', '30C', '31B', '31C', '31E'];
+    
+    for (let row = 1; row <= 31; row++) {
+      const rowSeats = [];
+      ['A', 'B', 'C', 'D', 'E', 'F'].forEach(col => {
+        const seatId = `${row}${col}`;
+        const isUnavailable = unavailableSeats.includes(seatId);
+        const isExit = exitRowSeats.includes(seatId);
+        const isXL = xlSeats.includes(seatId);
+        const isNonReclining = nonRecliningSeats.includes(seatId);
+        const isPremium = premiumSeats.includes(seatId);
+        const isMidPrice = midPriceSeats.includes(seatId);
+        const isFree = freeSeats.includes(seatId);
+        
+        let price = 0;
+        let priceCategory = 'free';
+        if (!isUnavailable) {
+          if (isFree) {
+            price = 0;
+            priceCategory = 'free';
+          } else if (isPremium) {
+            price = Math.floor(Math.random() * (835 - 545) + 545);
+            priceCategory = 'premium';
+          } else if (isMidPrice) {
+            price = Math.floor(Math.random() * (440 - 390) + 390);
+            priceCategory = 'mid';
+          }
+        }
+        
+        rowSeats.push({
+          id: seatId,
+          row,
+          col,
+          available: !isUnavailable,
+          isExit,
+          isXL,
+          isNonReclining,
+          price,
+          priceCategory
+        });
+      });
+      seats.push(rowSeats);
+    }
+    return seats;
+  };
+
+  const seats = generateSeats();
+
+  const handleSeatClick = (seat) => {
+    if (!seat.available) return;
+    
+    const isSelected = selectedSeats.some(s => s.id === seat.id);
+    if (isSelected) {
+      setSelectedSeats(selectedSeats.filter(s => s.id !== seat.id));
+    } else {
+      if (selectedSeats.length < maxSeats) {
+        setSelectedSeats([...selectedSeats, seat]);
+      }
+    }
+  };
+
+  const renderSeatIcon = (seat) => {
+    const isSelected = selectedSeats.some(s => s.id === seat.id);
+    
+    if (!seat.available) {
+      return <div className="flight-seat flight-seat-unavailable">✕</div>;
+    }
+    
+    let seatClass = 'flight-seat';
+    
+    // Exit row seats (rows 12-13) get special styling
+    if (seat.isExit || seat.isXL) {
+      seatClass += ' flight-seat-exit-row';
+      if (isSelected) {
+        seatClass += ' flight-seat-selected';
+      }
+      return (
+        <div className={seatClass} onClick={() => handleSeatClick(seat)}>
+          <span className="seat-label-xl">XL</span>
+        </div>
+      );
+    }
+    
+    // Non-reclining seats
+    if (seat.isNonReclining) {
+      seatClass += ' flight-seat-non-recline';
+      if (isSelected) {
+        seatClass += ' flight-seat-selected';
+      }
+      return <div className={seatClass} onClick={() => handleSeatClick(seat)}></div>;
+    }
+    
+    // Regular seats
+    if (isSelected) {
+      seatClass += ' flight-seat-selected';
+    } else if (seat.priceCategory === 'free') {
+      seatClass += ' flight-seat-free';
+    } else if (seat.priceCategory === 'premium') {
+      seatClass += ' flight-seat-premium';
+    } else if (seat.priceCategory === 'mid') {
+      seatClass += ' flight-seat-mid';
+    }
+    
+    return (
+      <div className={seatClass} onClick={() => handleSeatClick(seat)}>
+        {seat.price === 0 && <span className="seat-price-zero">₹0</span>}
+      </div>
+    );
+  };
+
+  return (
+    <div className="flight-seats-meals-container">
+      {/* Tabs */}
+      <div className="flight-sm-tabs">
+        <button 
+          className={`flight-sm-tab ${activeTab === 'seats' ? 'flight-sm-tab-active' : ''}`}
+          onClick={() => setActiveTab('seats')}
+        >
+          🪑 Seats
+        </button>
+        <button 
+          className={`flight-sm-tab ${activeTab === 'meals' ? 'flight-sm-tab-active' : ''}`}
+          onClick={() => setActiveTab('meals')}
+        >
+          🍽 Meals
+        </button>
+      </div>
+
+      {/* Offer Banner or Veg Toggle */}
+      {activeTab === 'seats' ? (
+        <div className="flight-sm-offer-banner">
+          <div className="flight-sm-offer-content">
+            <img src="/logo/visa-logo.png" alt="VISA" className="visa-icon-small" onError={(e) => e.target.style.display = 'none'} />
+            <span>Get <strong>FREE SEAT</strong> using VISA Signature Credit card. Discount will be automatically applied on payments page.</span>
+          </div>
+          <a href="#" className="flight-sm-offer-link">View T&C</a>
+        </div>
+      ) : (
+        <div className="flight-meals-veg-toggle-bar">
+          <label className="flight-veg-toggle">
+            <img src="/logo/veg.png" alt="Veg" className="toggle-veg-icon" />
+            <span className="toggle-label">Veg only</span>
+            <input
+              type="checkbox"
+              checked={vegOnly}
+              onChange={(e) => setVegOnly(e.target.checked)}
+              className="toggle-checkbox"
+            />
+          </label>
+        </div>
+      )}
+
+      {activeTab === 'seats' ? (
+        <>
+          {/* Route Header */}
+          <div className="flight-sm-route-header">
+            <div className="flight-sm-route-info">
+              <h3 className="flight-sm-route-title">{flightData.departureCity} → {flightData.arrivalCity}</h3>
+              <p className="flight-sm-seats-count">{selectedSeats.length} of {maxSeats} Seat(s) Selected</p>
+            </div>
+            <div className="flight-sm-selection-status">Selection pending</div>
+          </div>
+
+          {/* Main Seating Area */}
+          <div className="flight-sm-seating-area">
+            {/* Legend Box - Fixed */}
+            <div className="flight-sm-legend">
+              <div className="legend-item">
+                <div className="legend-color legend-free"></div>
+                <span>Free</span>
+              </div>
+              <div className="legend-item">
+                <div className="legend-color legend-mid"></div>
+                <span>₹390-440</span>
+              </div>
+              <div className="legend-item">
+                <div className="legend-color legend-premium"></div>
+                <span>₹545-835</span>
+              </div>
+              <div className="legend-item">
+                <div className="legend-color legend-exit"></div>
+                <span>Exit Row Seats</span>
+              </div>
+              <div className="legend-item">
+                <div className="legend-color legend-non-recline"></div>
+                <span>Non Reclining</span>
+              </div>
+              <div className="legend-item">
+                <div className="legend-xl">XL</div>
+                <span>Extra Legroom</span>
+              </div>
+            </div>
+
+            {/* Scrollable Airplane Container */}
+            <div className="flight-seat-map-scroll">
+              <div className="flight-seat-map">
+                {/* Front of Plane */}
+                <div className="plane-front">
+                  <div className="plane-nose"></div>
+                </div>
+
+                {/* Seat Grid */}
+                <div className="flight-seat-grid">
+                  {seats.map((rowSeats, rowIndex) => {
+                    const row = rowIndex + 1;
+                    const isExitRow = row === 12 || row === 13;
+                    
+                    return (
+                      <div key={row} className="flight-seat-row-container">
+                        {/* Exit Indicator Left */}
+                        {row === 1 && (
+                          <div className="exit-indicator exit-top-left">
+                            <span className="exit-arrow">◄</span>
+                            <span className="exit-text">EXIT</span>
+                          </div>
+                        )}
+                        
+                        <div className="flight-seat-row">
+                          <span className="seat-row-number">{row}</span>
+                          
+                          {/* Left side seats: A, B, C */}
+                          <div className="seat-group seat-group-left">
+                            {rowSeats.slice(0, 3).map(seat => (
+                              <div key={seat.id} className="seat-wrapper">
+                                {row === 1 && <span className="seat-col-letter">{seat.col}</span>}
+                                {renderSeatIcon(seat)}
+                              </div>
+                            ))}
+                          </div>
+                          
+                          {/* Aisle */}
+                          <div className="seat-aisle"></div>
+                          
+                          {/* Right side seats: D, E, F */}
+                          <div className="seat-group seat-group-right">
+                            {rowSeats.slice(3, 6).map(seat => (
+                              <div key={seat.id} className="seat-wrapper">
+                                {row === 1 && <span className="seat-col-letter">{seat.col}</span>}
+                                {renderSeatIcon(seat)}
+                              </div>
+                            ))}
+                          </div>
+                          
+                          <span className="seat-row-number">{row}</span>
+                        </div>
+
+                        {/* Exit Row Markers */}
+                        {isExitRow && (
+                          <>
+                            <div className="exit-row-marker exit-row-left"></div>
+                            <div className="exit-row-marker exit-row-right"></div>
+                          </>
+                        )}
+
+                        {/* Lavatory Icons */}
+                        {row === 1 && (
+                          <>
+                            <div className="lavatory-icon lav-top-left">🚻</div>
+                            <div className="lavatory-icon lav-top-right">🚻</div>
+                          </>
+                        )}
+                        {row === 31 && (
+                          <>
+                            <div className="lavatory-icon lav-bottom-left">🚻</div>
+                            <div className="lavatory-icon lav-bottom-right">🚻</div>
+                          </>
+                        )}
+
+                        {/* Exit Indicator Right */}
+                        {row === 1 && (
+                          <div className="exit-indicator exit-top-right">
+                            <span className="exit-text">EXIT</span>
+                            <span className="exit-arrow">►</span>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Rear Exit Doors */}
+                {seats.length > 30 && (
+                  <>
+                    <div className="exit-indicator exit-bottom-left">
+                      <span className="exit-arrow">◄</span>
+                      <span className="exit-text">EXIT</span>
+                    </div>
+                    <div className="exit-indicator exit-bottom-right">
+                      <span className="exit-text">EXIT</span>
+                      <span className="exit-arrow">►</span>
+                    </div>
+                  </>
+                )}
+
+                {/* Back of Plane */}
+                <div className="plane-back">
+                  <div className="plane-tail-left"></div>
+                  <div className="plane-tail-center"></div>
+                  <div className="plane-tail-right"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      ) : (
+        <div className="flight-meals-content">
+          {/* Meals Grid */}
+          <div className="flight-meals-grid">
+            {filteredMeals.map((meal) => {
+              const isSelected = selectedMeal?.id === meal.id;
+              const isDisabled = selectedMeal && !isSelected;
+              
+              return (
+                <div 
+                  key={meal.id} 
+                  className={`flight-meal-card ${isDisabled ? 'flight-meal-disabled' : ''}`}
+                >
+                  <img 
+                    src={meal.image} 
+                    alt={meal.name} 
+                    className="flight-meal-image"
+                    onError={(e) => {
+                      e.target.src = '/images/i1.jpg';
+                    }}
+                  />
+                  <div className="flight-meal-info">
+                    <h4 className="flight-meal-name">{meal.name}</h4>
+                    <div className="flight-meal-details">
+                      <img 
+                        src={meal.isVeg ? '/logo/veg.png' : '/logo/nonveg.png'} 
+                        alt={meal.isVeg ? 'Veg' : 'Non-veg'} 
+                        className="flight-meal-type-icon"
+                      />
+                      <span className="flight-meal-price">₹{meal.price}</span>
+                    </div>
+                  </div>
+                  <button
+                    className={`flight-meal-btn ${isSelected ? 'flight-meal-btn-remove' : ''}`}
+                    onClick={() => setSelectedMeal(isSelected ? null : meal)}
+                    disabled={isDisabled}
+                  >
+                    {isSelected ? 'Remove' : 'Add'}
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function FlightBookingPanel({ isOpen, onClose, flightData }) {
   // Step navigation state
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
@@ -10,11 +400,51 @@ function FlightBookingPanel({ isOpen, onClose, flightData }) {
     travelDetails: {},
     seatsAndMeals: {},
     addOns: {},
-    travelInsurance: {}
+    reviewBooking: {}
   });
   
   // GST checkbox state
   const [hasGST, setHasGST] = useState(false);
+  
+  // Seats and Meals state
+  const [selectedSeats, setSelectedSeats] = useState([]);
+  const [selectedMeal, setSelectedMeal] = useState(null);
+  
+  // Baggage dropdown state
+  const [baggageDropdownOpen, setBaggageDropdownOpen] = useState(false);
+  const [selectedBaggageWeight, setSelectedBaggageWeight] = useState({ weight: 10, price: 900 });
+  const [baggageQuantity, setBaggageQuantity] = useState(1);
+  const [baggageSelected, setBaggageSelected] = useState(false);
+  const [baggageTab, setBaggageTab] = useState('surface'); // 'surface' or 'premium'
+  
+  // Confirmation modal state
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+  
+  // Adults management state
+  const totalAdults = flightData?.adults || 1; // Get from flightData or default to 1
+  const [visibleAdults, setVisibleAdults] = useState(1); // Number of adult forms currently visible
+  
+  // Adult form data state - array of objects for each adult
+  const [adultsData, setAdultsData] = useState(
+    Array.from({ length: 10 }, () => ({
+      title: '',
+      firstName: '',
+      lastName: '',
+      countryCode: '',
+      mobile: '',
+      email: '',
+      wheelchair: false
+    }))
+  );
+  
+  // Update adult data for a specific index
+  const updateAdultData = (index, field, value) => {
+    setAdultsData(prevData => {
+      const newData = [...prevData];
+      newData[index] = { ...newData[index], [field]: value };
+      return newData;
+    });
+  };
   
   // Refs for scrolling to sections (for display reference only)
   const panelContentRef = useRef(null);
@@ -25,8 +455,7 @@ function FlightBookingPanel({ isOpen, onClose, flightData }) {
     { id: "trip-summary", label: "Trip Summary" },
     { id: "travel-details", label: "Travels details" },
     { id: "seats-meals", label: "Seats & Meals" },
-    { id: "add-ons", label: "Add-Ons" },
-    { id: "travel-insurance", label: "Travel Insurance" }
+    { id: "add-ons", label: "Add-Ons" }
   ];
 
   const handleStepClick = (stepIndex) => {
@@ -50,21 +479,9 @@ function FlightBookingPanel({ isOpen, onClose, flightData }) {
       setCompletedSteps([...completedSteps, currentStepIndex]);
     }
     
-    // If on Trip Summary (last step), save to backend
-    if (currentStepIndex === navigationSteps.length - 1) {
-      try {
-        // TODO: API call to save booking
-        // const response = await saveBooking(stepData);
-        console.log("Saving booking data:", stepData);
-        
-        // After successful save, move to next flow or show confirmation
-        alert("Booking saved successfully!");
-        // Continue to next flow step without closing panel
-      } catch (error) {
-        console.error("Error saving booking:", error);
-        alert("Failed to save booking. Please try again.");
-        return;
-      }
+    // If on Review Booking (step 4), show confirmation modal
+    if (currentStepIndex === 4) {
+      setShowConfirmationModal(true);
     } else {
       // Move to next step
       setCurrentStepIndex(currentStepIndex + 1);
@@ -73,6 +490,42 @@ function FlightBookingPanel({ isOpen, onClose, flightData }) {
       }
     }
   };
+
+  const handleConfirmBooking = async () => {
+    try {
+      // TODO: API call to save booking
+      console.log("Saving booking data:", stepData);
+      
+      // Close modal and panel
+      setShowConfirmationModal(false);
+      alert("Booking confirmed successfully!");
+      onClose();
+    } catch (error) {
+      console.error("Error saving booking:", error);
+      alert("Failed to save booking. Please try again.");
+    }
+  };
+
+  const handleCancelBooking = () => {
+    setShowConfirmationModal(false);
+  };
+
+  // Baggage options
+  const surfaceOptions = [
+    { weight: 10, price: 900 },
+    { weight: 15, price: 1350 },
+    { weight: 20, price: 1800 },
+    { weight: 25, price: 2250 },
+    { weight: 30, price: 2700 }
+  ];
+  
+  const premiumOptions = [
+    { weight: 10, price: 1800 },
+    { weight: 15, price: 2700 },
+    { weight: 20, price: 3600 },
+    { weight: 25, price: 4501 },
+    { weight: 30, price: 5400 }
+  ];
 
   const renderStepContent = () => {
     switch (currentStepIndex) {
@@ -344,72 +797,100 @@ function FlightBookingPanel({ isOpen, onClose, flightData }) {
               <span className="alert-text">Please ensure that your name matches your govt. ID such as Aadhaar, Passport or Driver's License</span>
             </div>
 
-            {/* Adult 1 Form */}
-            <div className="traveller-form-card">
-              <div className="adult-header">
-                <label className="adult-checkbox-label">
-                  <input type="checkbox" className="adult-checkbox" defaultChecked />
-                  <span className="adult-title">ADULT 1</span>
-                </label>
-              </div>
+            {/* Adult Forms - Dynamically rendered */}
+            {Array.from({ length: visibleAdults }).map((_, index) => (
+              <div key={index} className="traveller-form-card">
+                <div className="adult-header">
+                  <label className="adult-checkbox-label">
+                    <input type="checkbox" className="adult-checkbox" defaultChecked />
+                    <span className="adult-title">ADULT {index + 1}</span>
+                  </label>
+                </div>
 
-              {/* Name Row with Title */}
-              <div className="form-row name-title-row">
-                <select className="form-input form-select-title">
-                  <option value="">Title</option>
-                  <option value="Mr">Mr</option>
-                  <option value="Mrs">Mrs</option>
-                  <option value="Ms">Ms</option>
-                </select>
-                <input 
-                  type="text" 
-                  className="form-input" 
-                  placeholder="First & Middle Name"
-                />
-                <input 
-                  type="text" 
-                  className="form-input" 
-                  placeholder="Last Name"
-                />
-              </div>
+                {/* Name Row with Title */}
+                <div className="form-row name-title-row">
+                  <select 
+                    className="form-input form-select-title"
+                    value={adultsData[index].title}
+                    onChange={(e) => updateAdultData(index, 'title', e.target.value)}
+                  >
+                    <option value="">Title</option>
+                    <option value="Mr">Mr</option>
+                    <option value="Mrs">Mrs</option>
+                    <option value="Ms">Ms</option>
+                  </select>
+                  <input 
+                    type="text" 
+                    className="form-input" 
+                    placeholder="First & Middle Name"
+                    value={adultsData[index].firstName}
+                    onChange={(e) => updateAdultData(index, 'firstName', e.target.value)}
+                  />
+                  <input 
+                    type="text" 
+                    className="form-input" 
+                    placeholder="Last Name"
+                    value={adultsData[index].lastName}
+                    onChange={(e) => updateAdultData(index, 'lastName', e.target.value)}
+                  />
+                </div>
 
-              {/* Contact Details Row */}
-              <div className="form-labels-row">
-                <label className="form-field-label">Country Code</label>
-                <label className="form-field-label">Mobile No</label>
-                <label className="form-field-label">Email</label>
-              </div>
-              <div className="form-row contact-row">
-                <input 
-                  type="text" 
-                  className="form-input" 
-                  placeholder="Country Code(Optional)"
-                />
-                <input 
-                  type="text" 
-                  className="form-input" 
-                  placeholder="Mobile No(Optional)"
-                />
-                <input 
-                  type="text" 
-                  className="form-input" 
-                  placeholder="Email(Optional)"
-                />
-              </div>
+                {/* Contact Details Row */}
+                <div className="form-labels-row">
+                  <label className="form-field-label">Country Code</label>
+                  <label className="form-field-label">Mobile No</label>
+                  <label className="form-field-label">Email</label>
+                </div>
+                <div className="form-row contact-row">
+                  <input 
+                    type="text" 
+                    className="form-input" 
+                    placeholder="Country Code(Optional)"
+                    value={adultsData[index].countryCode}
+                    onChange={(e) => updateAdultData(index, 'countryCode', e.target.value)}
+                  />
+                  <input 
+                    type="text" 
+                    className="form-input" 
+                    placeholder="Mobile No(Optional)"
+                    value={adultsData[index].mobile}
+                    onChange={(e) => updateAdultData(index, 'mobile', e.target.value)}
+                  />
+                  <input 
+                    type="text" 
+                    className="form-input" 
+                    placeholder="Email(Optional)"
+                    value={adultsData[index].email}
+                    onChange={(e) => updateAdultData(index, 'email', e.target.value)}
+                  />
+                </div>
 
-              {/* Wheelchair Checkbox */}
-              <div className="wheelchair-option">
-                <label className="checkbox-label">
-                  <input type="checkbox" className="option-checkbox" />
-                  <span className="checkbox-text">I require wheelchair <span className="optional-text">(Optional)</span></span>
-                </label>
-              </div>
+                {/* Wheelchair Checkbox */}
+                <div className="wheelchair-option">
+                  <label className="checkbox-label">
+                    <input 
+                      type="checkbox" 
+                      className="option-checkbox"
+                      checked={adultsData[index].wheelchair}
+                      onChange={(e) => updateAdultData(index, 'wheelchair', e.target.checked)}
+                    />
+                    <span className="checkbox-text">I require wheelchair <span className="optional-text">(Optional)</span></span>
+                  </label>
+                </div>
 
-              {/* Add New Adult Link */}
-              <div className="add-adult-section">
-                <button className="add-adult-btn">+ ADD NEW ADULT</button>
+                {/* Add New Adult Link - Only show after current adult form and if more adults are expected */}
+                {index === visibleAdults - 1 && visibleAdults < totalAdults && (
+                  <div className="add-adult-section">
+                    <button 
+                      className="add-adult-btn"
+                      onClick={() => setVisibleAdults(visibleAdults + 1)}
+                    >
+                      + ADD NEW ADULT
+                    </button>
+                  </div>
+                )}
               </div>
-            </div>
+            ))}
 
             {/* Booking Details Section */}
             <div className="booking-details-card">
@@ -523,34 +1004,302 @@ function FlightBookingPanel({ isOpen, onClose, flightData }) {
         );
       
       case 2: // Seats & Meals
-        return (
-          <div className="flight-step-content">
-            <h3 className="step-content-title">Select Seats & Meals</h3>
-            {/* Placeholder: Content will be added later */}
-            <div className="step-placeholder">
-              <p>Seats & Meals content section</p>
-            </div>
-          </div>
-        );
+        return <SeatsAndMealsSection 
+          flightData={flightData} 
+          selectedSeats={selectedSeats}
+          setSelectedSeats={setSelectedSeats}
+          selectedMeal={selectedMeal}
+          setSelectedMeal={setSelectedMeal}
+        />;
       
       case 3: // Add-Ons
+        const baggageOptions = baggageTab === 'surface' ? surfaceOptions : premiumOptions;
+        
         return (
           <div className="flight-step-content">
-            <h3 className="step-content-title">Add Extra Services</h3>
-            {/* Placeholder: Content will be added later */}
-            <div className="step-placeholder">
-              <p>Add-Ons content section</p>
+            <div className="baggage-courier-section">
+              <h2 className="baggage-courier-title">Courier Your Bags & Travel Baggage Free</h2>
+              <p className="baggage-courier-subtitle">
+                Have excess baggage? Send it separately via our logistic partner at affordable rates & travel baggage-free!
+              </p>
+              
+              <div className="baggage-courier-tabs">
+                <button 
+                  className={`baggage-tab ${baggageTab === 'surface' ? 'active' : ''}`}
+                  onClick={() => {
+                    setBaggageTab('surface');
+                    setBaggageSelected(false);
+                    setBaggageQuantity(1);
+                    setSelectedBaggageWeight({ weight: 10, price: 900 });
+                    setBaggageDropdownOpen(false);
+                  }}
+                >
+                  <span className="tab-type">SURFACE</span>
+                  <span className="tab-duration">4-7 days by road</span>
+                </button>
+                <button 
+                  className={`baggage-tab ${baggageTab === 'premium' ? 'active' : ''}`}
+                  onClick={() => {
+                    setBaggageTab('premium');
+                    setBaggageSelected(false);
+                    setBaggageQuantity(1);
+                    setSelectedBaggageWeight({ weight: 10, price: 1800 });
+                    setBaggageDropdownOpen(false);
+                  }}
+                >
+                  <span className="tab-type">PREMIUM</span>
+                  <span className="tab-duration">In 72 hrs by air</span>
+                </button>
+              </div>
+              
+              <div className="baggage-option">
+                <label className="baggage-checkbox-label">
+                  <input 
+                    type="checkbox" 
+                    className="baggage-checkbox" 
+                    checked={baggageSelected}
+                    onChange={(e) => {
+                      setBaggageSelected(e.target.checked);
+                      if (!e.target.checked) {
+                        setBaggageQuantity(1);
+                      }
+                    }}
+                  />
+                  <span className="baggage-price">
+                    ₹ {(selectedBaggageWeight.price * baggageQuantity).toLocaleString('en-IN')} for {baggageQuantity} Bag{baggageQuantity > 1 ? 's' : ''}
+                  </span>
+                </label>
+                <div className="baggage-weight-dropdown-container">
+                  <div 
+                    className="baggage-weight-dropdown"
+                    onClick={() => setBaggageDropdownOpen(!baggageDropdownOpen)}
+                  >
+                    <span>{selectedBaggageWeight.weight} kgs {baggageSelected ? `X ${baggageQuantity} Bag${baggageQuantity > 1 ? 's' : ''}` : ''}</span>
+                    <svg 
+                      width="12" 
+                      height="8" 
+                      viewBox="0 0 12 8" 
+                      fill="none"
+                      style={{ transform: baggageDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }}
+                    >
+                      <path d="M1 1L6 6L11 1" stroke="#cc0000" strokeWidth="2" strokeLinecap="round"/>
+                    </svg>
+                  </div>
+                  
+                  {baggageDropdownOpen && (
+                    <div className="baggage-dropdown-menu">
+                      {baggageOptions.map((option) => (
+                        <div key={option.weight} className="baggage-dropdown-item">
+                          <div className="baggage-dropdown-left">
+                            <span className="baggage-dropdown-weight">{option.weight} kgs X {baggageQuantity} Bag{baggageQuantity > 1 ? 's' : ''}</span>
+                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="baggage-info-icon">
+                              <circle cx="7" cy="7" r="6.5" stroke="#999" strokeWidth="1"/>
+                              <text x="7" y="10" textAnchor="middle" fontSize="10" fill="#999" fontFamily="Arial">i</text>
+                            </svg>
+                          </div>
+                          <span className="baggage-dropdown-price">₹ {(option.price * baggageQuantity).toLocaleString('en-IN')}</span>
+                          <button 
+                            className="baggage-dropdown-add-btn"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedBaggageWeight(option);
+                              setBaggageSelected(true);
+                              setBaggageQuantity(1);
+                              setBaggageDropdownOpen(false);
+                            }}
+                          >
+                            ADD
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                
+                {baggageSelected && (
+                  <div className="baggage-quantity-controls">
+                    <button 
+                      className="quantity-btn"
+                      onClick={() => setBaggageQuantity(Math.max(1, baggageQuantity - 1))}
+                      disabled={baggageQuantity <= 1}
+                    >
+                      -
+                    </button>
+                    <input 
+                      type="text" 
+                      className="quantity-input" 
+                      value={baggageQuantity}
+                      readOnly
+                    />
+                    <button 
+                      className="quantity-btn"
+                      onClick={() => setBaggageQuantity(baggageQuantity + 1)}
+                    >
+                      +
+                    </button>
+                  </div>
+                )}
+              </div>
+              
+              <div className="baggage-info-box">
+                <ul className="baggage-info-list">
+                  <li>Baggage will be transported separately via road/rail/air cargo, and NOT in the flight booked.</li>
+                  <li>Pickup & drop addresses will be collected post booking.</li>
+                </ul>
+              </div>
             </div>
           </div>
         );
       
-      case 4: // Travel Insurance
+      case 4: // Review Booking
         return (
           <div className="flight-step-content">
-            <h3 className="step-content-title">Travel Insurance</h3>
-            {/* Placeholder: Content will be added later */}
-            <div className="step-placeholder">
-              <p>Travel Insurance content section</p>
+            <div className="review-booking-section">
+              <h2 className="review-booking-title">Review Trip Details</h2>
+              
+              {/* Flight Details */}
+              <div className="review-flight-card">
+                <div className="review-flight-header">
+                  <div className="review-airline-info">
+                    <img src={flightData.airlineLogo} alt={flightData.airline} className="review-airline-logo" />
+                    <span className="review-airline-name">{flightData.airline}</span>
+                  </div>
+                  <span className="review-fare-type">SAVER</span>
+                </div>
+                
+                <div className="review-flight-timing">
+                  <div className="review-time-section">
+                    <div className="review-main-time">{flightData.departureTime}</div>
+                    <div className="review-date">Friday, Feb 13</div>
+                    <div className="review-airport">{flightData.departureCity}</div>
+                  </div>
+                  
+                  <div className="review-duration-section">
+                    <div className="review-duration">{flightData.duration}</div>
+                    <div className="review-stop-type">{flightData.stops === '0 Stops' || flightData.stops === 0 ? 'Non Stop' : flightData.stops}</div>
+                  </div>
+                  
+                  <div className="review-time-section">
+                    <div className="review-main-time">{flightData.arrivalTime}</div>
+                    <div className="review-date">Friday, Feb 13</div>
+                    <div className="review-airport">{flightData.arrivalCity}</div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Travellers Section */}
+              <div className="review-section">
+                <h3 className="review-section-title">Travellers</h3>
+                {Array.from({ length: visibleAdults }).map((_, index) => (
+                  <div key={index} className="review-traveller-card">
+                    <h4 className="review-traveller-label">ADULT {index + 1}</h4>
+                    <div className="review-detail-row">
+                      <span className="review-detail-label">Title:</span>
+                      <span className="review-detail-value">{adultsData[index].title || 'Not provided'}</span>
+                    </div>
+                    <div className="review-detail-row">
+                      <span className="review-detail-label">First & Middle Name:</span>
+                      <span className="review-detail-value">{adultsData[index].firstName || 'Not provided'}</span>
+                    </div>
+                    <div className="review-detail-row">
+                      <span className="review-detail-label">Last Name:</span>
+                      <span className="review-detail-value">{adultsData[index].lastName || 'Not provided'}</span>
+                    </div>
+                    {adultsData[index].countryCode && (
+                      <div className="review-detail-row">
+                        <span className="review-detail-label">Country Code:</span>
+                        <span className="review-detail-value">{adultsData[index].countryCode}</span>
+                      </div>
+                    )}
+                    {adultsData[index].mobile && (
+                      <div className="review-detail-row">
+                        <span className="review-detail-label">Mobile No:</span>
+                        <span className="review-detail-value">{adultsData[index].mobile}</span>
+                      </div>
+                    )}
+                    {adultsData[index].email && (
+                      <div className="review-detail-row">
+                        <span className="review-detail-label">Email:</span>
+                        <span className="review-detail-value">{adultsData[index].email}</span>
+                      </div>
+                    )}
+                    {adultsData[index].wheelchair && (
+                      <div className="review-detail-row">
+                        <span className="review-detail-label">Special Request:</span>
+                        <span className="review-detail-value">Wheelchair Required</span>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+              
+              {/* Selected Seats */}
+              {selectedSeats.length > 0 && (
+                <div className="review-section">
+                  <h3 className="review-section-title">Selected Seats</h3>
+                  <div className="review-selection-card">
+                    <div className="review-detail-row">
+                      <span className="review-detail-label">Seats:</span>
+                      <span className="review-detail-value">{selectedSeats.join(', ')}</span>
+                    </div>
+                    <div className="review-detail-row">
+                      <span className="review-detail-label">Price:</span>
+                      <span className="review-detail-value">₹{(selectedSeats.length * 200).toLocaleString('en-IN')}</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              {/* Selected Meal */}
+              {selectedMeal && (
+                <div className="review-section">
+                  <h3 className="review-section-title">Selected Meal</h3>
+                  <div className="review-selection-card">
+                    <div className="review-meal-display">
+                      <img src={selectedMeal.image} alt={selectedMeal.name} className="review-meal-image" />
+                      <div className="review-meal-details">
+                        <div className="review-meal-name">{selectedMeal.name}</div>
+                        <div className="review-meal-price">₹{selectedMeal.price.toLocaleString('en-IN')}</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              {/* Baggage Add-On */}
+              {baggageSelected && (
+                <div className="review-section">
+                  <h3 className="review-section-title">Baggage Courier Service</h3>
+                  <div className="review-selection-card">
+                    <div className="review-detail-row">
+                      <span className="review-detail-label">Service Type:</span>
+                      <span className="review-detail-value">{baggageTab.toUpperCase()}</span>
+                    </div>
+                    <div className="review-detail-row">
+                      <span className="review-detail-label">Weight:</span>
+                      <span className="review-detail-value">{selectedBaggageWeight.weight} Kgs</span>
+                    </div>
+                    <div className="review-detail-row">
+                      <span className="review-detail-label">Quantity:</span>
+                      <span className="review-detail-value">{baggageQuantity}</span>
+                    </div>
+                    <div className="review-detail-row">
+                      <span className="review-detail-label">Total Price:</span>
+                      <span className="review-detail-value">
+                        ₹{(selectedBaggageWeight.price * baggageQuantity).toLocaleString('en-IN')}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              {/* Important Information */}
+              <div className="review-section">
+                <h3 className="review-section-title">Important Information</h3>
+                <p className="review-info-text">
+                  Please review your itinerary & traveller details carefully to avoid any cancellation penalties later.
+                </p>
+              </div>
             </div>
           </div>
         );
@@ -565,24 +1314,6 @@ function FlightBookingPanel({ isOpen, onClose, flightData }) {
       {/* Backdrop */}
       <div className="panel-backdrop" onClick={onClose}></div>
       
-      {/* Horizontal Navigation Menu */}
-      <div className="flight-step-nav">
-        {navigationSteps.map((step, index) => (
-          <div key={step.id} className="flight-step-item-wrapper">
-            {index === 0 && <div className="flight-step-separator">•</div>}
-            <button
-              className={`flight-step-item ${currentStepIndex === index ? 'flight-step-active' : ''} ${index > currentStepIndex && !completedSteps.includes(index) ? 'flight-step-disabled' : ''}`}
-              onClick={() => handleStepClick(index)}
-              disabled={index > currentStepIndex && !completedSteps.includes(index)}
-            >
-              {step.label}
-            </button>
-            {currentStepIndex === index && <div className="flight-step-indicator"></div>}
-            {index < navigationSteps.length - 1 && <div className="flight-step-separator">•</div>}
-          </div>
-        ))}
-      </div>
-      
       {/* Side Panel */}
       <div className="passenger-details-panel">
         {/* Close Button */}
@@ -593,20 +1324,59 @@ function FlightBookingPanel({ isOpen, onClose, flightData }) {
           <h2>Continue booking</h2>
         </div>
 
+        {/* Horizontal Navigation Menu */}
+        <div className="flight-step-nav">
+          {navigationSteps.map((step, index) => (
+            <button
+              key={step.id}
+              className={`flight-step-item ${currentStepIndex === index ? 'flight-step-active' : ''} ${index > currentStepIndex && !completedSteps.includes(index) ? 'flight-step-disabled' : ''}`}
+              onClick={() => handleStepClick(index)}
+              disabled={index > currentStepIndex && !completedSteps.includes(index)}
+            >
+              {step.label}
+            </button>
+          ))}
+        </div>
+
         {/* Panel Content - Dynamic based on current step */}
         <div className="panel-content" ref={panelContentRef}>
           {renderStepContent()}
 
           {/* Continue Button */}
           <button 
+            type="button"
             className="continue-button-flight-panel"
             onClick={handleContinue}
           >
-            {currentStepIndex === navigationSteps.length - 1 ? 'COMPLETE BOOKING' : 'CONTINUE'}
+            {currentStepIndex === 4 ? 'COMPLETE BOOKING' : 'CONTINUE'}
           </button>
           <p className="terms-text-flight">By proceeding, I agree to MakeMyTrip's <a href="#">User Agreement</a>, <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></p>
         </div>
       </div>
+
+      {/* Confirmation Modal */}
+      {showConfirmationModal && (
+        <>
+          <div className="confirmation-modal-backdrop" onClick={handleCancelBooking}></div>
+          <div className="confirmation-modal">
+            <div className="confirmation-modal-icon">
+              <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="40" cy="40" r="38" stroke="#9CA3AF" strokeWidth="4"/>
+                <text x="40" y="55" fontSize="48" fill="#6B7280" fontWeight="600" textAnchor="middle">?</text>
+              </svg>
+            </div>
+            <h3 className="confirmation-modal-title">Want to book Oneway trip flight ?</h3>
+            <div className="confirmation-modal-buttons">
+              <button className="confirmation-btn-yes" onClick={handleConfirmBooking}>
+                Yes, I Want
+              </button>
+              <button className="confirmation-btn-no" onClick={handleCancelBooking}>
+                No, Cancel
+              </button>
+            </div>
+          </div>
+        </>
+      )}
     </>
   );
 }

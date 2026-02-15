@@ -699,7 +699,7 @@ font-size: 13px;
 .search-btn {
   margin-top: 5px;
   background: var(--primary-red);
-  color: white;
+ 
   border: none;
   padding: 14px 40px;
   border-radius: 0 8px 0px 8px;
@@ -707,7 +707,12 @@ font-size: 13px;
   font-weight: bold;
   border: none;
   cursor: pointer;
-  background: linear-gradient(135deg, #e94d59, #5c1416);
+  background: radial-gradient(circle at top left, #851111, #fe6969);
+background-color: #c01313;
+  color: white;
+}
+.search-btn:hover {
+  background: #f40606cf;
 }
 
 /* SEARCH BUTTON */
