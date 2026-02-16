@@ -1015,8 +1015,8 @@ background-color: #c01313;
 }
 
 .legend-box.selected-legend {
-  background: #2196F3;
-  border-color: #2196F3;
+  background: #f32121;
+  border-color: #f32121;
 }
 
 .legend-box.booked {
@@ -1099,14 +1099,14 @@ background-color: #c01313;
 }
 
 .seat-item.available:hover {
-  border-color: #2196F3;
-  background: #e3f2fd;
+  border-color: #f32121;
+  background: #fde3e3;
   transform: scale(1.05);
 }
 
 .seat-item.selected {
-  background: #2196F3;
-  border-color: #1976D2;
+  background: #f15a5a;
+  border-color: #d21919;
   color: #fff;
 }
 
@@ -1788,7 +1788,7 @@ background-color: #c01313;
 }
 
 .view-all-reviews a {
-  color: #1976d2;
+  color: #d21919;
   text-decoration: none;
   font-size: 14px;
   font-weight: 500;
@@ -1798,7 +1798,7 @@ background-color: #c01313;
 }
 
 .view-all-reviews a:hover {
-  background: rgba(25, 118, 210, 0.08);
+  background: rgba(210, 25, 25, 0.08);
 }
 
 .continue-btn:active {
@@ -1834,7 +1834,7 @@ background-color: #c01313;
   right: 0;
   width: 750px;
   height: 100vh;
-  background: #f5f7fa;
+  background: #faf5f5;
   box-shadow: -4px 0 20px rgba(0, 0, 0, 0.9);
   z-index: 9999;
   overflow-y: auto;
@@ -1992,11 +1992,11 @@ background-color: #c01313;
   content: '';
   width: 35px;
   height: 1px;
-  background-color: #999;
+  background-color: #999999;
 }
 
 /* Traveller Details Section */
-.traveller-details-section {
+.bus-traveller-details-section {
   background: #fff;
   padding: 20px 24px;
   margin-bottom: 12px;
@@ -2036,13 +2036,13 @@ background-color: #c01313;
 }
 
 
-.form-row {
+.bus-form-row {
   display: flex;
   gap: 12px;
   margin-bottom: 12px;
 }
 
-.form-field {
+.bus-form-field {
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -2060,15 +2060,15 @@ background-color: #c01313;
   flex: 1.2;
 }
 
-.form-field label {
+.bus-form-field label {
   font-size: 13px;
   font-weight: 500;
   color: #333;
   margin-bottom: 6px;
 }
 
-.form-field input,
-.form-field select {
+.bus-form-field input,
+.bus-form-field select {
   padding: 10px 12px;
   border: 1px solid #d0d0d0;
   border-radius: 6px;
@@ -2078,22 +2078,22 @@ background-color: #c01313;
   transition: border-color 0.2s ease;
 }
 
-.form-field input:focus,
-.form-field select:focus {
+.bus-form-field input:focus,
+.bus-form-field select:focus {
   border-color: #d21919;
 }
 
-.form-field input::placeholder {
+.bus-form-field input::placeholder {
   color: #999;
 }
 
-.form-field select option:checked,
-.form-field select option[selected] {
+.bus-form-field select option:checked,
+.bus-form-field select option[selected] {
   background-color: #d21919;
   color: #fff;
 }
 
-.form-field select option:hover {
+.bus-form-field select option:hover {
   background-color: #d21919;
   color: #fff;
 }
@@ -2482,4 +2482,464 @@ background-color: #c01313;
   .passenger-details-panel {
     width: 100%;
   }
+}
+
+/* ============================================
+   REVIEW BOOKING SECTION (Same as Flight Page)
+   ============================================ */
+   
+/* Review Booking Section */
+.review-booking-section {
+  padding: 0;
+}
+
+.review-booking-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 24px 0;
+  padding: 0 24px;
+}
+
+.review-flight-card {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 20px;
+  margin: 0 24px 24px 24px;
+}
+
+.review-flight-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.review-airline-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.review-airline-logo {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+}
+
+.review-airline-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.review-fare-type {
+  background: #e8f5e9;
+  color: #2e7d32;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 4px;
+}
+
+.review-flight-timing {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}
+
+.review-time-section {
+  flex: 1;
+  text-align: left;
+}
+
+.review-time-section:last-child {
+  text-align: right;
+}
+
+.review-main-time {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 4px;
+}
+
+.review-date {
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 4px;
+}
+
+.review-airport {
+  font-size: 14px;
+  color: #1a1a1a;
+  font-weight: 500;
+}
+
+.review-duration-section {
+  flex: 1;
+  text-align: center;
+  position: relative;
+}
+
+.review-duration-section::before {
+  content: '';
+  position: absolute;
+  top: 8px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: #ccc;
+  z-index: 0;
+}
+
+.review-duration {
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 4px;
+  position: relative;
+  z-index: 1;
+  background: #fff;
+  display: inline-block;
+  padding: 0 8px;
+}
+
+.review-stop-type {
+  font-size: 12px;
+  color: #666;
+  position: relative;
+  z-index: 1;
+  background: #fff;
+  display: inline-block;
+  padding: 0 8px;
+}
+
+.review-section {
+  margin: 0 24px 24px 24px;
+}
+
+.review-section-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 16px 0;
+}
+
+.review-traveller-card {
+  background: #f9f9f9;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 16px 20px;
+}
+
+.review-traveller-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 12px 0;
+}
+
+.review-detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.review-detail-row:last-child {
+  border-bottom: none;
+}
+
+.review-detail-label {
+  font-size: 14px;
+  color: #666;
+}
+
+.review-detail-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.review-info-text {
+  font-size: 13px;
+  color: #666;
+  line-height: 1.6;
+  margin: 0;
+  padding: 12px 16px;
+  background: #fff8e1;
+  border: 1px solid #ffe082;
+  border-radius: 6px;
+}
+
+.review-selection-card {
+  background: #f9f9f9;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 16px 20px;
+}
+
+.review-total-card {
+  background:  #f9f9f9;
+  border: 2px solid #c8c6c6;
+  border-radius: 8px;
+  padding: 16px 20px;
+}
+
+.review-total-divider {
+  
+  background: #c9c6c6;
+  margin: 12px 0;
+}
+
+.review-detail-row.review-total-row {
+  border-bottom: none;
+  padding: 12px 0 0 0;
+}
+
+.review-total-label {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.review-total-value {
+  font-size: 22px;
+  font-weight: 700;
+  color: #d42929;
+}
+
+/* Confirmation Modal (Same as Flight Page) */
+.confirmation-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 10000;
+}
+
+.confirmation-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #fff;
+  padding: 40px 50px;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  z-index: 10001;
+  text-align: center;
+  min-width: 400px;
+  animation: modalFadeIn 0.3s ease;
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -45%);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+
+.confirmation-modal-icon {
+  margin: 0 auto 24px auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.confirmation-modal-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #ae0c0c;
+  margin: 0 0 32px 0;
+  line-height: 1.4;
+}
+
+.confirmation-modal-buttons {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+}
+
+.confirmation-btn-yes,
+.confirmation-btn-no {
+  padding: 14px 32px;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 140px;
+}
+
+.confirmation-btn-yes {
+  background: radial-gradient(circle at top left, #851111, #fe6969);
+  background-color: #c01313;
+  color: white;
+}
+
+.confirmation-btn-yes:hover {
+  background: #f40606cf;
+}
+
+.confirmation-btn-no {
+  background: #6b7280;
+  color: #fff;
+}
+
+.confirmation-btn-no:hover {
+  background: #4b5563;
+}
+
+/* Success Modal (Same as Flight Page) */
+.success-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 10000;
+}
+
+.success-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 10px 40px rgba(13, 13, 13, 0.9);
+  z-index: 10001;
+  width: 400px;
+  max-width: 90%;
+  overflow: hidden;
+  animation: successModalFadeIn 0.4s ease;
+}
+
+@keyframes successModalFadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -45%) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+.success-modal-top {
+  background: radial-gradient(circle at top left, #851111, #fe6969);
+  padding: 60px 40px 50px 40px;
+  text-align: center;
+  position: relative;
+}
+
+.success-checkmark-badge {
+  width: 80px;
+  height: 80px;
+  background: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px auto;
+  box-shadow: 0 4px 12px rgba(245, 244, 244, 0.2);
+  position: relative;
+}
+
+.success-checkmark-badge::before {
+  content: '';
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  padding: 8px;
+  background: white;
+  -webkit-mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  opacity: 0.3;
+}
+
+.success-modal-title {
+  font-size: 26px;
+  font-weight: 600;
+  color: white;
+  margin: 0;
+  letter-spacing: 0.3px;
+}
+
+.success-modal-zigzag {
+  height: 20px;
+  background: #960e13;
+  position: relative;
+}
+
+.success-modal-zigzag::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 20px;
+  background: linear-gradient(135deg, white 25%, transparent 25%) -10px 0,
+    linear-gradient(225deg, white 25%, transparent 25%) -10px 0,
+    linear-gradient(315deg, white 25%, transparent 25%),
+    linear-gradient(45deg, white 25%, transparent 25%);
+  background-size: 20px 20px;
+  background-color: #f7494f;
+}
+
+.success-modal-bottom {
+  background: white;
+  padding: 30px 40px 40px 40px;
+  text-align: center;
+}
+
+.success-modal-coins {
+  font-size: 15px;
+  color: #666;
+  margin: 0 0 25px 0;
+  line-height: 1.6;
+}
+
+.success-modal-coins strong {
+  color: #333;
+  font-weight: 600;
+}
+
+.success-modal-btn {
+  width: 100%;
+  padding: 14px 24px;
+  background: white;
+  color: #f40606cf;
+  border: 2px solid #f40606cf;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  letter-spacing: 0.5px;
+}
+
+.success-modal-btn:hover {
+  background: radial-gradient(circle at top left, #851111, #fe6969);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 90, 95, 0.9);
 }
