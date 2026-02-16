@@ -1612,7 +1612,7 @@ function FlightBookingPanel({ isOpen, onClose, flightData }) {
             </div>
             <div className="success-modal-zigzag"></div>
             <div className="success-modal-bottom">
-              <p className="success-modal-coins"> <strong>You Successfully Created Your Booking !!</strong></p>
+              <p className="success-modal-coins"> <strong>You Successfully Created Your Flight Booking !!</strong></p>
               <button className="success-modal-btn" onClick={() => {
                 setShowSuccessModal(false);
                 onClose();

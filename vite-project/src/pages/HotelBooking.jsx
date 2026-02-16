@@ -47,8 +47,26 @@ function HotelBooking() {
   const [showPriceDetails, setShowPriceDetails] = useState(false);
   const [showGSTDetails, setShowGSTDetails] = useState(false);
 
+  // Panel view state management ('guest-details' or 'review-booking')
+  const [panelView, setPanelView] = useState('guest-details');
   
+  // Guest form data state
+  const [guestFormData, setGuestFormData] = useState([]);
+  const [visibleGuestForms, setVisibleGuestForms] = useState(1);
+  
+  // Pincode and state data
+  const [pincodeStateData, setPincodeStateData] = useState({
+    billingAddress: '',
+    pincode: '',
+    state: 'Uttar Pradesh'
+  });
+  
+  // Confirmation and success modal states
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
+  const totalAdults = bookingData.adults || 2;
+  const totalChildren = bookingData.children || 0;
 
   const tabs = [
     "Description",
@@ -123,10 +141,71 @@ const closePanel = () => {
   setSelectedRoomData(null);
   setShowMoreBenefits(false);
   setShowPriceDetails(false);
+  setPanelView('guest-details'); // Reset to guest details
+  setVisibleGuestForms(1); // Reset visible forms
   if (typeof document !== 'undefined') {
     document.body.style.overflow = 'auto'; // Enable scroll
   }
 };
+
+// Handle Continue button click
+const handlePanelContinue = () => {
+  if (panelView === 'guest-details') {
+    // Capture guest form data from DOM
+    const guestData = [];
+    for (let i = 0; i < visibleGuestForms; i++) {
+      const titleInput = document.querySelector(`.guest-form-${i} select[name="title"]`);
+      const firstNameInput = document.querySelector(`.guest-form-${i} input[name="firstName"]`);
+      const lastNameInput = document.querySelector(`.guest-form-${i} input[name="lastName"]`);
+      const emailInput = document.querySelector(`.guest-form-${i} input[name="email"]`);
+      const mobileInput = document.querySelector(`.guest-form-${i} input[name="mobile"]`);
+      
+      guestData.push({
+        title: titleInput?.value || 'Mr',
+        firstName: firstNameInput?.value || '',
+        lastName: lastNameInput?.value || '',
+        email: emailInput?.value || '',
+        mobile: mobileInput?.value || ''
+      });
+    }
+    setGuestFormData(guestData);
+    
+    // Capture pincode and state data from DOM
+    const billingAddressInput = document.querySelector('.pincode-state-section input[placeholder="Enter Billing Address"]');
+    const pincodeInput = document.querySelector('.pincode-state-section input[placeholder="Enter Pincode"]');
+    const stateSelect = document.querySelector('.pincode-state-section select.input-select');
+    
+    setPincodeStateData({
+      billingAddress: billingAddressInput?.value || '',
+      pincode: pincodeInput?.value || '',
+      state: stateSelect?.value || 'Uttar Pradesh'
+    });
+    
+    setPanelView('review-booking');
+  } else if (panelView === 'review-booking') {
+    // Show confirmation modal
+    setShowConfirmationModal(true);
+  }
+};
+
+// Handle booking confirmation
+const handleConfirmHotelBooking = () => {
+  setShowConfirmationModal(false);
+  setShowSuccessModal(true);
+};
+
+// Handle cancel booking
+const handleCancelBooking = () => {
+  setShowConfirmationModal(false);
+};
+
+// Handle success modal close and navigate to home
+const handleSuccessClose = () => {
+  setShowSuccessModal(false);
+  closePanel();
+  navigate('/');
+};
+
 
   return (
     <div className="hotel-booking-page">
@@ -2759,7 +2838,9 @@ const closePanel = () => {
 
               {/* Panel Content */}
               <div className="panel-content">
-                {/* Hotel Summary */}
+                {panelView === 'guest-details' ? (
+                  <>
+                    {/* Hotel Summary */}
                 <div className="hotel-summary">
                   <div className="hotel-summary-header">
                     <div className="hotel-info-left">
@@ -2851,100 +2932,124 @@ const closePanel = () => {
                   </div>
 
                   <div className="guest-form-content">
-                    {/* Title, First Name, Last Name Row */}
-                    <div className="form-row-guest">
-                      <div className="form-field-guest title-field">
-                        <label>Title</label>
-                        <select className="input-select">
-                          <option>Mr</option>
-                          <option>Mrs</option>
-                          <option>Ms</option>
-                        </select>
-                      </div>
-                      <div className="form-field-guest">
-                        <label>First Name</label>
-                        <input type="text" placeholder="Enter First Name" />
-                      </div>
-                      <div className="form-field-guest">
-                        <label>Last Name</label>
-                        <input type="text" placeholder="Enter Last Name" />
-                      </div>
-                    </div>
-
-                    {/* Email Address */}
-                    <div className="form-field-guest full-width">
-                      <label>Email Address <span className="field-note">(Your booking voucher will be sent to this email address)</span></label>
-                      <input type="email" placeholder="Enter Email Address" />
-                    </div>
-
-                    {/* Mobile Number */}
-                    <div className="form-field-guest full-width">
-                      <label>Mobile Number</label>
-                      <div className="phone-input-group">
-                        <select className="country-code-select">
-                          <option>+91 India</option>
-                          <option>+1 USA</option>
-                          <option>+44 UK</option>
-                        </select>
-                        <input type="tel" placeholder="Enter Phone Number" className="phone-input" />
-                      </div>
-                    </div>
-
-                    {/* GST Checkbox */}
-                    <div className="checkbox-field">
-                      <input 
-                        type="checkbox" 
-                        id="gst-checkbox"
-                        checked={showGSTDetails}
-                        onChange={(e) => setShowGSTDetails(e.target.checked)}
-                      />
-                      <label htmlFor="gst-checkbox">Enter GST Details <span className="optional-text">(Optional)</span></label>
-                    </div>
-
-                    {/* GST Details Form - Shown when checkbox is checked */}
-                    {showGSTDetails && (
-                      <div className="gst-details-form">
-                        <h4 className="gst-form-title">BUSINESS PROFILE</h4>
+                    {/* Dynamically render guest forms based on visibleGuestForms */}
+                    {Array.from({ length: visibleGuestForms }).map((_, index) => (
+                      <div key={index} className={`guest-form-wrapper guest-form-${index}`}>
+                        <h4 className="guest-number-label">Guest {index + 1}</h4>
                         
-                        {/* GST Number and Company Name Row */}
-                        <div className="gst-form-row">
-                          <div className="gst-form-field">
-                            <label>GST Number</label>
-                            <input type="text" placeholder="EG: 06BZAHM6385P6Z2" />
+                        {/* Title, First Name, Last Name Row */}
+                        <div className="form-row-guest">
+                          <div className="form-field-guest title-field">
+                            <label>Title</label>
+                            <select className="input-select" name="title">
+                              <option>Mr</option>
+                              <option>Mrs</option>
+                              <option>Ms</option>
+                            </select>
                           </div>
-                          <div className="gst-form-field">
-                            <label>Company Name</label>
-                            <input type="text" placeholder="Enter Company Name" />
+                          <div className="form-field-guest">
+                            <label>First Name</label>
+                            <input type="text" placeholder="Enter First Name" name="firstName" />
+                          </div>
+                          <div className="form-field-guest">
+                            <label>Last Name</label>
+                            <input type="text" placeholder="Enter Last Name" name="lastName" />
                           </div>
                         </div>
 
-                        {/* Business Email ID */}
-                        <div className="gst-form-field gst-full-width">
-                          <label>Business Email ID</label>
-                          <input type="email" placeholder="Enter Email Address" />
+                        {/* Email Address */}
+                        <div className="form-field-guest full-width">
+                          <label>Email Address <span className="field-note">(Your booking voucher will be sent to this email address)</span></label>
+                          <input type="email" placeholder="Enter Email Address" name="email" />
                         </div>
 
-                        {/* Company Address */}
-                        <div className="gst-form-field gst-full-width">
-                          <label>Company Address</label>
-                          <textarea 
-                            placeholder="Enter Company Address" 
-                            rows="3"
-                            className="gst-textarea"
-                          ></textarea>
+                        {/* Mobile Number */}
+                        <div className="form-field-guest full-width">
+                          <label>Mobile Number</label>
+                          <div className="phone-input-group">
+                            <select className="country-code-select">
+                              <option>+91 India</option>
+                              <option>+1 USA</option>
+                              <option>+44 UK</option>
+                            </select>
+                            <input type="tel" placeholder="Enter Phone Number" className="phone-input" name="mobile" />
+                          </div>
                         </div>
 
-                        {/* Company Phone Number and Admin Email ID Row */}
-                        <div className="gst-form-row">
-                          <div className="gst-form-field">
-                            <label>Company Phone Number</label>
-                            <input type="tel" placeholder="Enter Phone Number" />
-                          </div>
-                          <div className="gst-form-field">
-                            <label>Admin Email ID</label>
-                            <input type="email" placeholder="Enter Email Address" />
-                          </div>
-                        </div>
+                        {/* Only show GST checkbox for first guest */}
+                        {index === 0 && (
+                          <>
+                            {/* GST Checkbox */}
+                            <div className="checkbox-field">
+                              <input 
+                                type="checkbox" 
+                                id="gst-checkbox"
+                                checked={showGSTDetails}
+                                onChange={(e) => setShowGSTDetails(e.target.checked)}
+                              />
+                              <label htmlFor="gst-checkbox">Enter GST Details <span className="optional-text">(Optional)</span></label>
+                            </div>
+
+                            {/* GST Details Form - Shown when checkbox is checked */}
+                            {showGSTDetails && (
+                              <div className="gst-details-form">
+                                <h4 className="gst-form-title">BUSINESS PROFILE</h4>
+                                
+                                {/* GST Number and Company Name Row */}
+                                <div className="gst-form-row">
+                                  <div className="gst-form-field">
+                                    <label>GST Number</label>
+                                    <input type="text" placeholder="EG: 06BZAHM6385P6Z2" />
+                                  </div>
+                                  <div className="gst-form-field">
+                                    <label>Company Name</label>
+                                    <input type="text" placeholder="Enter Company Name" />
+                                  </div>
+                                </div>
+
+                                {/* Business Email ID */}
+                                <div className="gst-form-field gst-full-width">
+                                  <label>Business Email ID</label>
+                                  <input type="email" placeholder="Enter Email Address" />
+                                </div>
+
+                                {/* Company Address */}
+                                <div className="gst-form-field gst-full-width">
+                                  <label>Company Address</label>
+                                  <textarea 
+                                    placeholder="Enter Company Address" 
+                                    rows="3"
+                                    className="gst-textarea"
+                                  ></textarea>
+                                </div>
+
+                                {/* Company Phone Number and Admin Email ID Row */}
+                                <div className="gst-form-row">
+                                  <div className="gst-form-field">
+                                    <label>Company Phone Number</label>
+                                    <input type="tel" placeholder="Enter Phone Number" />
+                                  </div>
+                                  <div className="gst-form-field">
+                                    <label>Admin Email ID</label>
+                                    <input type="email" placeholder="Enter Email Address" />
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                          </>
+                        )}
+                      </div>
+                    ))}
+
+                    {/* Add Guest Button - Show only if more adults are expected */}
+                    {visibleGuestForms < totalAdults && (
+                      <div className="add-guest-section">
+                        <button 
+                          className="add-guest-btn"
+                          onClick={() => setVisibleGuestForms(visibleGuestForms + 1)}
+                        >
+                          + ADD GUEST
+                        </button>
                       </div>
                     )}
                   </div>
@@ -3032,10 +3137,201 @@ const closePanel = () => {
                   </div>
                   <p className="price-included-note">Included in price: Extra Person Fee Rs. 300.00, Tax 18%</p>
                 </div>
+                  </>
+                ) : (
+                  <>
+                    {/* REVIEW BOOKING SECTION */}
+                    <div className="hotel-review-booking-section">
+                      <h2 className="hotel-review-booking-title">Review Your Booking</h2>
+                      
+                      {/* Hotel Details Card */}
+                      <div className="hotel-review-card">
+                        <div className="hotel-review-header">
+                          <div className="hotel-review-info">
+                            <span className="hotel-review-name">Hyatt Centric Janakpuri, New Delhi</span>
+                            <div className="hotel-review-location">
+                              <FaMapMarkerAlt className="location-icon-tiny" />
+                              <span>Janakpuri, Delhi</span>
+                            </div>
+                          </div>
+                          <img src="/hotels/hh1.jpeg" alt="Hotel" className="hotel-review-thumbnail" />
+                        </div>
+                        
+                        <div className="hotel-review-dates">
+                          <div className="hotel-review-date-item">
+                            <div className="hotel-review-date-label">Check In</div>
+                            <div className="hotel-review-date-value">Sun, 08 Feb, 2026</div>
+                            <div className="hotel-review-time-value">2 PM</div>
+                          </div>
+                          
+                          <div className="hotel-review-duration">
+                            <div className="hotel-review-nights">1 Night</div>
+                          </div>
+                          
+                          <div className="hotel-review-date-item">
+                            <div className="hotel-review-date-label">Check Out</div>
+                            <div className="hotel-review-date-value">Mon, 09 Feb, 2026</div>
+                            <div className="hotel-review-time-value">12 PM</div>
+                          </div>
+                        </div>
+
+                        <div className="hotel-review-room-info">
+                          <div className="hotel-review-room-type">1 x 2 TWIN BEDS</div>
+                          <div className="hotel-review-guests">
+                            <FaUser className="user-icon-tiny" />
+                            <FaUser className="user-icon-tiny" />
+                            <span>{totalAdults} Adults</span>
+                            {totalChildren > 0 && <span>, {totalChildren} Children</span>}
+                          </div>
+                          <div className="hotel-review-meal">Room with Breakfast</div>
+                        </div>
+                      </div>
+                      
+                      {/* Guest Details Section */}
+                      <div className="hotel-review-section">
+                        <h3 className="hotel-review-section-title">Guest Details</h3>
+                        {guestFormData.map((guest, index) => (
+                          <div key={index} className="hotel-review-guest-card">
+                            <h4 className="hotel-review-guest-label">Guest {index + 1}</h4>
+                            <div className="hotel-review-detail-row">
+                              <span className="hotel-review-detail-label">Title:</span>
+                              <span className="hotel-review-detail-value">{guest.title || 'Not provided'}</span>
+                            </div>
+                            <div className="hotel-review-detail-row">
+                              <span className="hotel-review-detail-label">First Name:</span>
+                              <span className="hotel-review-detail-value">{guest.firstName || 'Not provided'}</span>
+                            </div>
+                            <div className="hotel-review-detail-row">
+                              <span className="hotel-review-detail-label">Last Name:</span>
+                              <span className="hotel-review-detail-value">{guest.lastName || 'Not provided'}</span>
+                            </div>
+                            {guest.email && (
+                              <div className="hotel-review-detail-row">
+                                <span className="hotel-review-detail-label">Email:</span>
+                                <span className="hotel-review-detail-value">{guest.email}</span>
+                              </div>
+                            )}
+                            {guest.mobile && (
+                              <div className="hotel-review-detail-row">
+                                <span className="hotel-review-detail-label">Mobile:</span>
+                                <span className="hotel-review-detail-value">{guest.mobile}</span>
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                      
+                      {/* Pincode and State Section */}
+                      <div className="hotel-review-section">
+                        <h3 className="hotel-review-section-title">Billing Address & State</h3>
+                        <div className="hotel-review-guest-card">
+                          {pincodeStateData.billingAddress && (
+                            <div className="hotel-review-detail-row">
+                              <span className="hotel-review-detail-label">Billing Address:</span>
+                              <span className="hotel-review-detail-value">{pincodeStateData.billingAddress}</span>
+                            </div>
+                          )}
+                          {pincodeStateData.pincode && (
+                            <div className="hotel-review-detail-row">
+                              <span className="hotel-review-detail-label">Pincode:</span>
+                              <span className="hotel-review-detail-value">{pincodeStateData.pincode}</span>
+                            </div>
+                          )}
+                          <div className="hotel-review-detail-row">
+                            <span className="hotel-review-detail-label">State:</span>
+                            <span className="hotel-review-detail-value">{pincodeStateData.state}</span>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {/* Price Details Section */}
+                      <div className="hotel-review-section">
+                        <h3 className="hotel-review-section-title">Price Details</h3>
+                        <div className="hotel-review-total-card">
+                          <div className="hotel-review-detail-row">
+                            <span className="hotel-review-detail-label">Room price (1 room x 1 night):</span>
+                            <span className="hotel-review-detail-value">₹9,249</span>
+                          </div>
+                          <div className="hotel-review-detail-row">
+                            <span className="hotel-review-detail-label">Extra charges:</span>
+                            <span className="hotel-review-detail-value">₹300</span>
+                          </div>
+                          <div className="hotel-review-detail-row">
+                            <span className="hotel-review-detail-label">Taxes and fees:</span>
+                            <span className="hotel-review-detail-value">₹1,718.82</span>
+                          </div>
+                          <div className="hotel-review-total-divider"></div>
+                          <div className="hotel-review-detail-row hotel-review-total-row">
+                            <span className="hotel-review-total-label">Grand Total:</span>
+                            <span className="hotel-review-total-value">₹11,267.82</span>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {/* Important Information */}
+                      <div className="hotel-review-section">
+                        <h3 className="hotel-review-section-title">Important Information</h3>
+                        <p className="hotel-review-info-text">
+                          Please review your booking details carefully. Check-in time is 2 PM and check-out time is 12 PM.
+                        </p>
+                      </div>
+                    </div>
+                  </>
+                )}
 
                 {/* Continue Button */}
-                <button className="continue-button-hotel-panel">CONTINUE</button>
+                <button className="continue-button-hotel-panel" onClick={handlePanelContinue}>
+                  {panelView === 'guest-details' ? 'CONTINUE' : 'COMPLETE BOOKING'}
+                </button>
                 <p className="terms-text-hotel">By proceeding, I agree to MakeMyTrip's <a href="#">User Agreement</a>, <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></p>
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* Confirmation Modal */}
+        {showConfirmationModal && (
+          <>
+            <div className="hotel-confirmation-modal-backdrop" onClick={handleCancelBooking}></div>
+            <div className="hotel-confirmation-modal">
+              <div className="hotel-confirmation-modal-icon">
+                <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="40" cy="40" r="38" stroke="#9CA3AF" strokeWidth="4"/>
+                  <text x="40" y="55" fontSize="48" fill="#6B7280" fontWeight="600" textAnchor="middle">?</text>
+                </svg>
+              </div>
+              <h3 className="hotel-confirmation-modal-title">Want to book this hotel ?</h3>
+              <div className="hotel-confirmation-modal-actions">
+                <button className="hotel-confirm-yes-btn" onClick={handleConfirmHotelBooking}>
+                  Yes, I Want
+                </button>
+                <button className="hotel-confirm-cancel-btn" onClick={handleCancelBooking}>
+                  No, Cancel
+                </button>
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* Success Modal */}
+        {showSuccessModal && (
+          <>
+            <div className="hotel-success-modal-backdrop"></div>
+            <div className="hotel-success-modal">
+              <div className="hotel-success-modal-top">
+                <div className="hotel-success-checkmark-badge">
+                  <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M15 30L25 40L45 20" stroke="#FF5A5F" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </div>
+                <h2 className="hotel-success-modal-title">Booking successful</h2>
+              </div>
+              <div className="hotel-success-modal-zigzag"></div>
+              <div className="hotel-success-modal-bottom">
+                <p className="hotel-success-modal-coins"> <strong>Your Hotel booking has been confirmed successfully !!</strong></p>
+                <button className="hotel-success-modal-btn" onClick={handleSuccessClose}>
+                  Go Home
+                </button>
               </div>
             </div>
           </>

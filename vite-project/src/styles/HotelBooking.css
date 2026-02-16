@@ -4565,3 +4565,524 @@ background: linear-gradient(135deg, #bc3737 0%, #e58787 100%);
 .gst-textarea::placeholder {
   color: #9ca3af;
 }
+/* Guest Form Wrapper Styles */
+.guest-form-wrapper {
+  padding-bottom: 24px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.guest-form-wrapper:last-of-type {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.guest-number-label {
+  font-size: 16px;
+  font-weight: 700;
+  color: #000;
+  margin: 0 0 16px 0;
+}
+
+/* Add Guest Button */
+.add-guest-section {
+  margin-top: -20px;
+  padding-top: 2px;
+  
+}
+
+.add-guest-btn {
+  background: none;
+  border: none;
+  color: #d40000;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 8px 0;
+  transition: color 0.3s ease;
+}
+
+.add-guest-btn:hover {
+  color: #9e0000;
+  text-decoration: underline;
+}
+
+/* ============================================
+   HOTEL REVIEW BOOKING SECTION
+   ============================================ */
+.hotel-review-booking-section {
+  padding: 0;
+}
+
+.hotel-review-booking-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 24px 0;
+  padding: 0 24px;
+}
+
+.hotel-review-card {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 20px;
+  margin: 0 24px 24px 24px;
+}
+
+.hotel-review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+  gap: 16px;
+}
+
+.hotel-review-info {
+  flex: 1;
+}
+
+.hotel-review-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1a1a1a;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.hotel-review-location {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #666;
+}
+
+.hotel-review-thumbnail {
+  width: 80px;
+  height: 80px;
+  border-radius: 6px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.hotel-review-dates {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  padding: 16px 0;
+  border-top: 1px solid #e0e0e0;
+  border-bottom: 1px solid #e0e0e0;
+  margin-bottom: 16px;
+}
+
+.hotel-review-date-item {
+  flex: 1;
+  text-align: left;
+}
+
+.hotel-review-date-item:last-child {
+  text-align: right;
+}
+
+.hotel-review-date-label {
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 4px;
+}
+
+.hotel-review-date-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 2px;
+}
+
+.hotel-review-time-value {
+  font-size: 12px;
+  color: #666;
+}
+
+.hotel-review-duration {
+  flex: 1;
+  text-align: center;
+  position: relative;
+}
+
+.hotel-review-duration::before {
+  content: '';
+  position: absolute;
+  top: 8px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: #ccc;
+  z-index: 0;
+}
+
+.hotel-review-nights {
+  font-size: 13px;
+  color: #666;
+  position: relative;
+  z-index: 1;
+  background: #fff;
+  display: inline-block;
+  padding: 0 12px;
+}
+
+.hotel-review-room-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.hotel-review-room-type {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.hotel-review-guests {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #666;
+}
+
+.hotel-review-meal {
+  font-size: 13px;
+  color: #16a34a;
+}
+
+.hotel-review-section {
+  margin: 0 24px 24px 24px;
+}
+
+.hotel-review-section-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 16px 0;
+}
+
+.hotel-review-guest-card {
+  background: #f9f9f9;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin-bottom: 16px;
+}
+
+.hotel-review-guest-card:last-child {
+  margin-bottom: 0;
+}
+
+.hotel-review-guest-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 12px 0;
+}
+
+.hotel-review-detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.hotel-review-detail-row:last-child {
+  border-bottom: none;
+}
+
+.hotel-review-detail-label {
+  font-size: 14px;
+  color: #666;
+}
+
+.hotel-review-detail-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.hotel-review-total-card {
+  background: #f9f9f9;
+  border: 2px solid #c8c6c6;
+  border-radius: 8px;
+  padding: 16px 20px;
+}
+
+.hotel-review-total-divider {
+ 
+  background: #c9c6c6;
+  margin: 12px 0;
+}
+
+.hotel-review-detail-row.hotel-review-total-row {
+  border-bottom: none;
+  padding: 12px 0 0 0;
+}
+
+.hotel-review-total-label {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.hotel-review-total-value {
+  font-size: 22px;
+  font-weight: 700;
+  color: #d42929;
+}
+
+.hotel-review-info-text {
+  font-size: 13px;
+  color: #666;
+  line-height: 1.6;
+  margin: 0;
+  padding: 12px 16px;
+  background: #fff8e1;
+  border: 1px solid #ffe082;
+  border-radius: 6px;
+}
+
+/* ============================================
+   HOTEL CONFIRMATION MODAL
+   ============================================ */
+.hotel-confirmation-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 10000;
+}
+
+.hotel-confirmation-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #fff;
+  padding: 40px 50px;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  z-index: 10001;
+  text-align: center;
+  min-width: 400px;
+  animation: modalFadeIn 0.3s ease;
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -45%);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+
+.hotel-confirmation-modal-icon {
+  margin: 0 auto 24px auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.hotel-confirmation-modal-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #ae0c0c;
+  margin: 0 0 32px 0;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.hotel-confirmation-modal-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+}
+
+.hotel-confirm-cancel-btn,
+.hotel-confirm-yes-btn {
+  padding: 14px 32px;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 140px;
+}
+
+.hotel-confirm-cancel-btn {
+  background: #6b7280;
+  color: #fff;
+}
+
+.hotel-confirm-cancel-btn:hover {
+  background: #4b5563;
+}
+
+.hotel-confirm-yes-btn {
+  background: radial-gradient(circle at top left, #851111, #fe6969);
+  background-color: #c01313;
+  color: white;
+}
+
+.hotel-confirm-yes-btn:hover {
+  background: #f40606cf;
+}
+
+/* ============================================
+   HOTEL SUCCESS MODAL
+   ============================================ */
+.hotel-success-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 10000;
+}
+
+.hotel-success-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 10px 40px rgba(13, 13, 13, 0.9);
+  z-index: 10001;
+  width: 400px;
+  max-width: 90%;
+  overflow: hidden;
+  animation: hotelSuccessModalFadeIn 0.4s ease;
+}
+
+@keyframes hotelSuccessModalFadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -45%) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+.hotel-success-modal-top {
+  background: radial-gradient(circle at top left, #851111, #fe6969);
+  padding: 60px 40px 50px 40px;
+  text-align: center;
+  position: relative;
+}
+
+.hotel-success-checkmark-badge {
+  width: 80px;
+  height: 80px;
+  background: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px auto;
+  box-shadow: 0 4px 12px rgba(245, 244, 244, 0.2);
+  position: relative;
+}
+
+.hotel-success-checkmark-badge::before {
+  content: '';
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  padding: 8px;
+  background: white;
+  -webkit-mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  opacity: 0.3;
+}
+
+.hotel-success-modal-title {
+  font-size: 26px;
+  font-weight: 600;
+  color: white;
+  margin: 0;
+  letter-spacing: 0.3px;
+}
+
+.hotel-success-modal-zigzag {
+  height: 20px;
+  background: #960e13;
+  position: relative;
+}
+
+.hotel-success-modal-zigzag::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 20px;
+  background: linear-gradient(135deg, white 25%, transparent 25%) -10px 0,
+    linear-gradient(225deg, white 25%, transparent 25%) -10px 0,
+    linear-gradient(315deg, white 25%, transparent 25%),
+    linear-gradient(45deg, white 25%, transparent 25%);
+  background-size: 20px 20px;
+  background-color: #f7494f;
+}
+
+.hotel-success-modal-bottom {
+  background: white;
+  padding: 30px 40px 40px 40px;
+  text-align: center;
+}
+
+.hotel-success-modal-coins {
+  font-size: 15px;
+  color: #666;
+  margin: 0 0 25px 0;
+  line-height: 1.6;
+}
+
+.hotel-success-modal-coins strong {
+  color: #333;
+  font-weight: 600;
+}
+
+.hotel-success-modal-btn {
+  width: 100%;
+  padding: 14px 24px;
+  background: white;
+  color: #f40606cf;
+  border: 2px solid #f40606cf;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  letter-spacing: 0.5px;
+}
+
+.hotel-success-modal-btn:hover {
+  background: radial-gradient(circle at top left, #851111, #fe6969);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 90, 95, 0.9);
+}
