@@ -119,10 +119,12 @@ function FlightResults() {
 
   // Open Booking Panel
   const openBookingPanel = (flight) => {
-    // Add adults count from searchData to flight data
+    // Add passenger counts from searchData to flight data
     const flightWithTravellers = {
       ...flight,
-      adults: searchData.adults || 1 // Default to 1 if not specified
+      adults: searchData.adults || 1, // Default to 1 if not specified
+      children: searchData.children || 0,
+      infants: searchData.infants || 0
     };
     setBookingFlightData(flightWithTravellers);
     setIsBookingPanelOpen(true);
