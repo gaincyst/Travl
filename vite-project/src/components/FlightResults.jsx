@@ -13,6 +13,7 @@ import {
 
 import FiltersPanel from "./FiltersPanel";
 import DatePriceStrip from "./DatePriceStrip";
+import DualDatePriceStrip from "./DualDatePriceStrip";
 import SearchBox from "./SearchBox";
 import AuthModal from "./AuthModal";
 import FlightBookingPanel from "./FlightBookingPanel";
@@ -22,6 +23,9 @@ function FlightResults() {
   const location = useLocation();
   const navigate = useNavigate();
   const searchData = location.state || {};
+  
+  // Check if trip is round trip
+  const isRoundTrip = searchData.tripType === "roundTrip";
 
   // ✅ FIX 1: dark mode state added
   const [darkMode, setDarkMode] = useState(false);
@@ -43,8 +47,89 @@ function FlightResults() {
     smart: 'active'
   });
 
+  // Separate sorting states for Round Trip
+  const [outboundSortStates, setOutboundSortStates] = useState({
+    price: null,
+    fastest: null,
+    departure: null,
+    smart: 'active'
+  });
+
+  const [returnSortStates, setReturnSortStates] = useState({
+    price: null,
+    fastest: null,
+    departure: null,
+    smart: 'active'
+  });
+
   const toggleSort = (sortKey) => {
     setSortStates(prev => {
+      // If Smart is clicked, just toggle it to active
+      if (sortKey === 'smart') {
+        return {
+          price: null,
+          fastest: null,
+          departure: null,
+          smart: 'active'
+        };
+      }
+      
+      const currentState = prev[sortKey];
+      let newState;
+      
+      if (currentState === null) {
+        newState = 'asc'; // First click: ascending/primary
+      } else if (currentState === 'asc') {
+        newState = 'desc'; // Second click: descending/reverse
+      } else {
+        newState = null; // Third click: reset
+      }
+      
+      return {
+        price: null,
+        fastest: null,
+        departure: null,
+        smart: null, // Deselect smart when any other sort is clicked
+        [sortKey]: newState
+      };
+    });
+  };
+
+  const toggleOutboundSort = (sortKey) => {
+    setOutboundSortStates(prev => {
+      // If Smart is clicked, just toggle it to active
+      if (sortKey === 'smart') {
+        return {
+          price: null,
+          fastest: null,
+          departure: null,
+          smart: 'active'
+        };
+      }
+      
+      const currentState = prev[sortKey];
+      let newState;
+      
+      if (currentState === null) {
+        newState = 'asc'; // First click: ascending/primary
+      } else if (currentState === 'asc') {
+        newState = 'desc'; // Second click: descending/reverse
+      } else {
+        newState = null; // Third click: reset
+      }
+      
+      return {
+        price: null,
+        fastest: null,
+        departure: null,
+        smart: null, // Deselect smart when any other sort is clicked
+        [sortKey]: newState
+      };
+    });
+  };
+
+  const toggleReturnSort = (sortKey) => {
+    setReturnSortStates(prev => {
       // If Smart is clicked, just toggle it to active
       if (sortKey === 'smart') {
         return {
@@ -226,7 +311,19 @@ function FlightResults() {
       layout: "3-3 Layout",
       beverage: "Beverage Available",
       baseFare: 4950,
-      taxes: 846
+      taxes: 846,
+      // Return flight data (for round trip)
+      returnFlight: {
+        airline: "IndiGo",
+        airlineLogo: "/airlines/a4.png",
+        flightCode: "6E - 678",
+        departureTime: "06:55",
+        departureLocation: "LKO",
+        arrivalTime: "13:00",
+        arrivalLocation: "DEL",
+        duration: "06h 05m",
+        stops: "1 Stop"
+      }
     },
     {
       id: 2,
@@ -252,7 +349,19 @@ function FlightResults() {
       layout: "3-3 Layout",
       beverage: "Beverage Available",
       baseFare: 5250,
-      taxes: 900
+      taxes: 900,
+      // Return flight data (for round trip)
+      returnFlight: {
+        airline: "IndiGo",
+        airlineLogo: "/airlines/a4.png",
+        flightCode: "6E - 680",
+        departureTime: "04:45",
+        departureLocation: "LKO",
+        arrivalTime: "13:00",
+        arrivalLocation: "DEL",
+        duration: "08h 15m",
+        stops: "1 Stop"
+      }
     },
     {
       id: 3,
@@ -278,7 +387,19 @@ function FlightResults() {
       layout: "3-3 Layout",
       beverage: "Beverage Available",
       baseFare: 6200,
-      taxes: 1050
+      taxes: 1050,
+      // Return flight data (for round trip)
+      returnFlight: {
+        airline: "Air India",
+        airlineLogo: "/airlines/a1.png",
+        flightCode: "AI804",
+        departureTime: "14:00",
+        departureLocation: "LKO",
+        arrivalTime: "16:30",
+        arrivalLocation: "DEL",
+        duration: "2h 30m",
+        stops: "Non Stop"
+      }
     }
   ];
 
@@ -415,99 +536,261 @@ function FlightResults() {
       {/* RIGHT SIDE CONTENT */}
       <section className="flights-list-section">
         {/* DATE-PRICE STRIP SECTION */}
-        <DatePriceStrip />
+        {isRoundTrip ? (
+          <DualDatePriceStrip 
+            departureCity={searchData.fromCity || "DEL"} 
+            arrivalCity={searchData.toCity || "BOM"}
+            selectedDepartureDate={searchData.startDate}
+            selectedReturnDate={searchData.returnDate}
+          />
+        ) : (
+          <DatePriceStrip />
+        )}
         
-        {/* SORT BY BAR */}
-        <div className="sort-by-bar">
-          <span className="results-count">186 Flights Available</span>
-          <div className="sort-options">
-            <button 
-              className={`sort-btn ${sortStates.price !== null ? 'active' : ''}`}
-              onClick={() => toggleSort('price')}
-            >
-              Price
-              <span className="sort-label">
-                {getSortLabel('price', sortStates.price)}
-                {sortStates.price === 'asc' && <FaArrowUp style={{marginLeft: '4px', fontSize: '10px'}} />}
-                {sortStates.price === 'desc' && <FaArrowDown style={{marginLeft: '4px', fontSize: '10px'}} />}
-              </span>
-            </button>
-            <button 
-              className={`sort-btn ${sortStates.fastest !== null ? 'active' : ''}`}
-              onClick={() => toggleSort('fastest')}
-            >
-              Fastest
-              <span className="sort-label">
-                {getSortLabel('fastest', sortStates.fastest)}
-                {sortStates.fastest === 'asc' && <FaArrowUp style={{marginLeft: '4px', fontSize: '10px'}} />}
-                {sortStates.fastest === 'desc' && <FaArrowDown style={{marginLeft: '4px', fontSize: '10px'}} />}
-              </span>
-            </button>
-            <button 
-              className={`sort-btn ${sortStates.departure !== null ? 'active' : ''}`}
-              onClick={() => toggleSort('departure')}
-            >
-              Departure
-              <span className="sort-label">
-                {getSortLabel('departure', sortStates.departure)}
-                {sortStates.departure === 'asc' && <FaArrowUp style={{marginLeft: '4px', fontSize: '10px'}} />}
-                {sortStates.departure === 'desc' && <FaArrowDown style={{marginLeft: '4px', fontSize: '10px'}} />}
-              </span>
-            </button>
-            <button 
-              className={`sort-btn ${sortStates.smart === 'active' ? 'active' : ''}`}
-              onClick={() => toggleSort('smart')}
-            >
-              Smart
-              <span className="sort-label">Recommended</span>
-            </button>
+        {/* SORT BY BAR - Conditional for Round Trip */}
+        {isRoundTrip ? (
+          <div className="round-trip-sort-container">
+            {/* Outbound Sort Bar */}
+            <div className="sort-by-bar">
+              <div className="sort-options">
+                <button 
+                  className={`sort-btn ${outboundSortStates.price !== null ? 'active' : ''}`}
+                  onClick={() => toggleOutboundSort('price')}
+                >
+                  Price
+                  <span className="sort-label">
+                    {getSortLabel('price', outboundSortStates.price)}
+                  </span>
+                </button>
+                <button 
+                  className={`sort-btn ${outboundSortStates.fastest !== null ? 'active' : ''}`}
+                  onClick={() => toggleOutboundSort('fastest')}
+                >
+                  Fastest
+                  <span className="sort-label">
+                    {getSortLabel('fastest', outboundSortStates.fastest)}
+                  </span>
+                </button>
+                <button 
+                  className={`sort-btn ${outboundSortStates.departure !== null ? 'active' : ''}`}
+                  onClick={() => toggleOutboundSort('departure')}
+                >
+                  Departure
+                  <span className="sort-label">
+                    {getSortLabel('departure', outboundSortStates.departure)}
+                  </span>
+                </button>
+                <button 
+                  className={`sort-btn ${outboundSortStates.smart === 'active' ? 'active' : ''}`}
+                  onClick={() => toggleOutboundSort('smart')}
+                >
+                  Smart ↓
+                  <span className="sort-label">Recommended</span>
+                </button>
+              </div>
+            </div>
+            
+            {/* Return Sort Bar */}
+            <div className="sort-by-bar">
+              <div className="sort-options">
+                <button 
+                  className={`sort-btn ${returnSortStates.price !== null ? 'active' : ''}`}
+                  onClick={() => toggleReturnSort('price')}
+                >
+                  Price
+                  <span className="sort-label">
+                    {getSortLabel('price', returnSortStates.price)}
+                  </span>
+                </button>
+                <button 
+                  className={`sort-btn ${returnSortStates.fastest !== null ? 'active' : ''}`}
+                  onClick={() => toggleReturnSort('fastest')}
+                >
+                  Fastest
+                  <span className="sort-label">
+                    {getSortLabel('fastest', returnSortStates.fastest)}
+                  </span>
+                </button>
+                <button 
+                  className={`sort-btn ${returnSortStates.departure !== null ? 'active' : ''}`}
+                  onClick={() => toggleReturnSort('departure')}
+                >
+                  Departure
+                  <span className="sort-label">
+                    {getSortLabel('departure', returnSortStates.departure)}
+                  </span>
+                </button>
+                <button 
+                  className={`sort-btn ${returnSortStates.smart === 'active' ? 'active' : ''}`}
+                  onClick={() => toggleReturnSort('smart')}
+                >
+                  Smart ↓
+                  <span className="sort-label">Recommended</span>
+                </button>
+              </div>
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="sort-by-bar">
+            <span className="results-count">186 Flights Available</span>
+            <div className="sort-options">
+              <button 
+                className={`sort-btn ${sortStates.price !== null ? 'active' : ''}`}
+                onClick={() => toggleSort('price')}
+              >
+                Price
+                <span className="sort-label">
+                  {getSortLabel('price', sortStates.price)}
+                  {sortStates.price === 'asc' && <FaArrowUp style={{marginLeft: '4px', fontSize: '10px'}} />}
+                  {sortStates.price === 'desc' && <FaArrowDown style={{marginLeft: '4px', fontSize: '10px'}} />}
+                </span>
+              </button>
+              <button 
+                className={`sort-btn ${sortStates.fastest !== null ? 'active' : ''}`}
+                onClick={() => toggleSort('fastest')}
+              >
+                Fastest
+                <span className="sort-label">
+                  {getSortLabel('fastest', sortStates.fastest)}
+                  {sortStates.fastest === 'asc' && <FaArrowUp style={{marginLeft: '4px', fontSize: '10px'}} />}
+                  {sortStates.fastest === 'desc' && <FaArrowDown style={{marginLeft: '4px', fontSize: '10px'}} />}
+                </span>
+              </button>
+              <button 
+                className={`sort-btn ${sortStates.departure !== null ? 'active' : ''}`}
+                onClick={() => toggleSort('departure')}
+              >
+                Departure
+                <span className="sort-label">
+                  {getSortLabel('departure', sortStates.departure)}
+                  {sortStates.departure === 'asc' && <FaArrowUp style={{marginLeft: '4px', fontSize: '10px'}} />}
+                  {sortStates.departure === 'desc' && <FaArrowDown style={{marginLeft: '4px', fontSize: '10px'}} />}
+                </span>
+              </button>
+              <button 
+                className={`sort-btn ${sortStates.smart === 'active' ? 'active' : ''}`}
+                onClick={() => toggleSort('smart')}
+              >
+                Smart
+                <span className="sort-label">Recommended</span>
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* FLIGHT CARDS */}
         <div className="flight-cards-container">
           {flightData.map((flight) => (
             <div key={flight.id} className="flight-card-wrapper">
-              <div className="flight-card">
+              <div className={`flight-card ${isRoundTrip ? 'round-trip-card' : ''}`}>
                 {flight.badge && (
                   <div className="flight-card-header">
                     <span className="cheapest-badge">{flight.badge}</span>
                   </div>
                 )}
-                <div className="flight-card-content">
-                  <div className="airline-info">
-                    <img src={flight.airlineLogo} alt={flight.airline} className="airline-logo-flight" />
-                    <div className="flight-numbers">
-                      <span>{flight.airline}</span>
-                      <span className="flight-code">{flight.flightCode}</span>
-                    </div>
-                  </div>
-                  
-                  <div className="flight-timing">
-                    <div className="time-section">
-                      <span className="time">{flight.departureTime}</span>
-                      <span className="location">{flight.departureLocation}</span>
-                    </div>
-                    <div className="duration-section">
-                      <span className="duration">{flight.duration}</span>
-                      <div className="flight-line">
-                        <div className="line"></div>
-                        {flight.stops !== "Non Stop" && <span className="stops-dot">○</span>}
+                
+                {/* Conditional rendering based on trip type */}
+                {isRoundTrip ? (
+                  // ROUND TRIP LAYOUT - Two side-by-side mini cards
+                  <div className="flight-card-content round-trip-content">
+                    {/* Outbound Flight Card */}
+                    <div className="round-trip-mini-card">
+                      <div className="mini-card-header">
+                        <img src={flight.airlineLogo} alt={flight.airline} className="mini-airline-logo" />
+                        <span className="mini-airline-name">{flight.airline}</span>
                       </div>
-                      <span className="stops">{flight.stops}</span>
+                      <div className="mini-card-body">
+                        <div className="mini-time-section">
+                          <div className="mini-time">{flight.departureTime}</div>
+                          <div className="mini-city">{flight.departureLocation}</div>
+                        </div>
+                        <div className="mini-duration-section">
+                          <div className="mini-duration">{flight.duration}</div>
+                          <div className="mini-flight-line">
+                            <div className="mini-line"></div>
+                          </div>
+                          <div className="mini-stops">{flight.stops}</div>
+                        </div>
+                        <div className="mini-time-section">
+                          <div className="mini-time">{flight.arrivalTime}{flight.stops !== "Non Stop" && <sup>+1</sup>}</div>
+                          <div className="mini-city">{flight.arrivalLocation}</div>
+                        </div>
+                      </div>
+                      <div className="mini-card-footer">
+                        <div className="mini-price">{flight.price}</div>
+                        <div className="mini-per-adult">/adult</div>
+                        <input type="radio" name="outbound-flight" value={flight.id} className="mini-radio" />
+                      </div>
                     </div>
-                    <div className="time-section">
-                      <span className="time">{flight.arrivalTime}{flight.stops !== "Non Stop" && <sup>+1</sup>}</span>
-                      <span className="location">{flight.arrivalLocation}</span>
+                    
+                    {/* Return Flight Card */}
+                    <div className="round-trip-mini-card">
+                      <div className="mini-card-header">
+                        <img src={flight.returnFlight.airlineLogo} alt={flight.returnFlight.airline} className="mini-airline-logo" />
+                        <span className="mini-airline-name">{flight.returnFlight.airline}</span>
+                      </div>
+                      <div className="mini-card-body">
+                        <div className="mini-time-section">
+                          <div className="mini-time">{flight.returnFlight.departureTime}</div>
+                          <div className="mini-city">{flight.returnFlight.departureLocation}</div>
+                        </div>
+                        <div className="mini-duration-section">
+                          <div className="mini-duration">{flight.returnFlight.duration}</div>
+                          <div className="mini-flight-line">
+                            <div className="mini-line"></div>
+                          </div>
+                          <div className="mini-stops">{flight.returnFlight.stops}</div>
+                        </div>
+                        <div className="mini-time-section">
+                          <div className="mini-time">{flight.returnFlight.arrivalTime}</div>
+                          <div className="mini-city">{flight.returnFlight.arrivalLocation}</div>
+                        </div>
+                      </div>
+                      <div className="mini-card-footer">
+                        <div className="mini-price">{flight.returnFlight.price}</div>
+                        <div className="mini-per-adult">/adult</div>
+                        <input type="radio" name="return-flight" value={`${flight.id}-return`} className="mini-radio" />
+                      </div>
                     </div>
                   </div>
+                ) : (
+                  // ONE WAY LAYOUT (existing)
+                  <div className="flight-card-content">
+                    <div className="airline-info">
+                      <img src={flight.airlineLogo} alt={flight.airline} className="airline-logo-flight" />
+                      <div className="flight-numbers">
+                        <span>{flight.airline}</span>
+                        <span className="flight-code">{flight.flightCode}</span>
+                      </div>
+                    </div>
+                    
+                    <div className="flight-timing">
+                      <div className="time-section">
+                        <span className="time">{flight.departureTime}</span>
+                        <span className="location">{flight.departureLocation}</span>
+                      </div>
+                      <div className="duration-section">
+                        <span className="duration">{flight.duration}</span>
+                        <div className="flight-line">
+                          <div className="line"></div>
+                          {flight.stops !== "Non Stop" && <span className="stops-dot">○</span>}
+                        </div>
+                        <span className="stops">{flight.stops}</span>
+                      </div>
+                      <div className="time-section">
+                        <span className="time">{flight.arrivalTime}{flight.stops !== "Non Stop" && <sup>+1</sup>}</span>
+                        <span className="location">{flight.arrivalLocation}</span>
+                      </div>
+                    </div>
 
-                  <div className="flight-price-section">
-                    <button className="book-btn" onClick={() => openFareModal(flight)}>Book</button>
-                    <div className="price-main">{flight.price}</div>
-                    <button className="lock-price-btn">🔒 Lock Price @{flight.lockPrice}</button>
+                    <div className="flight-price-section">
+                      <button className="book-btn" onClick={() => openFareModal(flight)}>Book</button>
+                      <div className="price-main">{flight.price}</div>
+                      <button className="lock-price-btn">🔒 Lock Price @{flight.lockPrice}</button>
+                    </div>
                   </div>
-                </div>
+                )}
+                
                 <div className="flight-card-footer">
                   <div className="price-offers">
                     <span className="offer-badge">{flight.offers}</span>

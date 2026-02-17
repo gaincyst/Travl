@@ -356,12 +356,27 @@
   justify-content: space-between;
   align-items: center;
   background: #ffffff;
-  padding: 15px 20px;
+  padding: 8px 20px;
   border-radius: 8px;
   margin-bottom: 20px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
   position: relative;
   z-index: 10;
+}
+
+/* Round Trip Sort Container - Two side-by-side sort bars */
+.round-trip-sort-container {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 10px;
+}
+
+.round-trip-sort-container .sort-by-bar {
+  flex: 1;
+  margin-bottom: 0;
+  justify-content: center;
+  padding: 4px 1px;
+  
 }
 
 .results-count {
@@ -372,22 +387,23 @@
 
 .sort-options {
   display: flex;
-  gap: 10px;
+  gap: 0;
 }
 
 .sort-btn {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 8px 16px;
+  padding: 6px 30px;
   background: transparent;
-  border: 1px solid #e0e0e0;
-  border-radius: 6px;
+  border: none;
+  border-radius: 0;
   cursor: pointer;
-  font-size: 13px;
-  font-weight: 600;
-  color: #333;
+  font-size: 15px;
+  font-weight: 500;
+  color: #666;
   transition: all 0.2s ease;
+  position: relative;
 }
 
 .sort-btn:hover {
@@ -395,13 +411,12 @@
 }
 
 .sort-btn.active {
-  background-color: #007bff;
-  color: white;
-  border-color: #007bff;
+  background-color: transparent;
+  border: none;
 }
 
 .sort-btn.active .sort-label {
-  color: rgba(255,255,255,0.9);
+  color: #666;
 }
 
 .sort-label {
@@ -1396,4 +1411,171 @@ background-color: #c01313;
   .fare-cards-wrapper {
     grid-template-columns: 1fr;
   }
+}
+
+/* ============================================ */
+/* ROUND TRIP SPECIFIC STYLING */
+/* ============================================ */
+
+/* Round Trip Content - Two mini cards side-by-side */
+.round-trip-content {
+  display: flex !important;
+  gap: 10px;
+  padding: 15px !important;
+  align-items: stretch;
+}
+
+/* Round Trip Mini Card */
+.round-trip-mini-card {
+  flex: 1;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 12px 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: #ffffff;
+}
+
+/* Mini Card Header - Logo and Airline Name */
+.mini-card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mini-airline-logo {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+}
+
+.mini-airline-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+/* Mini Card Body - Flight Times and Duration */
+.mini-card-body {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.mini-time-section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.mini-time {
+  font-size: 20px;
+  font-weight: 700;
+  color: #000;
+  line-height: 1.2;
+}
+
+.mini-time sup {
+  font-size: 10px;
+  color: #e83b3b;
+  font-weight: 600;
+  margin-left: 2px;
+}
+
+.mini-city {
+  font-size: 12px;
+  color: #666;
+  margin-top: 2px;
+}
+
+/* Mini Duration Section */
+.mini-duration-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  gap: 4px;
+}
+
+.mini-duration {
+  font-size: 11px;
+  color: #666;
+  white-space: nowrap;
+}
+
+.mini-flight-line {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mini-line {
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, #ffa500 0%, #ff8c00 100%);
+  position: relative;
+}
+
+.mini-stops {
+  font-size: 10px;
+  color: #cc0000;
+  text-align: center;
+}
+
+/* Mini Card Footer - Price and Radio */
+.mini-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 8px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.mini-price {
+  font-size: 18px;
+  font-weight: 700;
+  color: #000;
+}
+
+.mini-per-adult {
+  font-size: 11px;
+  color: #666;
+  margin-left: -8px;
+}
+
+.mini-radio {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: #cc0000;
+}
+
+/* Round Trip Card Footer - same as one-way */
+.flight-card.round-trip-card .flight-card-footer {
+  padding: 12px 20px;
+  border-top: 1px solid #f0f0f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.flight-card.round-trip-card .price-offers {
+  display: flex;
+  gap: 6px;
+}
+
+.flight-card.round-trip-card .offer-badge {
+  display: flex;
+  padding: 3px 50px;
+  background-color: #e8f5e9;
+  color: #2e7d32;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 4px;
+  background: radial-gradient(circle at top left, #7fde74, #e8f5e9);
+  margin-left: 0;
+  margin-bottom: 0;
 }

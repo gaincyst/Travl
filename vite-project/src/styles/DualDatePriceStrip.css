@@ -1,0 +1,152 @@
+/* Dual Date Strip Wrapper - Container for both strips */
+.dual-date-strip-wrapper {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  margin-bottom: 10px;
+  align-items: flex-start;
+  
+}
+
+/* Single Strip Section */
+.single-strip-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+ 
+}
+
+/* Strip Header - City route and flight count */
+.strip-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 15px;
+  background: #f8f9fa;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.strip-label {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1a1a1a;
+  letter-spacing: 0.3px;
+}
+
+.flights-count {
+  font-size: 14px;
+  font-weight: 500;
+  color: #666;
+}
+
+/* Date Strip Container - matches existing DatePriceStrip */
+.dual-date-strip-wrapper .date-strip-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: #ffffff;
+  border: none;
+  border-radius: 0;
+  overflow: hidden;
+  height: 55px;
+   margin-bottom: 1px;
+}
+
+.dual-date-strip-wrapper .date-scroll-wrapper {
+  display: flex;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  width: 100%;
+}
+
+.dual-date-strip-wrapper .date-scroll-wrapper::-webkit-scrollbar {
+  display: none;
+}
+
+.dual-date-strip-wrapper .date-card {
+  flex: 0 0 150px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 10px 3px 10px;
+  cursor: pointer;
+  border-right: 1px solid #f0f0f0;
+  transition: all 0.2s ease;
+  position: relative;
+  background: #ffffff;
+}
+
+.dual-date-strip-wrapper .date-text {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 3px;
+  font-weight: 500;
+}
+
+.dual-date-strip-wrapper .price-text {
+  font-size: 16px;
+  font-weight: 700;
+  color: #333;
+}
+
+/* Selected state highlight */
+.dual-date-strip-wrapper .date-card.active {
+  background-color: #fff0f0;
+}
+
+.dual-date-strip-wrapper .date-card.active .date-text, 
+.dual-date-strip-wrapper .date-card.active .price-text {
+  color: #cc0000;
+}
+
+.dual-date-strip-wrapper .date-card.active::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2.2px;
+  background-color: #cc0000;
+}
+
+.dual-date-strip-wrapper .date-card:hover:not(.active) {
+  background-color: #fbf9f9;
+}
+
+.dual-date-strip-wrapper .date-arrow {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 30px;
+  background: #ffffff;
+  border: none;
+  z-index: 10;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 2px 0 8px rgba(0,0,0,0.08);
+  color: #333;
+  font-size: 14px;
+}
+
+.dual-date-strip-wrapper .date-arrow:hover {
+  background: #faf8f8;
+}
+
+.dual-date-strip-wrapper .date-arrow.left { 
+  left: 0; 
+  box-shadow: 2px 0 8px rgba(0,0,0,0.08);
+}
+
+.dual-date-strip-wrapper .date-arrow.right { 
+  right: 0; 
+  box-shadow: -2px 0 8px rgba(0,0,0,0.08);
+}
