@@ -431,6 +431,7 @@
   display: flex;
   flex-direction: column;
   gap: 15px;
+  padding-bottom: 150px; /* Space for summary bar when visible */
 }
 
 /* Flight Card */
@@ -1543,7 +1544,7 @@ background-color: #c01313;
 .mini-per-adult {
   font-size: 11px;
   color: #666;
-  margin-left: -8px;
+  margin-left: -270px;
 }
 
 .mini-radio {

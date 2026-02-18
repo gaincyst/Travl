@@ -1,0 +1,203 @@
+/* Round Trip Summary Bar - Fixed at Bottom */
+.round-trip-summary-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: radial-gradient( at top center, #b21313, #fe6969)   ;
+  /* background: linear-gradient(135deg, #d52222 0%, #a52727 100%); */
+  box-shadow: 0 -4px 20px rgba(156, 13, 13, 0.589);
+  z-index: 1000;
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.summary-bar-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px 40px;
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  color: white;
+}
+
+/* Flight Summary Sections */
+.summary-section {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  flex: 1;
+}
+
+.summary-airline-logo {
+  width: 45px;
+  height: 45px;
+  object-fit: contain;
+  background: transparent;
+  border-radius: 8px;
+  padding: 5px;
+}
+
+.summary-flight-details {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  flex: 1;
+}
+
+.summary-airline-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #e0e0e0;
+  letter-spacing: 0.3px;
+}
+
+.summary-route {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.summary-time {
+  font-weight: 700;
+  font-size: 16px;
+  color: white;
+}
+
+.summary-city {
+  font-weight: 500;
+  color: #ece3e3da;
+}
+
+.summary-arrow {
+  color: #f0e2dd;
+  font-weight: bold;
+  margin: 0 5px;
+}
+
+.summary-price {
+  font-size: 18px;
+  font-weight: 700;
+  color: white;
+  white-space: nowrap;
+}
+
+/* Center Divider */
+.summary-divider {
+  width: 2px;
+  height: 60px;
+  background: rgba(255, 255, 255, 0.2);
+  flex-shrink: 0;
+}
+
+/* Actions Section */
+.summary-actions {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+  padding-left: 0;
+}
+
+.summary-total {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 3px;
+}
+
+.summary-total-label {
+  font-size: 12px;
+  color: #eee9e9e8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.summary-total-price {
+  font-size: 28px;
+  font-weight: 800;
+  color: white;
+  line-height: 1;
+}
+
+.summary-book-btn {
+background: radial-gradient(circle at top left, #851111, #fe6969);
+background-color: #c01313;
+  color: white;
+  border: none;
+  padding: 14px 40px;
+  font-size: 16px;
+  font-weight: 700;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+ border: #e0e0e0 2px solid;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.summary-book-btn:hover {
+  background: #f40606cf;
+  box-shadow: 0 6px 20px rgba(238, 164, 164, 0.6);
+  transform: translateY(-2px);
+}
+
+.summary-book-btn:active {
+  transform: translateY(0);
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .summary-bar-container {
+    padding: 18px 30px;
+    gap: 20px;
+  }
+
+  .summary-total-price {
+    font-size: 24px;
+  }
+
+  .summary-book-btn {
+    padding: 12px 30px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 768px) {
+  .summary-bar-container {
+    flex-direction: column;
+    padding: 15px 20px;
+    gap: 15px;
+  }
+
+  .summary-section {
+    width: 100%;
+    gap: 10px;
+  }
+
+  .summary-divider {
+    width: 100%;
+    height: 1px;
+  }
+
+  .summary-actions {
+    width: 100%;
+    justify-content: space-between;
+    padding-left: 0;
+  }
+
+  .summary-book-btn {
+    flex: 1;
+    max-width: 200px;
+  }
+}

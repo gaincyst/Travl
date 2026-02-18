@@ -17,6 +17,7 @@ import DualDatePriceStrip from "./DualDatePriceStrip";
 import SearchBox from "./SearchBox";
 import AuthModal from "./AuthModal";
 import FlightBookingPanel from "./FlightBookingPanel";
+import RoundTripSummaryBar from "./RoundTripSummaryBar";
 import "../styles/FlightResults.css";
 
 function FlightResults() {
@@ -30,6 +31,10 @@ function FlightResults() {
   // ✅ FIX 1: dark mode state added
   const [darkMode, setDarkMode] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
+
+  // State for selected flights in round trip
+  const [selectedOutbound, setSelectedOutbound] = useState(null);
+  const [selectedReturn, setSelectedReturn] = useState(null);
 
   // Fare Modal State
   const [isFareModalOpen, setIsFareModalOpen] = useState(false);
@@ -284,6 +289,30 @@ function FlightResults() {
 
   const fareOptions = ["Student", "Senior Citizen", "Armed Forces"];
 
+  // Handlers for round trip selection
+  const handleOutboundSelect = (flight) => {
+    setSelectedOutbound(flight);
+  };
+
+  const handleReturnSelect = (flight) => {
+    setSelectedReturn(flight);
+  };
+
+  const handleSummaryBookNow = () => {
+    if (selectedOutbound && selectedReturn) {
+      // Create combined flight data for booking
+      const combinedFlightData = {
+        ...selectedOutbound,
+        returnFlight: selectedReturn.returnFlight,
+        adults: searchData.adults || 1,
+        children: searchData.children || 0,
+        infants: searchData.infants || 0,
+        isRoundTrip: true
+      };
+      openBookingPanel(combinedFlightData);
+    }
+  };
+
   // Flight data
   const flightData = [
     {
@@ -322,7 +351,8 @@ function FlightResults() {
         arrivalTime: "13:00",
         arrivalLocation: "DEL",
         duration: "06h 05m",
-        stops: "1 Stop"
+        stops: "1 Stop",
+        price: "₹3,251"
       }
     },
     {
@@ -360,7 +390,8 @@ function FlightResults() {
         arrivalTime: "13:00",
         arrivalLocation: "DEL",
         duration: "08h 15m",
-        stops: "1 Stop"
+        stops: "1 Stop",
+        price: "₹4,599"
       }
     },
     {
@@ -398,7 +429,8 @@ function FlightResults() {
         arrivalTime: "16:30",
         arrivalLocation: "DEL",
         duration: "2h 30m",
-        stops: "Non Stop"
+        stops: "Non Stop",
+        price: "₹7,250"
       }
     }
   ];
@@ -719,7 +751,14 @@ function FlightResults() {
                       <div className="mini-card-footer">
                         <div className="mini-price">{flight.price}</div>
                         <div className="mini-per-adult">/adult</div>
-                        <input type="radio" name="outbound-flight" value={flight.id} className="mini-radio" />
+                        <input 
+                          type="radio" 
+                          name="outbound-flight" 
+                          value={flight.id} 
+                          className="mini-radio" 
+                          checked={selectedOutbound?.id === flight.id}
+                          onChange={() => handleOutboundSelect(flight)}
+                        />
                       </div>
                     </div>
                     
@@ -749,7 +788,14 @@ function FlightResults() {
                       <div className="mini-card-footer">
                         <div className="mini-price">{flight.returnFlight.price}</div>
                         <div className="mini-per-adult">/adult</div>
-                        <input type="radio" name="return-flight" value={`${flight.id}-return`} className="mini-radio" />
+                        <input 
+                          type="radio" 
+                          name="return-flight" 
+                          value={`${flight.id}-return`} 
+                          className="mini-radio" 
+                          checked={selectedReturn?.id === flight.id}
+                          onChange={() => handleReturnSelect(flight)}
+                        />
                       </div>
                     </div>
                   </div>
@@ -1197,6 +1243,15 @@ function FlightResults() {
         onClose={closeBookingPanel}
         flightData={bookingFlightData}
       />
+
+      {/* Round Trip Summary Bar */}
+      {isRoundTrip && selectedOutbound && selectedReturn && (
+        <RoundTripSummaryBar 
+          outboundFlight={selectedOutbound}
+          returnFlight={selectedReturn}
+          onBookNow={handleSummaryBookNow}
+        />
+      )}
     </div>
   );
 }
