@@ -6,7 +6,7 @@ import TravellersDropdown from "./TravellersClassDropdown";
 import HotelGuestsDropdown from "./HotelGuestsDropdown";
 import { useNavigate } from "react-router-dom"; // Navigation Import
 
-function SearchBox({ preFilledData, hideServiceTabs, activeService }) {
+function SearchBox({ preFilledData, hideServiceTabs, activeService, hideTripType }) {
   const navigate = useNavigate(); // Initialize hook
   const dropdownRef = useRef(null);
   const datePickerRef = useRef(null);
@@ -45,8 +45,17 @@ function SearchBox({ preFilledData, hideServiceTabs, activeService }) {
   const handleSearch = () => {
     console.log("Active Tab:", activeTab); // Debug log
     if (activeTab === "flights") {
+      // If round trip is selected but no return date, redirect to one-way
+      let effectiveTripType = tripType;
+      let effectiveReturnDate = returnDate;
+      
+      if (tripType === "roundTrip" && !returnDate) {
+        effectiveTripType = "oneWay";
+        effectiveReturnDate = null;
+      }
+      
       navigate("/flight-results", { 
-        state: { fromCity, toCity, startDate, returnDate, displayValue, tripType, adults: tempSelection.adults, children: tempSelection.children, infants: tempSelection.infants } 
+        state: { fromCity, toCity, startDate, returnDate: effectiveReturnDate, displayValue, tripType: effectiveTripType, adults: tempSelection.adults, children: tempSelection.children, infants: tempSelection.infants } 
       });
     } else if (activeTab === "bus") {
       navigate("/bus-results", { 
@@ -68,6 +77,43 @@ function SearchBox({ preFilledData, hideServiceTabs, activeService }) {
       setActiveTab(activeService);
     }
   }, [activeService]);
+
+  // Populate form fields from preFilledData
+  useEffect(() => {
+    if (preFilledData) {
+      // Set trip type
+      if (preFilledData.tripType) {
+        setTripType(preFilledData.tripType);
+      }
+      
+      // Set cities
+      if (preFilledData.fromCity) {
+        setFromCity(preFilledData.fromCity);
+      }
+      if (preFilledData.toCity) {
+        setToCity(preFilledData.toCity);
+      }
+      
+      // Set dates
+      if (preFilledData.startDate) {
+        setStartDate(new Date(preFilledData.startDate));
+      }
+      if (preFilledData.returnDate) {
+        setReturnDate(new Date(preFilledData.returnDate));
+      }
+      
+      // Set traveller data
+      if (preFilledData.adults !== undefined || preFilledData.children !== undefined || preFilledData.infants !== undefined) {
+        const adults = preFilledData.adults || 1;
+        const children = preFilledData.children || 0;
+        const infants = preFilledData.infants || 0;
+        const cabinClass = preFilledData.displayValue?.cabinClass || "Economy";
+        
+        setTempSelection({ adults, children, infants, cabinClass });
+        setDisplayValue({ total: adults + children + infants, cabinClass });
+      }
+    }
+  }, [preFilledData]);
 
   useEffect(() => {
     function handleClickOutside(e) {
@@ -98,7 +144,7 @@ function SearchBox({ preFilledData, hideServiceTabs, activeService }) {
       </div>
       )}
 
-      {activeTab === 'flights' && (
+      {activeTab === 'flights' && !hideTripType && (
         <div className="trip-type">
           <label>
             <input type="radio" name="trip" checked={tripType === "oneWay"} onChange={() => setTripType("oneWay")} /> One Way

@@ -11,8 +11,8 @@ const DualDatePriceStrip = ({
   const departureScrollRef = useRef(null);
   const returnScrollRef = useRef(null);
   
-  // Generate dates for one month from current date (February 18, 2026)
-  const generateDates = () => {
+  // Generate dates for one month from current date (February 18, 2026) - only once
+  const [departureDates] = useState(() => {
     const dates = [];
     const startDate = new Date(2026, 1, 18); // February 18, 2026 (current date)
     const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -37,10 +37,34 @@ const DualDatePriceStrip = ({
     }
     
     return dates;
-  };
+  });
 
-  const departureDates = generateDates();
-  const returnDates = generateDates();
+  const [returnDates] = useState(() => {
+    const dates = [];
+    const startDate = new Date(2026, 1, 18); // February 18, 2026 (current date)
+    const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    
+    for (let i = 0; i < 31; i++) {
+      const currentDate = new Date(startDate);
+      currentDate.setDate(startDate.getDate() + i);
+      
+      const dayName = daysOfWeek[currentDate.getDay()];
+      const date = currentDate.getDate();
+      const month = monthNames[currentDate.getMonth()];
+      
+      // Generate random prices between ₹5,000 and ₹8,000
+      const price = `₹${(Math.floor(Math.random() * 3000) + 5000).toLocaleString()}`;
+      
+      dates.push({
+        day: `${dayName}, ${date} ${month}`,
+        price: price,
+        dateObj: currentDate
+      });
+    }
+    
+    return dates;
+  });
 
   // Format date for matching
   const formatDateForMatch = (dateString) => {

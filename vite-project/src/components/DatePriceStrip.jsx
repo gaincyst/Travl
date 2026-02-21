@@ -4,13 +4,12 @@ import "../styles/DatePriceStrip.css";
 
 const DatePriceStrip = ({ showPrice = true }) => {
   const scrollRef = useRef(null);
-  const [activeDate, setActiveDate] = useState(null);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(true);
 
   // Generate dates for one month from current date (Jan 21, 2026 to Feb 21, 2026)
-  const generateDates = () => {
-    const dates = [];
+  const [dates] = useState(() => {
+    const datesList = [];
     const startDate = new Date(2026, 0, 21); // January 21, 2026
     const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -26,17 +25,17 @@ const DatePriceStrip = ({ showPrice = true }) => {
       // Generate random prices between ₹5,000 and ₹8,000
       const price = `₹ ${(Math.floor(Math.random() * 3000) + 5000).toLocaleString()}`;
       
-      dates.push({
+      datesList.push({
         day: `${dayName}, ${date} ${month}`,
         price: price,
         dateObj: currentDate
       });
     }
     
-    return dates;
-  };
+    return datesList;
+  });
 
-  const dates = generateDates();
+  const [activeDate, setActiveDate] = useState(dates[0]?.day || null);
 
   const checkArrows = () => {
     if (scrollRef.current) {
@@ -58,10 +57,6 @@ const DatePriceStrip = ({ showPrice = true }) => {
 
   useEffect(() => {
     checkArrows();
-    // Set the first date as active by default
-    if (dates.length > 0 && !activeDate) {
-      setActiveDate(dates[0].day);
-    }
   }, []);
 
   return (

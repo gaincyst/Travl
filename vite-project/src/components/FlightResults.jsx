@@ -516,6 +516,7 @@ function FlightResults() {
       <section className="search-section-container">
         <SearchBox preFilledData={searchData} 
         hideServiceTabs={true}
+        hideTripType={true}
         />
       </section>
 
