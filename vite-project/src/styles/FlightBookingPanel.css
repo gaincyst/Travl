@@ -1484,7 +1484,8 @@
 /* Header */
 .traveller-header {
   background: #fff;
-  padding: 2px;
+  padding-top: 20px;
+  padding-left: 14px;
   margin-bottom: 2px;
   display: flex;
   justify-content: space-between;

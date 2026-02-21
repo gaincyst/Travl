@@ -601,20 +601,19 @@
 .price-offers {
   display: flex;
   gap: 6px;
-  margin-bottom: 12px;
+  align-items: center;
+  flex-shrink: 0;
 }
 
 .offer-badge {
-  display: flex;
-  padding: 3px 50px;
-  background-color: #e8f5e9;
+  display: inline-block;
+  padding: 5px 15px;
+  background: radial-gradient(circle at top left, #7fde74, #e8f5e9);
   color: #2e7d32;
   font-size: 12px;
   font-weight: 600;
   border-radius: 4px;
-  margin-left: -750px;
-  margin-bottom: -10px;
-  background: radial-gradient(circle at top left, #7fde74, #e8f5e9);
+  white-space: nowrap;
 }
 
 .book-btn {
@@ -659,7 +658,8 @@
   padding: 12px 20px;
   border-top: 1px solid #f0f0f0;
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .flight-details-btn {
@@ -1181,6 +1181,41 @@
   color: #999;
 }
 
+/* Round Trip Fare Modal Tabs */
+.round-trip-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 2px solid #e0e0e0;
+  background: #f8f9fa;
+  padding: 0 20px;
+}
+
+.round-trip-tab {
+  flex: 1;
+  padding: 5px 20px;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  font-size: 16px;
+  font-weight: 600;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  margin-bottom: -2px;
+}
+
+.round-trip-tab:hover {
+  color: #333;
+  background: #f0f0f0;
+}
+
+.round-trip-tab.active {
+  color: #d32f2f;
+  border-bottom-color: #d32f2f;
+  background: #fff;
+}
+
 .fare-modal-content {
   padding: 6px 40px;
 }
@@ -1199,10 +1234,13 @@
   display: flex;
   flex-direction: column;
   transition: all 0.2s ease;
+  cursor: pointer;
+  position: relative;
 }
 
 .fare-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.9);
+  box-shadow: 0 4px 12px rgba(223, 19, 19, 0.6);
+  border-color: #cc0000;
 }
 
 
@@ -1210,9 +1248,23 @@
   border-bottom: 1px solid #e8e8e8;
   padding-bottom: 16px;
   margin-bottom: 18px;
+  padding-top: 8px;
   display: flex;
   flex-direction: column;
   gap: 4px;
+  position: relative;
+}
+
+.fare-radio-btn {
+  position: absolute;
+  top: 8px;
+  right: 4px;
+  width: 22px;
+  height: 22px;
+  cursor: pointer;
+  accent-color: #cc0000;
+  z-index: 10;
+  margin: 0;
 }
 
 .fare-price-strikethrough {
@@ -1388,6 +1440,84 @@ background-color: #c01313;
    background: #f40606cf;
 }
 
+/* Fare Modal Footer */
+.fare-modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 30px;
+  border-top: 2px solid #e0e0e0;
+  background: #f9f9f9;
+  gap: 20px;
+}
+
+.fare-total-section {
+  display: flex;
+  flex-direction: column;
+  gap: 17px;
+}
+
+.fare-total-prices {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.fare-cut-price {
+  font-size: 18px;
+  color: #666;
+  text-decoration: line-through;
+  font-weight: 500;
+}
+
+.fare-main-price {
+  font-size: 32px;
+  font-weight: 700;
+  color: #c50d0d;
+}
+
+.fare-total-label {
+  font-size: 12px;
+  color: #666;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.fare-btn-book-roundtrip {
+  padding: 14px 40px;
+ background: radial-gradient(circle at top left, #851111, #fe6969);
+background-color: #c01313;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+
+.fare-btn-book-roundtrip:hover {
+  background: #f40606cf;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(253, 13, 13, 0.3);
+}
+
+.fare-btn-book-roundtrip:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.fare-btn-book-roundtrip:disabled:hover {
+  transform: none;
+  box-shadow: none;
+  background: #ccc;
+}
+
 /* Responsive */
 @media (max-width: 1200px) {
   .fare-cards-wrapper {
@@ -1412,6 +1542,27 @@ background-color: #c01313;
   .fare-cards-wrapper {
     grid-template-columns: 1fr;
   }
+
+  .fare-modal-footer {
+    flex-direction: column;
+    padding: 15px 20px;
+    gap: 15px;
+  }
+
+  .fare-total-section {
+    width: 100%;
+    align-items: center;
+    text-align: center;
+  }
+
+  .fare-main-price {
+    font-size: 28px;
+  }
+
+  .fare-btn-book-roundtrip {
+    width: 100%;
+    padding: 12px 20px;
+  }
 }
 
 /* ============================================ */
@@ -1420,10 +1571,11 @@ background-color: #c01313;
 
 /* Round Trip Content - Two mini cards side-by-side */
 .round-trip-content {
-  display: flex !important;
-  gap: 10px;
-  padding: 15px !important;
+  display: flex;
+  gap: 15px;
+  padding: 0;
   align-items: stretch;
+  margin-bottom: 1px;
 }
 
 /* Round Trip Mini Card */
@@ -1431,78 +1583,134 @@ background-color: #c01313;
   flex: 1;
   border: 1px solid #e0e0e0;
   border-radius: 8px;
-  padding: 12px 15px;
+  padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  background: #ffffff;
+  gap: 15px;
+  background: radial-gradient(circle at bottom right, #f5dcdc, #ffffff);
+  position: relative;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.6);
+  transition: all 0.2s ease;
 }
 
-/* Mini Card Header - Logo and Airline Name */
-.mini-card-header {
+.round-trip-mini-card:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.92);
+}
+
+/* Top Row - Airline Info, Radio, Price */
+.mini-card-top-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 15px;
+}
+
+.mini-airline-info {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
+  flex: 1;
 }
 
 .mini-airline-logo {
-  width: 28px;
-  height: 28px;
+  width: 36px;
+  height: 36px;
   object-fit: contain;
 }
 
-.mini-airline-name {
-  font-size: 14px;
-  font-weight: 600;
-  color: #333;
-}
-
-/* Mini Card Body - Flight Times and Duration */
-.mini-card-body {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-}
-
-.mini-time-section {
+.mini-airline-details {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  gap: 2px;
 }
 
-.mini-time {
-  font-size: 20px;
-  font-weight: 700;
-  color: #000;
+.mini-airline-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1a1a1a;
   line-height: 1.2;
 }
 
-.mini-time sup {
-  font-size: 10px;
-  color: #e83b3b;
-  font-weight: 600;
-  margin-left: 2px;
-}
-
-.mini-city {
+.mini-flight-code {
   font-size: 12px;
   color: #666;
+  font-weight: 400;
+}
+
+.mini-radio-top {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: #e81a1a;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.mini-price-section {
+  display: flex;
+  align-items: flex-start;
+}
+
+.mini-price {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1a1a1a;
+  line-height: 1;
+}
+
+/* Main Row - Departure, Duration, Arrival */
+.mini-card-main-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 5px 0;
+}
+
+.mini-departure-section,
+.mini-arrival-section {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 120px;
+}
+
+.mini-time {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1a1a1a;
+  line-height: 1.2;
+}
+
+.mini-date {
+  font-size: 11px;
+  color: #666;
+  font-weight: 400;
   margin-top: 2px;
 }
 
-/* Mini Duration Section */
+.mini-city {
+  font-size: 13px;
+  color: #333;
+  font-weight: 500;
+  margin-top: 2px;
+}
+
+/* Duration Section - Center */
 .mini-duration-section {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   flex: 1;
-  gap: 4px;
+  gap: 8px;
+  padding: 0 10px;
 }
 
 .mini-duration {
-  font-size: 11px;
+  font-size: 12px;
   color: #666;
+  font-weight: 500;
   white-space: nowrap;
 }
 
@@ -1511,72 +1719,70 @@ background-color: #c01313;
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
+  
 }
 
 .mini-line {
   width: 100%;
   height: 2px;
-  background: linear-gradient(90deg, #ffa500 0%, #ff8c00 100%);
+  background-color: #1caa1e89;
   position: relative;
 }
 
-.mini-stops {
-  font-size: 10px;
-  color: #cc0000;
-  text-align: center;
-}
-
-/* Mini Card Footer - Price and Radio */
-.mini-card-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-top: 8px;
-  border-top: 1px solid #f0f0f0;
-}
-
-.mini-price {
-  font-size: 18px;
-  font-weight: 700;
-  color: #000;
-}
-
-.mini-per-adult {
+.mini-stops-info {
   font-size: 11px;
   color: #666;
-  margin-left: -270px;
+  text-align: center;
+  font-weight: 400;
 }
 
-.mini-radio {
-  width: 20px;
-  height: 20px;
-  cursor: pointer;
-  accent-color: #cc0000;
-}
-
-/* Round Trip Card Footer - same as one-way */
-.flight-card.round-trip-card .flight-card-footer {
-  padding: 12px 20px;
-  border-top: 1px solid #f0f0f0;
+/* Bottom Row - Seats and Stop Info */
+.mini-card-bottom-row {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
+  padding-top: 10px;
+  border-top: 1px solid #cdcbcb;
+  gap: 10px;
 }
 
-.flight-card.round-trip-card .price-offers {
-  display: flex;
-  gap: 6px;
-}
-
-.flight-card.round-trip-card .offer-badge {
-  display: flex;
-  padding: 3px 50px;
-  background-color: #e8f5e9;
-  color: #2e7d32;
+.mini-seats-info {
   font-size: 12px;
-  font-weight: 600;
-  border-radius: 4px;
-  background: radial-gradient(circle at top left, #7fde74, #e8f5e9);
-  margin-left: 0;
-  margin-bottom: 0;
+  color: #388e3c;
+  font-weight: 500;
 }
+
+.mini-stop-details {
+  font-size: 12px;
+  color: #d32f2f;
+  font-weight: 500;
+}
+
+/* Mini Card Footer Button */
+.mini-card-footer-btn {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 1px;
+  border-top: 0px solid #cfcfcf;
+  margin-top: -9px;
+}
+
+.mini-flight-details-btn {
+  background: transparent;
+  border: none;
+  color: #ed0808;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  padding: 5px 0;
+
+}
+
+.mini-flight-details-btn:hover {
+  color: #c54a4a;
+  text-decoration: underline;
+}
+
+

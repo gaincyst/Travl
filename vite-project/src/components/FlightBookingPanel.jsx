@@ -577,7 +577,7 @@ function FlightBookingPanel({ isOpen, onClose, flightData }) {
               {/* Date and Duration Row */}
               <div className="flight-date-row">
                 <div className="date-duration-left">
-                  <span className="flight-date-text">Friday, Feb 13</span>
+                  <span className="flight-date-text">{flightData.departureDate || "Friday, Feb 13"}</span>
                   <span className="flight-stops-duration">{flightData.stops} · {flightData.duration}</span>
                 </div>
                 <a href="#" className="fare-rules-link">View Fare Rules</a>
@@ -590,11 +590,11 @@ function FlightBookingPanel({ isOpen, onClose, flightData }) {
                   <div className="airline-details">
                     <span className="airline-name-text">{flightData.airline}</span>
                     <span className="flight-number-text">{flightData.flightCode}</span>
-                    <span className="aircraft-type-badge">{flightData.layout || "Boeing 737"}</span>
+                    {flightData.layout && <span className="aircraft-type-badge">{flightData.layout}</span>}
                   </div>
                 </div>
                 <div className="economy-class-text">
-                  Economy &gt; <span className="fare-class">SPICESAVER</span>
+                  Economy &gt; <span className="fare-class">SAVER</span>
                 </div>
               </div>
 
@@ -604,7 +604,7 @@ function FlightBookingPanel({ isOpen, onClose, flightData }) {
                 <div className="journey-point-section">
                   <div className="journey-time">{flightData.departureTime}</div>
                   <div className="journey-city">{flightData.departureCity}</div>
-                  <div className="journey-location">Indira Gandhi International Airport, {flightData.departureTerminal}</div>
+                  <div className="journey-location">{flightData.departureCity} Airport</div>
                 </div>
 
                 {/* Duration Line */}
@@ -621,7 +621,7 @@ function FlightBookingPanel({ isOpen, onClose, flightData }) {
                 <div className="journey-point-section">
                   <div className="journey-time">{flightData.arrivalTime}</div>
                   <div className="journey-city">{flightData.arrivalCity}</div>
-                  <div className="journey-location">Chaudhary Charan Singh International Airport, {flightData.arrivalTerminal}</div>
+                  <div className="journey-location">{flightData.arrivalCity} International Airport, {flightData.arrivalTerminal}</div>
                 </div>
               </div>
 
@@ -638,6 +638,80 @@ function FlightBookingPanel({ isOpen, onClose, flightData }) {
               </div>
             </div>
 
+            {/* Return Journey Section - For Round Trip */}
+            {flightData.isRoundTrip && flightData.returnFlight && (
+              <div className="flight-summary-panel">
+                {/* Top Header Row */}
+                <div className="flight-header-row">
+                  <div className="flight-route-title">{flightData.arrivalCity} → {flightData.departureCity}</div>
+                  <div className="cancellation-badge">CANCELLATION FEES APPLY</div>
+                </div>
+
+                {/* Date and Duration Row */}
+                <div className="flight-date-row">
+                  <div className="date-duration-left">
+                    <span className="flight-date-text">{flightData.returnFlight.departureDate || "Saturday, Feb 15"}</span>
+                    <span className="flight-stops-duration">{flightData.returnFlight.stops} · {flightData.returnFlight.duration}</span>
+                  </div>
+                  <a href="#" className="fare-rules-link">View Fare Rules</a>
+                </div>
+
+                {/* Airline Info Row */}
+                <div className="airline-row">
+                  <div className="airline-left-section">
+                    <img src={flightData.returnFlight.airlineLogo} alt={flightData.returnFlight.airline} className="airline-logo-img" />
+                    <div className="airline-details">
+                      <span className="airline-name-text">{flightData.returnFlight.airline}</span>
+                      <span className="flight-number-text">{flightData.returnFlight.flightCode}</span>
+                      {flightData.returnFlight.layout && <span className="aircraft-type-badge">{flightData.returnFlight.layout}</span>}
+                    </div>
+                  </div>
+                  <div className="economy-class-text">
+                    Economy &gt; <span className="fare-class">SAVER</span>
+                  </div>
+                </div>
+
+                {/* Flight Timeline */}
+                <div className="flight-journey-timeline">
+                  {/* Departure */}
+                  <div className="journey-point-section">
+                    <div className="journey-time">{flightData.returnFlight.departureTime}</div>
+                    <div className="journey-city">{flightData.arrivalCity}</div>
+                    <div className="journey-location">{flightData.arrivalCity} Airport</div>
+                  </div>
+
+                  {/* Duration Line */}
+                  <div className="journey-duration-line">
+                    <div className="duration-text-center">{flightData.returnFlight.duration}</div>
+                    <div className="timeline-visual">
+                      <div className="journey-circle"></div>
+                      <div className="dotted-line"></div>
+                      <div className="journey-circle"></div>
+                    </div>
+                  </div>
+
+                  {/* Arrival */}
+                  <div className="journey-point-section">
+                    <div className="journey-time">{flightData.returnFlight.arrivalTime}</div>
+                    <div className="journey-city">{flightData.departureCity}</div>
+                    <div className="journey-location">{flightData.departureCity} International Airport</div>
+                  </div>
+                </div>
+
+                {/* Baggage Section */}
+                <div className="baggage-section-bottom">
+                  <div className="baggage-item-row">
+                    <img src="/logo/cabin-baggage.png" alt="Cabin Baggage" className="baggage-icon-img" />
+                    <span className="baggage-text"><strong>Cabin Baggage:</strong> 7 Kgs (1 piece only) / Adult</span>
+                  </div>
+                  <div className="baggage-item-row">
+                    <img src="/logo/baggage1.png" alt="Check-in Baggage" className="baggage-icon-img" />
+                    <span className="baggage-text"><strong>Check-In Baggage:</strong> 15 Kgs (1 piece only) / Adult</span>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Refund on Cancellation Section */}
             <div className="refund-cancellation-section">
               <div className="refund-header">
@@ -645,28 +719,22 @@ function FlightBookingPanel({ isOpen, onClose, flightData }) {
                 <a href="#" className="cancellation-policy-link">Cancellation &amp; Rescheduling Policy</a>
               </div>
 
+              {/* Outbound Flight Refund Timeline */}
               <div className="refund-route">{flightData.departureLocation} - {flightData.arrivalLocation}</div>
 
               <div className="refund-timeline">
                 <div className="refund-point">
-                  <div className="refund-amount">₹1070 refund</div>
+                  <div className="refund-amount">₹2217 refund</div>
                   <div className="timeline-marker marker-yellow"></div>
                   <div className="refund-time-label">Now</div>
-                  <div className="refund-time-value">00:45</div>
-                </div>
-
-                <div className="refund-point">
-                  <div className="refund-amount">₹70 refund</div>
-                  <div className="timeline-marker marker-orange"></div>
-                  <div className="refund-time-label">11 Feb</div>
-                  <div className="refund-time-value">05:00</div>
+                  <div className="refund-time-value">17:24</div>
                 </div>
 
                 <div className="refund-point">
                   <div className="refund-amount">Non Refundable</div>
                   <div className="timeline-marker marker-red"></div>
-                  <div className="refund-time-label">12 Feb</div>
-                  <div className="refund-time-value">02:00</div>
+                  <div className="refund-time-label">22 Feb</div>
+                  <div className="refund-time-value">00:30</div>
                 </div>
 
                 <div className="refund-point">
@@ -675,15 +743,43 @@ function FlightBookingPanel({ isOpen, onClose, flightData }) {
                     <span className="plane-icon">✈</span>
                   </div>
                   <div className="refund-time-label">Departure</div>
-                  <div className="refund-time-value">12 Feb, 05:00</div>
+                  <div className="refund-time-value">22 Feb, 04:30</div>
                 </div>
 
                 <div className="timeline-line">
                   <div className="line-segment segment-yellow"></div>
-                  <div className="line-segment segment-orange"></div>
                   <div className="line-segment segment-red"></div>
                 </div>
               </div>
+
+              {/* Return Flight Refund Timeline - For Round Trip Only */}
+              {flightData.isRoundTrip && flightData.returnFlight && (
+                <>
+                  <div className="refund-route">{flightData.arrivalLocation} - {flightData.departureLocation}</div>
+
+                  <div className="refund-timeline">
+                    <div className="refund-point">
+                      <div className="refund-amount">Non Refundable</div>
+                      <div className="timeline-marker marker-red"></div>
+                      <div className="refund-time-label">Now</div>
+                      <div className="refund-time-value">17:24</div>
+                    </div>
+
+                    <div className="refund-point">
+                      <div className="refund-amount">&nbsp;</div>
+                      <div className="timeline-marker marker-red-dark">
+                        <span className="plane-icon">✈</span>
+                      </div>
+                      <div className="refund-time-label">Departure</div>
+                      <div className="refund-time-value">26 Feb, 23:40</div>
+                    </div>
+
+                    <div className="timeline-line">
+                      <div className="line-segment segment-red"></div>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
 
             {/* Fare Upgrade Section */}
@@ -1325,7 +1421,10 @@ function FlightBookingPanel({ isOpen, onClose, flightData }) {
             <div className="review-booking-section">
               <h2 className="review-booking-title">Review Your Booking</h2>
               
-              {/* Flight Details */}
+              {/* Departure Flight Details */}
+              <div className="review-section">
+                <h3 className="review-section-title">Departure Flight</h3>
+              </div>
               <div className="review-flight-card">
                 <div className="review-flight-header">
                   <div className="review-airline-info">
@@ -1354,6 +1453,43 @@ function FlightBookingPanel({ isOpen, onClose, flightData }) {
                   </div>
                 </div>
               </div>
+              
+              {/* Return Flight Details (if exists) */}
+              {flightData.returnFlight && (
+                <>
+                  <div className="review-section">
+                    <h3 className="review-section-title">Return Flight</h3>
+                  </div>
+                  <div className="review-flight-card">
+                    <div className="review-flight-header">
+                      <div className="review-airline-info">
+                        <img src={flightData.returnFlight.airlineLogo} alt={flightData.returnFlight.airline} className="review-airline-logo" />
+                        <span className="review-airline-name">{flightData.returnFlight.airline}</span>
+                      </div>
+                      <span className="review-fare-type">SAVER</span>
+                    </div>
+                    
+                    <div className="review-flight-timing">
+                      <div className="review-time-section">
+                        <div className="review-main-time">{flightData.returnFlight.departureTime}</div>
+                        <div className="review-date">Friday, Feb 13</div>
+                        <div className="review-airport">{flightData.arrivalCity}</div>
+                      </div>
+                      
+                      <div className="review-duration-section">
+                        <div className="review-duration">{flightData.returnFlight.duration}</div>
+                        <div className="review-stop-type">{flightData.returnFlight.stops === '0 Stops' || flightData.returnFlight.stops === 0 ? 'Non Stop' : flightData.returnFlight.stops}</div>
+                      </div>
+                      
+                      <div className="review-time-section">
+                        <div className="review-main-time">{flightData.returnFlight.arrivalTime}</div>
+                        <div className="review-date">Friday, Feb 13</div>
+                        <div className="review-airport">{flightData.departureCity}</div>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              )}
               
               {/* Travellers Section */}
               <div className="review-section">

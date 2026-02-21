@@ -40,6 +40,12 @@ function FlightResults() {
   const [isFareModalOpen, setIsFareModalOpen] = useState(false);
   const [selectedFlightData, setSelectedFlightData] = useState(null);
 
+  // Round Trip Fare Modal State
+  const [isRoundTripFareModalOpen, setIsRoundTripFareModalOpen] = useState(false);
+  const [roundTripFareTab, setRoundTripFareTab] = useState('departure'); // 'departure' or 'return'
+  const [selectedDepartureFare, setSelectedDepartureFare] = useState(null);
+  const [selectedReturnFare, setSelectedReturnFare] = useState(null);
+
   // Flight Booking Panel State
   const [isBookingPanelOpen, setIsBookingPanelOpen] = useState(false);
   const [bookingFlightData, setBookingFlightData] = useState(null);
@@ -300,17 +306,31 @@ function FlightResults() {
 
   const handleSummaryBookNow = () => {
     if (selectedOutbound && selectedReturn) {
-      // Create combined flight data for booking
-      const combinedFlightData = {
-        ...selectedOutbound,
-        returnFlight: selectedReturn.returnFlight,
-        adults: searchData.adults || 1,
-        children: searchData.children || 0,
-        infants: searchData.infants || 0,
-        isRoundTrip: true
-      };
-      openBookingPanel(combinedFlightData);
+      // Open round trip fare modal instead of directly opening booking panel
+      setIsRoundTripFareModalOpen(true);
+      setRoundTripFareTab('departure'); // Default to departure tab
+      document.body.style.overflow = 'hidden';
     }
+  };
+
+  // Close Round Trip Fare Modal
+  const closeRoundTripFareModal = () => {
+    setIsRoundTripFareModalOpen(false);
+    document.body.style.overflow = 'auto';
+  };
+
+  // Open Booking Panel from Round Trip Fare Modal
+  const openBookingPanelFromRoundTrip = () => {
+    const combinedFlightData = {
+      ...selectedOutbound,
+      returnFlight: selectedReturn.returnFlight,
+      adults: searchData.adults || 1,
+      children: searchData.children || 0,
+      infants: searchData.infants || 0,
+      isRoundTrip: true
+    };
+    setIsRoundTripFareModalOpen(false);
+    openBookingPanel(combinedFlightData);
   };
 
   // Flight data
@@ -714,94 +734,505 @@ function FlightResults() {
         <div className="flight-cards-container">
           {flightData.map((flight) => (
             <div key={flight.id} className="flight-card-wrapper">
-              <div className={`flight-card ${isRoundTrip ? 'round-trip-card' : ''}`}>
-                {flight.badge && (
-                  <div className="flight-card-header">
-                    <span className="cheapest-badge">{flight.badge}</span>
-                  </div>
-                )}
-                
                 {/* Conditional rendering based on trip type */}
                 {isRoundTrip ? (
-                  // ROUND TRIP LAYOUT - Two side-by-side mini cards
-                  <div className="flight-card-content round-trip-content">
+                  // ROUND TRIP LAYOUT - Two independent side-by-side mini cards
+                  <>
+                  <div className="round-trip-content">
                     {/* Outbound Flight Card */}
                     <div className="round-trip-mini-card">
-                      <div className="mini-card-header">
-                        <img src={flight.airlineLogo} alt={flight.airline} className="mini-airline-logo" />
-                        <span className="mini-airline-name">{flight.airline}</span>
-                      </div>
-                      <div className="mini-card-body">
-                        <div className="mini-time-section">
-                          <div className="mini-time">{flight.departureTime}</div>
-                          <div className="mini-city">{flight.departureLocation}</div>
+                      <div className="mini-card-top-row">
+                        <div className="mini-airline-info">
+                          <img src={flight.airlineLogo} alt={flight.airline} className="mini-airline-logo" />
+                          <div className="mini-airline-details">
+                            <div className="mini-airline-name">{flight.airline}</div>
+                            <div className="mini-flight-code">{flight.flightCode}</div>
+                          </div>
                         </div>
+                        <input 
+                          type="radio" 
+                          name="outbound-flight" 
+                          value={flight.id} 
+                          className="mini-radio-top" 
+                          checked={selectedOutbound?.id === flight.id}
+                          onChange={() => handleOutboundSelect(flight)}
+                        />
+                        <div className="mini-price-section">
+                          <div className="mini-price">{flight.price}</div>
+                        </div>
+                      </div>
+                      
+                      <div className="mini-card-main-row">
+                        <div className="mini-departure-section">
+                          <div className="mini-time">{flight.departureTime}</div>
+                          <div className="mini-date">{flight.departureDate?.split(' at ')[0] || 'Tue, 14-10-2025'}</div>
+                          <div className="mini-city">{flight.departureCity || flight.departureLocation}</div>
+                        </div>
+                        
                         <div className="mini-duration-section">
                           <div className="mini-duration">{flight.duration}</div>
                           <div className="mini-flight-line">
                             <div className="mini-line"></div>
                           </div>
-                          <div className="mini-stops">{flight.stops}</div>
+                          <div className="mini-stops-info">{flight.stops}</div>
                         </div>
-                        <div className="mini-time-section">
-                          <div className="mini-time">{flight.arrivalTime}{flight.stops !== "Non Stop" && <sup>+1</sup>}</div>
-                          <div className="mini-city">{flight.arrivalLocation}</div>
+                        
+                        <div className="mini-arrival-section">
+                          <div className="mini-time">{flight.arrivalTime}</div>
+                          <div className="mini-date">{flight.arrivalDate?.split(' at ')[0] || 'Wed, 15-10-2025'}</div>
+                          <div className="mini-city">{flight.arrivalCity || flight.arrivalLocation}</div>
                         </div>
                       </div>
-                      <div className="mini-card-footer">
-                        <div className="mini-price">{flight.price}</div>
-                        <div className="mini-per-adult">/adult</div>
-                        <input 
-                          type="radio" 
-                          name="outbound-flight" 
-                          value={flight.id} 
-                          className="mini-radio" 
-                          checked={selectedOutbound?.id === flight.id}
-                          onChange={() => handleOutboundSelect(flight)}
-                        />
+                      
+                      <div className="mini-card-bottom-row">
+                        <div className="mini-seats-info">{flight.stops === "Non Stop" ? "32 Seats Available" : "5 Seats Available"}</div>
+                        <div className="mini-stop-details">{flight.stops === "Non Stop" ? "Non-stop" : `1 Stop at ${flight.arrivalCity || flight.arrivalLocation}`}</div>
+                      </div>
+                      
+                      <div className="mini-card-footer-btn">
+                        <button 
+                          className="mini-flight-details-btn"
+                          onClick={() => toggleFlightDetails(`${flight.id}-outbound`)}
+                        >
+                          {openFlightDetails[`${flight.id}-outbound`] ? 'Hide Details' : 'Flight Details'} →
+                        </button>
                       </div>
                     </div>
                     
                     {/* Return Flight Card */}
                     <div className="round-trip-mini-card">
-                      <div className="mini-card-header">
-                        <img src={flight.returnFlight.airlineLogo} alt={flight.returnFlight.airline} className="mini-airline-logo" />
-                        <span className="mini-airline-name">{flight.returnFlight.airline}</span>
-                      </div>
-                      <div className="mini-card-body">
-                        <div className="mini-time-section">
-                          <div className="mini-time">{flight.returnFlight.departureTime}</div>
-                          <div className="mini-city">{flight.returnFlight.departureLocation}</div>
+                      <div className="mini-card-top-row">
+                        <div className="mini-airline-info">
+                          <img src={flight.returnFlight.airlineLogo} alt={flight.returnFlight.airline} className="mini-airline-logo" />
+                          <div className="mini-airline-details">
+                            <div className="mini-airline-name">{flight.returnFlight.airline}</div>
+                            <div className="mini-flight-code">{flight.returnFlight.flightCode}</div>
+                          </div>
                         </div>
+                        <input 
+                          type="radio" 
+                          name="return-flight" 
+                          value={`${flight.id}-return`} 
+                          className="mini-radio-top" 
+                          checked={selectedReturn?.id === flight.id}
+                          onChange={() => handleReturnSelect(flight)}
+                        />
+                        <div className="mini-price-section">
+                          <div className="mini-price">{flight.returnFlight.price}</div>
+                        </div>
+                      </div>
+                      
+                      <div className="mini-card-main-row">
+                        <div className="mini-departure-section">
+                          <div className="mini-time">{flight.returnFlight.departureTime}</div>
+                          <div className="mini-date">Wed, 15-10-2025</div>
+                          <div className="mini-city">{flight.arrivalCity || flight.returnFlight.departureLocation}</div>
+                        </div>
+                        
                         <div className="mini-duration-section">
                           <div className="mini-duration">{flight.returnFlight.duration}</div>
                           <div className="mini-flight-line">
                             <div className="mini-line"></div>
                           </div>
-                          <div className="mini-stops">{flight.returnFlight.stops}</div>
+                          <div className="mini-stops-info">{flight.returnFlight.stops}</div>
                         </div>
-                        <div className="mini-time-section">
+                        
+                        <div className="mini-arrival-section">
                           <div className="mini-time">{flight.returnFlight.arrivalTime}</div>
-                          <div className="mini-city">{flight.returnFlight.arrivalLocation}</div>
+                          <div className="mini-date">Wed, 15-10-2025</div>
+                          <div className="mini-city">{flight.departureCity || flight.returnFlight.arrivalLocation}</div>
                         </div>
                       </div>
-                      <div className="mini-card-footer">
-                        <div className="mini-price">{flight.returnFlight.price}</div>
-                        <div className="mini-per-adult">/adult</div>
-                        <input 
-                          type="radio" 
-                          name="return-flight" 
-                          value={`${flight.id}-return`} 
-                          className="mini-radio" 
-                          checked={selectedReturn?.id === flight.id}
-                          onChange={() => handleReturnSelect(flight)}
-                        />
+                      
+                      <div className="mini-card-bottom-row">
+                        <div className="mini-seats-info">{flight.returnFlight.stops === "Non Stop" ? "32 Seats Available" : "670 Seats Available"}</div>
+                        <div className="mini-stop-details">{flight.returnFlight.stops === "Non Stop" ? "Non-stop" : `1 Stop`}</div>
+                      </div>
+                      
+                      <div className="mini-card-footer-btn">
+                        <button 
+                          className="mini-flight-details-btn"
+                          onClick={() => toggleFlightDetails(`${flight.id}-return`)}
+                        >
+                          {openFlightDetails[`${flight.id}-return`] ? 'Hide Details' : 'Flight Details'} →
+                        </button>
                       </div>
                     </div>
                   </div>
+                  
+                  {/* FLIGHT DETAILS DROPDOWN FOR OUTBOUND */}
+                  {openFlightDetails[`${flight.id}-outbound`] && (
+                    <div className="flight-details-dropdown">
+                      {/* Tabs */}
+                      <div className="flight-details-tabs">
+                        <button 
+                          className={`tab-btn ${activeTab[`${flight.id}-outbound`] === 'flight-info' ? 'active' : ''}`}
+                          onClick={() => handleTabChange(`${flight.id}-outbound`, 'flight-info')}
+                        >
+                          <FaPlane style={{marginRight: '6px', fontSize: '14px'}} />
+                          FLIGHT INFORMATION
+                        </button>
+                        <button 
+                          className={`tab-btn ${activeTab[`${flight.id}-outbound`] === 'fare-details' ? 'active' : ''}`}
+                          onClick={() => handleTabChange(`${flight.id}-outbound`, 'fare-details')}
+                        >
+                          <FaLock style={{marginRight: '6px', fontSize: '14px'}} />
+                          FARE DETAILS
+                        </button>
+                        <button 
+                          className={`tab-btn ${activeTab[`${flight.id}-outbound`] === 'baggage-rules' ? 'active' : ''}`}
+                          onClick={() => handleTabChange(`${flight.id}-outbound`, 'baggage-rules')}
+                        >
+                          <FaSuitcase style={{marginRight: '6px', fontSize: '14px'}} />
+                          BAGGAGE RULES
+                        </button>
+                        <button 
+                          className={`tab-btn ${activeTab[`${flight.id}-outbound`] === 'cancellation' ? 'active' : ''}`}
+                          onClick={() => handleTabChange(`${flight.id}-outbound`, 'cancellation')}
+                        >
+                          <FaLock style={{marginRight: '6px', fontSize: '14px'}} />
+                          CANCELLATION
+                        </button>
+                      </div>
+
+                      {/* Tab Content */}
+                      <div className="flight-details-content">
+                        {activeTab[`${flight.id}-outbound`] === 'flight-info' && (
+                          <div className="flight-info-tab">
+                            <div className="flight-info-header">
+                              <div className="airline-header">
+                                <img src={flight.airlineLogo} alt={flight.airline} className="dropdown-airline-logo" />
+                                <div className="airline-details">
+                                  <span className="airline-name">{flight.airline}</span>
+                                  <span className="flight-number">{flight.flightCode}</span>
+                                </div>
+                              </div>
+                              <div className="flight-route">
+                                <div className="route-segment">
+                                  <div className="route-location">
+                                    <span className="route-code">{flight.departureLocation}</span>
+                                    <span className="route-time">{flight.departureDate}</span>
+                                  </div>
+                                  <div className="route-city">
+                                    <span>{flight.departureCity}</span>
+                                    <span className="terminal-info">{flight.departureTerminal}</span>
+                                  </div>
+                                </div>
+                                <div className="route-duration">
+                                  <span className="duration-text">{flight.duration}</span>
+                                  <div className="duration-timeline-line"></div>
+                                  <div className={`refundable-badge ${flight.refundable ? '' : 'non-refundable'}`}>
+                                    {flight.refundable ? 'Refundable' : 'Non-Refundable'}
+                                  </div>
+                                </div>
+                                <div className="route-segment">
+                                  <div className="route-location">
+                                    <span className="route-code">{flight.arrivalLocation}</span>
+                                    <span className="route-time">{flight.arrivalDate}</span>
+                                  </div>
+                                  <div className="route-city">
+                                    <span>{flight.arrivalCity}</span>
+                                    <span className="terminal-info">{flight.arrivalTerminal}</span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            
+                            <div className="flight-amenities">
+                              <div className="amenity-item">
+                                <FaThLarge style={{fontSize: '16px', color: '#666'}} />
+                                <span>{flight.layout}</span>
+                              </div>
+                              <div className="amenity-item">
+                                <FaUtensils style={{fontSize: '16px', color: '#666'}} />
+                                <span>{flight.beverage}</span>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {activeTab[`${flight.id}-outbound`] === 'fare-details' && (
+                          <div className="fare-details-tab">
+                            <div className="fare-breakdown-card">
+                              <h3 className="fare-breakdown-heading">Fare breakdown</h3>
+                              
+                              <div className="fare-breakdown-row">
+                                <span className="fare-label">Base Fare</span>
+                                <span className="fare-value">₹{flight.baseFare}</span>
+                              </div>
+                              
+                              <div className="fare-breakdown-row">
+                                <span className="fare-label">Taxes & Fees</span>
+                                <span className="fare-value">₹{flight.taxes}</span>
+                              </div>
+                              
+                              <div className="fare-divider"></div>
+                              
+                              <div className="fare-breakdown-row fare-total-row">
+                                <span className="fare-total-label">TOTAL</span>
+                                <span className="fare-total-value">₹{flight.baseFare + flight.taxes}</span>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {activeTab[`${flight.id}-outbound`] === 'baggage-rules' && (
+                          <div className="baggage-rules-tab">
+                            <div className="baggage-section">
+                              <h3 className="baggage-heading">CHECK-IN</h3>
+                              <div className="baggage-divider"></div>
+                              <div className="baggage-columns">
+                                <div className="baggage-column">
+                                  <div className="baggage-column-header">ADULT</div>
+                                  <div className="baggage-column-value">15 kgs (1-piece only)</div>
+                                </div>
+                                <div className="baggage-column">
+                                  <div className="baggage-column-header">CHILD</div>
+                                  <div className="baggage-column-value">15 kgs (1-piece only)</div>
+                                </div>
+                                <div className="baggage-column">
+                                  <div className="baggage-column-header">INFANT</div>
+                                  <div className="baggage-column-value">0 kgs</div>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="baggage-section">
+                              <h3 className="baggage-heading">CABIN</h3>
+                              <div className="baggage-divider"></div>
+                              <div className="baggage-columns">
+                                <div className="baggage-column">
+                                  <div className="baggage-column-header">ADULT</div>
+                                  <div className="baggage-column-value">7 kgs (1-piece only)</div>
+                                </div>
+                                <div className="baggage-column">
+                                  <div className="baggage-column-header">CHILD</div>
+                                  <div className="baggage-column-value">7 kgs (1-piece only)</div>
+                                </div>
+                                <div className="baggage-column">
+                                  <div className="baggage-column-header">INFANT</div>
+                                  <div className="baggage-column-value">7 kgs (1-piece only)</div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {activeTab[`${flight.id}-outbound`] === 'cancellation' && (
+                          <div className="cancellation-tab">
+                            <div className="cancellation-empty-state">
+                              <div className="cancellation-icon">
+                                <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                  <circle cx="40" cy="12" r="3" fill="#999" />
+                                  <circle cx="68" cy="52" r="2" fill="#999" />
+                                  <circle cx="55" cy="18" r="2.5" fill="#999" />
+                                  <circle cx="16" cy="45" r="2" fill="#999" />
+                                  <rect x="28" y="28" width="24" height="32" rx="2" stroke="#666" strokeWidth="1.5" fill="none" />
+                                  <path d="M32 34 L36 34 M32 38 L38 38 M32 42 L36 42" stroke="#666" strokeWidth="1.2" strokeLinecap="round" />
+                                  <text x="34" y="36" fontSize="8" fill="#666" fontWeight="600">₹</text>
+                                  <circle cx="40" cy="54" r="8" fill="white" stroke="#666" strokeWidth="1.5" />
+                                  <path d="M40 50 L40 54 M40 58 L40 58" stroke="#e74c3c" strokeWidth="2" strokeLinecap="round" />
+                                  <circle cx="40" cy="58" r="1" fill="#e74c3c" />
+                                </svg>
+                              </div>
+                              <p className="cancellation-message">Sorry! Fare rules could not be<br />fetched at the moment.</p>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* FLIGHT DETAILS DROPDOWN FOR RETURN */}
+                  {openFlightDetails[`${flight.id}-return`] && (
+                    <div className="flight-details-dropdown">
+                      {/* Tabs */}
+                      <div className="flight-details-tabs">
+                        <button 
+                          className={`tab-btn ${activeTab[`${flight.id}-return`] === 'flight-info' ? 'active' : ''}`}
+                          onClick={() => handleTabChange(`${flight.id}-return`, 'flight-info')}
+                        >
+                          <FaPlane style={{marginRight: '6px', fontSize: '14px'}} />
+                          FLIGHT INFORMATION
+                        </button>
+                        <button 
+                          className={`tab-btn ${activeTab[`${flight.id}-return`] === 'fare-details' ? 'active' : ''}`}
+                          onClick={() => handleTabChange(`${flight.id}-return`, 'fare-details')}
+                        >
+                          <FaLock style={{marginRight: '6px', fontSize: '14px'}} />
+                          FARE DETAILS
+                        </button>
+                        <button 
+                          className={`tab-btn ${activeTab[`${flight.id}-return`] === 'baggage-rules' ? 'active' : ''}`}
+                          onClick={() => handleTabChange(`${flight.id}-return`, 'baggage-rules')}
+                        >
+                          <FaSuitcase style={{marginRight: '6px', fontSize: '14px'}} />
+                          BAGGAGE RULES
+                        </button>
+                        <button 
+                          className={`tab-btn ${activeTab[`${flight.id}-return`] === 'cancellation' ? 'active' : ''}`}
+                          onClick={() => handleTabChange(`${flight.id}-return`, 'cancellation')}
+                        >
+                          <FaLock style={{marginRight: '6px', fontSize: '14px'}} />
+                          CANCELLATION
+                        </button>
+                      </div>
+
+                      {/* Tab Content for Return Flight */}
+                      <div className="flight-details-content">
+                        {activeTab[`${flight.id}-return`] === 'flight-info' && (
+                          <div className="flight-info-tab">
+                            <div className="flight-info-header">
+                              <div className="airline-header">
+                                <img src={flight.returnFlight.airlineLogo} alt={flight.returnFlight.airline} className="dropdown-airline-logo" />
+                                <div className="airline-details">
+                                  <span className="airline-name">{flight.returnFlight.airline}</span>
+                                  <span className="flight-number">{flight.returnFlight.flightCode}</span>
+                                </div>
+                              </div>
+                              <div className="flight-route">
+                                <div className="route-segment">
+                                  <div className="route-location">
+                                    <span className="route-code">{flight.returnFlight.departureLocation}</span>
+                                    <span className="route-time">Wed, 15-10-2025</span>
+                                  </div>
+                                  <div className="route-city">
+                                    <span>{flight.arrivalCity || flight.returnFlight.departureLocation}</span>
+                                    <span className="terminal-info">Terminal: 1</span>
+                                  </div>
+                                </div>
+                                <div className="route-duration">
+                                  <span className="duration-text">{flight.returnFlight.duration}</span>
+                                  <div className="duration-timeline-line"></div>
+                                  <div className="refundable-badge non-refundable">Non-Refundable</div>
+                                </div>
+                                <div className="route-segment">
+                                  <div className="route-location">
+                                    <span className="route-code">{flight.returnFlight.arrivalLocation}</span>
+                                    <span className="route-time">Wed, 15-10-2025</span>
+                                  </div>
+                                  <div className="route-city">
+                                    <span>{flight.departureCity || flight.returnFlight.arrivalLocation}</span>
+                                    <span className="terminal-info">Terminal: 2</span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            
+                            <div className="flight-amenities">
+                              <div className="amenity-item">
+                                <FaThLarge style={{fontSize: '16px', color: '#666'}} />
+                                <span>3-3 Layout</span>
+                              </div>
+                              <div className="amenity-item">
+                                <FaUtensils style={{fontSize: '16px', color: '#666'}} />
+                                <span>Beverage Available</span>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {activeTab[`${flight.id}-return`] === 'fare-details' && (
+                          <div className="fare-details-tab">
+                            <div className="fare-breakdown-card">
+                              <h3 className="fare-breakdown-heading">Fare breakdown</h3>
+                              
+                              <div className="fare-breakdown-row">
+                                <span className="fare-label">Base Fare</span>
+                                <span className="fare-value">₹{flight.baseFare || 2800}</span>
+                              </div>
+                              
+                              <div className="fare-breakdown-row">
+                                <span className="fare-label">Taxes & Fees</span>
+                                <span className="fare-value">₹{flight.taxes || 451}</span>
+                              </div>
+                              
+                              <div className="fare-divider"></div>
+                              
+                              <div className="fare-breakdown-row fare-total-row">
+                                <span className="fare-total-label">TOTAL</span>
+                                <span className="fare-total-value">{flight.returnFlight.price}</span>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {activeTab[`${flight.id}-return`] === 'baggage-rules' && (
+                          <div className="baggage-rules-tab">
+                            <div className="baggage-section">
+                              <h3 className="baggage-heading">CHECK-IN</h3>
+                              <div className="baggage-divider"></div>
+                              <div className="baggage-columns">
+                                <div className="baggage-column">
+                                  <div className="baggage-column-header">ADULT</div>
+                                  <div className="baggage-column-value">15 kgs (1-piece only)</div>
+                                </div>
+                                <div className="baggage-column">
+                                  <div className="baggage-column-header">CHILD</div>
+                                  <div className="baggage-column-value">15 kgs (1-piece only)</div>
+                                </div>
+                                <div className="baggage-column">
+                                  <div className="baggage-column-header">INFANT</div>
+                                  <div className="baggage-column-value">0 kgs</div>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="baggage-section">
+                              <h3 className="baggage-heading">CABIN</h3>
+                              <div className="baggage-divider"></div>
+                              <div className="baggage-columns">
+                                <div className="baggage-column">
+                                  <div className="baggage-column-header">ADULT</div>
+                                  <div className="baggage-column-value">7 kgs (1-piece only)</div>
+                                </div>
+                                <div className="baggage-column">
+                                  <div className="baggage-column-header">CHILD</div>
+                                  <div className="baggage-column-value">7 kgs (1-piece only)</div>
+                                </div>
+                                <div className="baggage-column">
+                                  <div className="baggage-column-header">INFANT</div>
+                                  <div className="baggage-column-value">7 kgs (1-piece only)</div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {activeTab[`${flight.id}-return`] === 'cancellation' && (
+                          <div className="cancellation-tab">
+                            <div className="cancellation-empty-state">
+                              <div className="cancellation-icon">
+                                <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                  <circle cx="40" cy="12" r="3" fill="#999" />
+                                  <circle cx="68" cy="52" r="2" fill="#999" />
+                                  <circle cx="55" cy="18" r="2.5" fill="#999" />
+                                  <circle cx="16" cy="45" r="2" fill="#999" />
+                                  <rect x="28" y="28" width="24" height="32" rx="2" stroke="#666" strokeWidth="1.5" fill="none" />
+                                  <path d="M32 34 L36 34 M32 38 L38 38 M32 42 L36 42" stroke="#666" strokeWidth="1.2" strokeLinecap="round" />
+                                  <text x="34" y="36" fontSize="8" fill="#666" fontWeight="600">₹</text>
+                                  <circle cx="40" cy="54" r="8" fill="white" stroke="#666" strokeWidth="1.5" />
+                                  <path d="M40 50 L40 54 M40 58 L40 58" stroke="#e74c3c" strokeWidth="2" strokeLinecap="round" />
+                                  <circle cx="40" cy="58" r="1" fill="#e74c3c" />
+                                </svg>
+                              </div>
+                              <p className="cancellation-message">Sorry! Fare rules could not be<br />fetched at the moment.</p>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                  </>
                 ) : (
-                  // ONE WAY LAYOUT (existing)
-                  <div className="flight-card-content">
+                  <div className="flight-card">
+                    {flight.badge && (
+                      <div className="flight-card-header">
+                        <span className="cheapest-badge">{flight.badge}</span>
+                      </div>
+                    )}
+                    
+                    <div className="flight-card-content">
                     <div className="airline-info">
                       <img src={flight.airlineLogo} alt={flight.airline} className="airline-logo-flight" />
                       <div className="flight-numbers">
@@ -834,21 +1265,21 @@ function FlightResults() {
                       <div className="price-main">{flight.price}</div>
                       <button className="lock-price-btn">🔒 Lock Price @{flight.lockPrice}</button>
                     </div>
+                    </div>
+                    
+                    <div className="flight-card-footer">
+                      <div className="price-offers">
+                        <span className="offer-badge">{flight.offers}</span>
+                      </div>
+                      <button 
+                        className="flight-details-btn"
+                        onClick={() => toggleFlightDetails(flight.id)}
+                      >
+                        {openFlightDetails[flight.id] ? 'Hide Details' : 'Flight Details'} →
+                      </button>
+                    </div>
                   </div>
                 )}
-                
-                <div className="flight-card-footer">
-                  <div className="price-offers">
-                    <span className="offer-badge">{flight.offers}</span>
-                  </div>
-                  <button 
-                    className="flight-details-btn"
-                    onClick={() => toggleFlightDetails(flight.id)}
-                  >
-                    {openFlightDetails[flight.id] ? 'Hide Details' : 'Flight Details'} →
-                  </button>
-                </div>
-              </div>
 
               {/* FLIGHT DETAILS DROPDOWN */}
               {openFlightDetails[flight.id] && (
@@ -1224,6 +1655,438 @@ function FlightResults() {
                   <button className="fare-btn-book-single" onClick={() => openBookingPanel(selectedFlightData)}>BOOK NOW</button>
                 </div>
               </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* Round Trip Fare Options Modal */}
+      {isRoundTripFareModalOpen && selectedOutbound && selectedReturn && (
+        <>
+          <div className="fare-modal-overlay" onClick={closeRoundTripFareModal}></div>
+          <div className="fare-modal">
+            <button className="fare-modal-close" onClick={closeRoundTripFareModal}>✕</button>
+            
+            <div className="fare-modal-header">
+              <h2 className="fare-modal-title">Flight Details and Fare Options available for you!</h2>
+              <div className="fare-modal-flight-info">
+                <img src={selectedOutbound.airlineLogo} alt={selectedOutbound.airline} className="fare-modal-airline-logo" />
+                <span className="fare-modal-route">
+                  {selectedOutbound.departureLocation} → {selectedOutbound.arrivalLocation} → {selectedOutbound.departureLocation}
+                </span>
+                <span className="fare-modal-separator">|</span>
+                <span>{selectedOutbound.airline} & {selectedReturn.returnFlight.airline}</span>
+                <span className="fare-modal-separator">|</span>
+                <span>Round Trip</span>
+              </div>
+            </div>
+
+            {/* Departure and Return Tabs */}
+            <div className="round-trip-tabs">
+              <button 
+                className={`round-trip-tab ${roundTripFareTab === 'departure' ? 'active' : ''}`}
+                onClick={() => setRoundTripFareTab('departure')}
+              >
+                Departure
+              </button>
+              <button 
+                className={`round-trip-tab ${roundTripFareTab === 'return' ? 'active' : ''}`}
+                onClick={() => setRoundTripFareTab('return')}
+              >
+                Return
+              </button>
+            </div>
+
+            <div className="fare-modal-content">
+              {roundTripFareTab === 'departure' ? (
+                <div className="fare-cards-wrapper">
+                  {/* Departure Fare Options - Content will be provided later */}
+                  <div className="fare-card" onClick={() => setSelectedDepartureFare('saver')}>
+                    <div className="fare-card-price">
+                      <input 
+                        type="radio" 
+                        name="departure-fare" 
+                        value="saver"
+                        checked={selectedDepartureFare === 'saver'}
+                        onChange={() => setSelectedDepartureFare('saver')}
+                        className="fare-radio-btn"
+                      />
+                      <span className="fare-price-amount">{selectedOutbound.price}</span>
+                      <span className="fare-price-label">per adult</span>
+                      <span className="fare-type">SAVER</span>
+                    </div>
+
+                    <div className="fare-card-section">
+                      <div className="fare-section-title">Baggage</div>
+                      <div className="fare-item">
+                        <span className="fare-check">✔</span>
+                        <span>7 Kgs Cabin Baggage</span>
+                      </div>
+                      <div className="fare-item">
+                        <span className="fare-check">✔</span>
+                        <span>15 Kgs Check-in Baggage</span>
+                      </div>
+                    </div>
+
+                    <div className="fare-card-section">
+                      <div className="fare-section-title">Flexibility</div>
+                      <div className="fare-item">
+                        <span className="fare-cross">✖</span>
+                        <span>Cancellation fee starts at ₹ 3,999 (up to 24 hours before departure)</span>
+                      </div>
+                      <div className="fare-item">
+                        <span className="fare-cross">✖</span>
+                        <span>Date Change fee starts at ₹ 2,999 up to 3 hrs before departure</span>
+                      </div>
+                    </div>
+
+                    <div className="fare-card-section">
+                      <div className="fare-section-title">Seats, Meals & More</div>
+                      <div className="fare-item">
+                        <span className="fare-cross">✖</span>
+                        <span>Chargeable Seats</span>
+                      </div>
+                      <div className="fare-item">
+                        <span className="fare-cross">✖</span>
+                        <span>Chargeable Meals</span>
+                      </div>
+                    </div>
+
+                    <div className="fare-offer-box">
+                      <span className="fare-offer-icon">🎯</span>
+                      <span>FLAT ₹ 292 OFF using MMTSUPER | FLAT 10% OFF on KOTAK Credit cards using KOTAKEMI.</span>
+                    </div>
+                  </div>
+
+                  {/* Second Card - FLEXI PLUS */}
+                  <div className="fare-card" onClick={() => setSelectedDepartureFare('flexi-plus')}>
+                    <div className="fare-card-price">
+                      <input 
+                        type="radio" 
+                        name="departure-fare" 
+                        value="flexi-plus"
+                        checked={selectedDepartureFare === 'flexi-plus'}
+                        onChange={() => setSelectedDepartureFare('flexi-plus')}
+                        className="fare-radio-btn"
+                      />
+                      <span className="fare-price-amount">₹ 10,957</span>
+                      <span className="fare-price-label">per adult</span>
+                      <span className="fare-type">FLEXI PLUS</span>
+                    </div>
+
+                    <div className="fare-card-section">
+                      <div className="fare-section-title">Baggage</div>
+                      <div className="fare-item">
+                        <span className="fare-check">✔</span>
+                        <span>7 Kgs Cabin Baggage</span>
+                      </div>
+                      <div className="fare-item">
+                        <span className="fare-check">✔</span>
+                        <span>15 Kgs Check-in Baggage</span>
+                      </div>
+                    </div>
+
+                    <div className="fare-card-section">
+                      <div className="fare-section-title">Flexibility</div>
+                      <div className="fare-item">
+                        <span className="fare-minus">➖</span>
+                        <span>Lower Cancellation fee of ₹ 2,499 (up to 3 days before departure)</span>
+                      </div>
+                      <div className="fare-item">
+                        <span className="fare-minus">➖</span>
+                        <span>Lower Date Change fee ₹ 299 (up to 3 days before departure)</span>
+                      </div>
+                    </div>
+
+                    <div className="fare-card-section">
+                      <div className="fare-section-title">Seats, Meals & More</div>
+                      <div className="fare-item">
+                        <span className="fare-check">✔</span>
+                        <span><span className="fare-highlight-text">Free</span> Seats</span>
+                      </div>
+                      <div className="fare-item">
+                        <span className="fare-check">✔</span>
+                        <span><span className="fare-highlight-text">Complimentary</span> Meals</span>
+                      </div>
+                    </div>
+
+                    <div className="fare-offer-box">
+                      <span className="fare-offer-icon">🪙</span>
+                      <span>₹ 550 OFF using FLEXI50 | 800 OFF on HDFC Credit Cards using HDFCFLY</span>
+                    </div>
+                  </div>
+
+                  {/* Third Card - PREMIUM */}
+                  <div className="fare-card" onClick={() => setSelectedDepartureFare('premium')}>
+                    <div className="fare-card-price">
+                      <input 
+                        type="radio" 
+                        name="departure-fare" 
+                        value="premium"
+                        checked={selectedDepartureFare === 'premium'}
+                        onChange={() => setSelectedDepartureFare('premium')}
+                        className="fare-radio-btn"
+                      />
+                      <span className="fare-price-amount">₹ 12,850</span>
+                      <span className="fare-price-label">per adult</span>
+                      <span className="fare-type">PREMIUM</span>
+                    </div>
+
+                    <div className="fare-card-section">
+                      <div className="fare-section-title">Baggage</div>
+                      <div className="fare-item">
+                        <span className="fare-check">✔</span>
+                        <span>10 Kgs Cabin Baggage</span>
+                      </div>
+                      <div className="fare-item">
+                        <span className="fare-check">✔</span>
+                        <span>25 Kgs Check-in Baggage</span>
+                      </div>
+                    </div>
+
+                    <div className="fare-card-section">
+                      <div className="fare-section-title">Flexibility</div>
+                      <div className="fare-item">
+                        <span className="fare-minus">➖</span>
+                        <span>Lower Cancellation fee of ₹ 1,599 (up to 5 days before departure)</span>
+                      </div>
+                      <div className="fare-item">
+                        <span className="fare-minus">➖</span>
+                        <span>Lower Date Change fee ₹ 199 (up to 6 hrs before departure)</span>
+                      </div>
+                    </div>
+
+                    <div className="fare-card-section">
+                      <div className="fare-section-title">Seats, Meals & More</div>
+                      <div className="fare-item">
+                        <span className="fare-check">✔</span>
+                        <span><span className="fare-highlight-text">Free</span> Seats</span>
+                      </div>
+                      <div className="fare-item">
+                        <span className="fare-check">✔</span>
+                        <span><span className="fare-highlight-text">Complimentary</span> Meals</span>
+                      </div>
+                    </div>
+
+                    <div className="fare-offer-box">
+                      <span className="fare-offer-icon">🎁</span>
+                      <span>₹ 750 OFF using PREMIUM100 | 1000 OFF on AXIS Bank Cards using AXISPREMIUM</span>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="fare-cards-wrapper">
+                  {/* Return Fare Options - Content will be provided later */}
+                  <div className="fare-card" onClick={() => setSelectedReturnFare('saver')}>
+                    <div className="fare-card-price">
+                      <input 
+                        type="radio" 
+                        name="return-fare" 
+                        value="saver"
+                        checked={selectedReturnFare === 'saver'}
+                        onChange={() => setSelectedReturnFare('saver')}
+                        className="fare-radio-btn"
+                      />
+                      <span className="fare-price-amount">{selectedReturn.returnFlight.price}</span>
+                      <span className="fare-price-label">per adult</span>
+                      <span className="fare-type">SAVER</span>
+                    </div>
+
+                    <div className="fare-card-section">
+                      <div className="fare-section-title">Baggage</div>
+                      <div className="fare-item">
+                        <span className="fare-check">✔</span>
+                        <span>7 Kgs Cabin Baggage</span>
+                      </div>
+                      <div className="fare-item">
+                        <span className="fare-check">✔</span>
+                        <span>15 Kgs Check-in Baggage</span>
+                      </div>
+                    </div>
+
+                    <div className="fare-card-section">
+                      <div className="fare-section-title">Flexibility</div>
+                      <div className="fare-item">
+                        <span className="fare-cross">✖</span>
+                        <span>Cancellation fee starts at ₹ 3,999 (up to 24 hours before departure)</span>
+                      </div>
+                      <div className="fare-item">
+                        <span className="fare-cross">✖</span>
+                        <span>Date Change fee starts at ₹ 2,999 up to 3 hrs before departure</span>
+                      </div>
+                    </div>
+
+                    <div className="fare-card-section">
+                      <div className="fare-section-title">Seats, Meals & More</div>
+                      <div className="fare-item">
+                        <span className="fare-cross">✖</span>
+                        <span>Chargeable Seats</span>
+                      </div>
+                      <div className="fare-item">
+                        <span className="fare-cross">✖</span>
+                        <span>Chargeable Meals</span>
+                      </div>
+                    </div>
+
+                    <div className="fare-offer-box">
+                      <span className="fare-offer-icon">🎯</span>
+                      <span>FLAT ₹ 292 OFF using MMTSUPER | FLAT 10% OFF on KOTAK Credit cards using KOTAKEMI.</span>
+                    </div>
+                  </div>
+
+                  {/* Second Card - FLEXI */}
+                  <div className="fare-card" onClick={() => setSelectedReturnFare('flexi')}>
+                    <div className="fare-card-price">
+                      <input 
+                        type="radio" 
+                        name="return-fare" 
+                        value="flexi"
+                        checked={selectedReturnFare === 'flexi'}
+                        onChange={() => setSelectedReturnFare('flexi')}
+                        className="fare-radio-btn"
+                      />
+                      <span className="fare-price-amount">₹ 10,275</span>
+                      <span className="fare-price-label">per adult</span>
+                      <span className="fare-type">FLEXI</span>
+                    </div>
+
+                    <div className="fare-card-section">
+                      <div className="fare-section-title">Baggage</div>
+                      <div className="fare-item">
+                        <span className="fare-check">✔</span>
+                        <span>7 Kgs Cabin Baggage</span>
+                      </div>
+                      <div className="fare-item">
+                        <span className="fare-check">✔</span>
+                        <span>15 Kgs Check-in Baggage</span>
+                      </div>
+                    </div>
+
+                    <div className="fare-card-section">
+                      <div className="fare-section-title">Flexibility</div>
+                      <div className="fare-item">
+                        <span className="fare-minus">➖</span>
+                        <span>Cancellation fee starts at ₹ 3,999 (up to 24 hours before departure)</span>
+                      </div>
+                      <div className="fare-item">
+                        <span className="fare-minus">➖</span>
+                        <span>Date Change fee starts at ₹ 2,999 up to 3 hrs before departure</span>
+                      </div>
+                    </div>
+
+                    <div className="fare-card-section">
+                      <div className="fare-section-title">Seats, Meals & More</div>
+                      <div className="fare-item">
+                        <span className="fare-cross">✖</span>
+                        <span>Chargeable Seats</span>
+                      </div>
+                      <div className="fare-item">
+                        <span className="fare-cross">✖</span>
+                        <span>Chargeable Meals</span>
+                      </div>
+                    </div>
+
+                    <div className="fare-offer-box">
+                      <span className="fare-offer-icon">🎁</span>
+                      <span>₹ 380 OFF using RETURNFARE | FLAT 12% OFF on SBI cards using SBIEMI</span>
+                    </div>
+                  </div>
+
+                  {/* Third Card - SUPER SAVER */}
+                  <div className="fare-card" onClick={() => setSelectedReturnFare('super-saver')}>
+                    <div className="fare-card-price">
+                      <input 
+                        type="radio" 
+                        name="return-fare" 
+                        value="super-saver"
+                        checked={selectedReturnFare === 'super-saver'}
+                        onChange={() => setSelectedReturnFare('super-saver')}
+                        className="fare-radio-btn"
+                      />
+                      <span className="fare-price-amount">₹ 11,890</span>
+                      <span className="fare-price-label">per adult</span>
+                      <span className="fare-type">SUPER SAVER</span>
+                    </div>
+
+                    <div className="fare-card-section">
+                      <div className="fare-section-title">Baggage</div>
+                      <div className="fare-item">
+                        <span className="fare-check">✔</span>
+                        <span>8 Kgs Cabin Baggage</span>
+                      </div>
+                      <div className="fare-item">
+                        <span className="fare-check">✔</span>
+                        <span>20 Kgs Check-in Baggage</span>
+                      </div>
+                    </div>
+
+                    <div className="fare-card-section">
+                      <div className="fare-section-title">Flexibility</div>
+                      <div className="fare-item">
+                        <span className="fare-minus">➖</span>
+                        <span>Lower Cancellation fee of ₹ 2,199 (up to 48 hours before departure)</span>
+                      </div>
+                      <div className="fare-item">
+                        <span className="fare-minus">➖</span>
+                        <span>Lower Date Change fee ₹ 499 (up to 5 hrs before departure)</span>
+                      </div>
+                    </div>
+
+                    <div className="fare-card-section">
+                      <div className="fare-section-title">Seats, Meals & More</div>
+                      <div className="fare-item">
+                        <span className="fare-check">✔</span>
+                        <span><span className="fare-highlight-text">Free</span> Seats</span>
+                      </div>
+                      <div className="fare-item">
+                        <span className="fare-cross">✖</span>
+                        <span>Chargeable Meals</span>
+                      </div>
+                    </div>
+
+                    <div className="fare-offer-box">
+                      <span className="fare-offer-icon">🪙</span>
+                      <span>₹ 625 OFF using SUPERSAVE | 900 OFF on YES Bank Cards using YESFLY</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Total Price Footer */}
+            <div className="fare-modal-footer">
+              <div className="fare-total-section">
+                <div className="fare-total-prices">
+                  <span className="fare-cut-price">
+                    ₹ {(() => {
+                      const departurePrices = { 'saver': 5315, 'flexi-plus': 10957, 'premium': 12850 };
+                      const returnPrices = { 'saver': 8465, 'flexi': 10275, 'super-saver': 11890 };
+                      const depPrice = departurePrices[selectedDepartureFare] || 0;
+                      const retPrice = returnPrices[selectedReturnFare] || 0;
+                      return (depPrice + retPrice).toLocaleString('en-IN');
+                    })()}
+                  </span>
+                  <span className="fare-main-price">
+                    ₹ {(() => {
+                      const departurePrices = { 'saver': 5315, 'flexi-plus': 10957, 'premium': 12850 };
+                      const returnPrices = { 'saver': 8465, 'flexi': 10275, 'super-saver': 11890 };
+                      const depPrice = departurePrices[selectedDepartureFare] || 0;
+                      const retPrice = returnPrices[selectedReturnFare] || 0;
+                      const total = depPrice + retPrice;
+                      const discount = Math.floor(Math.random() * (1500 - 500 + 1)) + 500;
+                      return (total - discount).toLocaleString('en-IN');
+                    })()}
+                  </span>
+                </div>
+                <div className="fare-total-label">ROUNDTRIP FOR 1 ADULT</div>
+              </div>
+              <button 
+                className="fare-btn-book-roundtrip" 
+                onClick={openBookingPanelFromRoundTrip}
+                disabled={!selectedDepartureFare || !selectedReturnFare}
+              >
+                BOOK NOW
+              </button>
             </div>
           </div>
         </>

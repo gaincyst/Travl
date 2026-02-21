@@ -4,7 +4,7 @@
   bottom: 0;
   left: 0;
   right: 0;
-  background: radial-gradient( at top center, #b21313, #fe6969)   ;
+  background: radial-gradient( at top center, #b21313d8, #e88181)   ;
   /* background: linear-gradient(135deg, #d52222 0%, #a52727 100%); */
   box-shadow: 0 -4px 20px rgba(156, 13, 13, 0.589);
   z-index: 1000;
