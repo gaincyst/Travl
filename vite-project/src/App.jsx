@@ -4,6 +4,7 @@ import FlightResults from "./components/FlightResults";
 import BusResults from "./components/BusResults";
 import HotelResults from "./components/HotelResults";
 import HotelBooking from "./pages/HotelBooking";
+import MyTrips from "./pages/MyTrips";
 
 function App() {
   return (
@@ -33,6 +34,9 @@ function App() {
             
             {/* Hotel Booking page */}
             <Route path="/hotel-booking" element={<HotelBooking />} />
+            
+            {/* My Trips page */}
+            <Route path="/my-trips" element={<MyTrips />} />
           </Routes>
         </div>
       </div>

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   FaChevronDown,
   FaPlane,
@@ -21,6 +22,7 @@ import { MdOutlineLoyalty } from "react-icons/md";
 import { MdOutlineCardTravel } from "react-icons/md";
 import { TbGraphFilled } from "react-icons/tb";
 function Navbar() {
+  const navigate = useNavigate();
   const [scrolled, setScrolled] = useState(false);
   const [openMenu, setOpenMenu] = useState(null);
   const [darkMode, setDarkMode] = useState(false);
@@ -168,6 +170,14 @@ function Navbar() {
         <button className="theme-toggle" onClick={toggleTheme} title="Toggle Theme">
           {darkMode ? <FaSun className="sun-icon" /> : <FaMoon className="moon-icon" />}
         </button>
+
+        <div className="my-trips" onClick={() => navigate('/my-trips')}>
+          <img src="/logo/luggage.png" alt="My Trips" className="luggage-icon" />
+          <div className="my-trips-text">
+            <span className="my-trips-title">My Trips</span>
+            <span className="my-trips-subtitle">Manage your bookings</span>
+          </div>
+        </div>
 
         <div
   className="login-signup"
