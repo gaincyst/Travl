@@ -1455,7 +1455,7 @@ function FlightBookingPanel({ isOpen, onClose, flightData }) {
               </div>
               
               {/* Return Flight Details (if exists) */}
-              {flightData.returnFlight && (
+              {flightData.isRoundTrip && flightData.returnFlight && (
                 <>
                   <div className="review-section">
                     <h3 className="review-section-title">Return Flight</h3>

@@ -49,12 +49,12 @@
 
 /* Selected state highlight */
 .date-card.active {
-  background-color: #f8faff;
+  background-color: #fff8f8;
 }
 
 .date-card.active .date-text, 
 .date-card.active .price-text {
-  color: #007bff; /* Blue text for active selection */
+  color: #ff0000; /* Blue text for active selection */
 }
 
 .date-card.active::after {
@@ -64,7 +64,7 @@
   left: 0;
   width: 100%;
   height: 4px;
-  background-color: #007bff; /* Thick blue underline */
+  background-color: #ff0000; /* Thick blue underline */
   
 }
 
