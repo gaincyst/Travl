@@ -5,6 +5,7 @@ import BusResults from "./components/BusResults";
 import HotelResults from "./components/HotelResults";
 import HotelBooking from "./pages/HotelBooking";
 import MyTrips from "./pages/MyTrips";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   return (
@@ -32,11 +33,19 @@ function App() {
             {/* Hotel Results page */}
             <Route path="/hotel-results" element={<HotelResults />} />
             
-            {/* Hotel Booking page */}
-            <Route path="/hotel-booking" element={<HotelBooking />} />
+            {/* Hotel Booking page - Protected */}
+            <Route path="/hotel-booking" element={
+              <ProtectedRoute>
+                <HotelBooking />
+              </ProtectedRoute>
+            } />
             
-            {/* My Trips page */}
-            <Route path="/my-trips" element={<MyTrips />} />
+            {/* My Trips page - Protected */}
+            <Route path="/my-trips" element={
+              <ProtectedRoute>
+                <MyTrips />
+              </ProtectedRoute>
+            } />
           </Routes>
         </div>
       </div>

@@ -487,9 +487,9 @@ function FlightBookingPanel({ isOpen, onClose, flightData }) {
 
   const navigationSteps = [
     { id: "trip-summary", label: "Trip Summary" },
-    { id: "travel-details", label: "Travel Details" },
+    { id: "traveller-details", label: "Traveller Details" },
     // { id: "seats-meals", label: "Seats & Meals" }, // COMMENTED OUT
-    { id: "add-ons", label: "Add-Ons" },
+    // { id: "add-ons", label: "Add-Ons" }, // COMMENTED OUT
     { id: "fare-details", label: "Fare Details" }
   ];
 
@@ -514,8 +514,8 @@ function FlightBookingPanel({ isOpen, onClose, flightData }) {
       setCompletedSteps([...completedSteps, currentStepIndex]);
     }
     
-    // If on Review Booking (step 4), show confirmation modal
-    if (currentStepIndex === 4) {
+    // If on Review Booking (step 3), show confirmation modal
+    if (currentStepIndex === 3) {
       setShowConfirmationModal(true);
     } else {
       // Move to next step
@@ -782,12 +782,11 @@ function FlightBookingPanel({ isOpen, onClose, flightData }) {
               )}
             </div>
 
-            {/* Fare Upgrade Section */}
+          {/* ===== FARE UPGRADE SECTION - COMMENTED OUT =====
             <div className="fare-upgrade-section">
               <h3 className="fare-upgrade-title">Get more benefits by upgrading your fare</h3>
               
               <div className="fare-options-grid">
-                {/* Your Selection */}
                 <div 
                   className={`fare-option-card ${selectedFare === 'your-selection' ? 'selected' : ''}`}
                   onClick={() => handleFareSelection('your-selection')}
@@ -830,7 +829,6 @@ function FlightBookingPanel({ isOpen, onClose, flightData }) {
                   </div>
                 </div>
 
-                {/* MMT Regular */}
                 <div 
                   className={`fare-option-card ${selectedFare === 'mmt-regular' ? 'selected' : ''}`}
                   onClick={() => handleFareSelection('mmt-regular')}
@@ -879,7 +877,6 @@ function FlightBookingPanel({ isOpen, onClose, flightData }) {
                   </div>
                 </div>
 
-                {/* MMT Premium */}
                 <div 
                   className={`fare-option-card ${selectedFare === 'mmt-premium' ? 'selected' : ''}`}
                   onClick={() => handleFareSelection('mmt-premium')}
@@ -934,10 +931,12 @@ function FlightBookingPanel({ isOpen, onClose, flightData }) {
                 <span className="banner-text">Just a click for a better trip. <strong>Upgrade now!</strong></span>
               </div>
             </div>
+          ===== END OF FARE UPGRADE SECTION ===== */}
           </>
         );
+        
       
-      case 1: // Travel Details
+      case 1: // Traveller Details
         return (
           <div className="traveller-details-section">
             {/* Header */}
@@ -1125,7 +1124,7 @@ function FlightBookingPanel({ isOpen, onClose, flightData }) {
               )}
             </div>
 
-            {/* Billing Address Section */}
+            {/* ===== BILLING ADDRESS SECTION - COMMENTED OUT =====
             <div className="billing-address-card">
               <h3 className="billing-address-title">Billing Address</h3>
               <p className="billing-address-subtitle">As per the latest govt. regulations, it's mandatory to provide your address.</p>
@@ -1168,6 +1167,7 @@ function FlightBookingPanel({ isOpen, onClose, flightData }) {
                 </div>
               </div>
             </div>
+            ===== END OF BILLING ADDRESS SECTION ===== */}
           </div>
         );
       
@@ -1182,6 +1182,7 @@ function FlightBookingPanel({ isOpen, onClose, flightData }) {
         />;
       ===== END OF SEATS & MEALS CASE ===== */
       
+      /* ===== CASE 2: ADD-ONS - COMMENTED OUT =====
       case 2: // Add-Ons (was case 3)
         const baggageOptions = baggageTab === 'surface' ? surfaceOptions : premiumOptions;
         
@@ -1320,8 +1321,9 @@ function FlightBookingPanel({ isOpen, onClose, flightData }) {
             </div>
           </div>
         );
+      ===== END OF ADD-ONS CASE ===== */
       
-      case 3: // Fare Details
+      case 2: // Fare Details
         // Get passenger counts from flightData
         const numAdults = flightData?.adults || 1;
         const numChildren = flightData?.children || 0;
@@ -1415,7 +1417,7 @@ function FlightBookingPanel({ isOpen, onClose, flightData }) {
           </div>
         );
       
-      case 4: // Review Booking (Hidden from navigation)
+      case 3: // Review Booking (Hidden from navigation)
         return (
           <div className="flight-step-content">
             <div className="review-booking-section">
@@ -1703,7 +1705,7 @@ function FlightBookingPanel({ isOpen, onClose, flightData }) {
             className="continue-button-flight-panel"
             onClick={handleContinue}
           >
-            {currentStepIndex === 4 ? 'COMPLETE BOOKING' : 'CONTINUE'}
+            {currentStepIndex === 3 ? 'COMPLETE BOOKING' : 'CONTINUE'}
           </button>
           <p className="terms-text-flight">By proceeding, I agree to MakeMyTrip's <a href="#">User Agreement</a>, <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></p>
         </div>

@@ -12,9 +12,11 @@ import {
   FaSun,
   FaMoon,
   FaUmbrellaBeach,
-  FaGlobe
+  FaGlobe,
+  FaSignOutAlt
 } from "react-icons/fa";
 import AuthModal from "../components/AuthModal";
+import { isAuthenticated, getCurrentUser, logout } from "../utils/auth";
 
 
 import { GiWorld } from "react-icons/gi";
@@ -27,6 +29,9 @@ function Navbar() {
   const [openMenu, setOpenMenu] = useState(null);
   const [darkMode, setDarkMode] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
+  const [showUserMenu, setShowUserMenu] = useState(false);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 120);
@@ -34,9 +39,22 @@ function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  useEffect(() => {
+    // Check authentication status
+    setIsLoggedIn(isAuthenticated());
+    setCurrentUser(getCurrentUser());
+  }, []);
+
   const toggleTheme = () => {
     setDarkMode(!darkMode);
     document.body.classList.toggle("dark-theme");
+  };
+
+  const handleLogout = () => {
+    logout();
+    setIsLoggedIn(false);
+    setCurrentUser(null);
+    setShowUserMenu(false);
   };
 
   return (
@@ -179,17 +197,42 @@ function Navbar() {
           </div>
         </div>
 
-        <div
-  className="login-signup"
-  onClick={() => setShowAuthModal(true)}
->
-  <FaUserCircle className="login-icon" />
-  <span>Login / Signup</span>
-</div>
+        {isLoggedIn && currentUser ? (
+          <div 
+            className="user-menu-container"
+            onMouseEnter={() => setShowUserMenu(true)}
+            onMouseLeave={() => setShowUserMenu(false)}
+          >
+            <div className="login-signup logged-in">
+              <FaUserCircle className="login-icon" />
+              <span>{currentUser.name}</span>
+            </div>
+            
+            {showUserMenu && (
+              <div className="user-dropdown-menu">
+                <div className="user-info">
+                  <strong>{currentUser.name}</strong>
+                  <span>{currentUser.email}</span>
+                </div>
+                <button className="logout-btn" onClick={handleLogout}>
+                  <FaSignOutAlt /> Logout
+                </button>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div
+            className="login-signup"
+            onClick={() => setShowAuthModal(true)}
+          >
+            <FaUserCircle className="login-icon" />
+            <span>Login / Signup</span>
+          </div>
+        )}
 
-{showAuthModal && (
-  <AuthModal onClose={() => setShowAuthModal(false)} />
-)}
+        {showAuthModal && (
+          <AuthModal onClose={() => setShowAuthModal(false)} />
+        )}
 
       </div>
     </header>
