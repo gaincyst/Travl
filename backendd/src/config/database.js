@@ -15,8 +15,11 @@ const pool = mysql.createPool({
   queueLimit: 0,
   connectTimeout: 10000,
   // SSL configuration for cloud databases (Aiven, PlanetScale, etc.)
+  // For Aiven: Accept self-signed certificates in production
   ssl: process.env.DB_HOST && process.env.DB_HOST !== 'localhost' 
-    ? { rejectUnauthorized: true } 
+    ? { 
+        rejectUnauthorized: false // Required for Aiven's SSL certificates
+      } 
     : undefined
 });
 
