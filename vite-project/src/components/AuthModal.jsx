@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import "../styles/AuthModal.css";
+import API_BASE_URL from "../utils/api.js";
 
 const AuthModal = ({ onClose }) => {
   const [mode, setMode] = useState("login");
@@ -17,8 +18,6 @@ const AuthModal = ({ onClose }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-
-  const API_BASE_URL = "http://localhost:5000/api";
   
   useEffect(() => {
     // 🔒 Disable background scroll when modal opens
