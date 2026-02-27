@@ -9,25 +9,27 @@ const pool = mysql.createPool({
   user: process.env.DB_USER || 'root',
   password: process.env.DB_PASSWORD || '',
   database: process.env.DB_NAME || 'travel_db',
-  port: process.env.DB_PORT || 3306,
+  port: parseInt(process.env.DB_PORT) || 3306,
   waitForConnections: true,
-  connectionLimit: 10,
+  connectionLimit: 5, // Lower limit for serverless
   queueLimit: 0,
+  connectTimeout: 10000,
   // SSL configuration for cloud databases (Aiven, PlanetScale, etc.)
   ssl: process.env.DB_HOST && process.env.DB_HOST !== 'localhost' 
     ? { rejectUnauthorized: true } 
     : undefined
 });
 
-// Test database connection
+// Test database connection (for serverless, this is called on-demand)
 const testConnection = async () => {
   try {
     const connection = await pool.getConnection();
     console.log('✅ MySQL Database connected successfully');
     connection.release();
+    return true;
   } catch (error) {
     console.error('❌ Database connection failed:', error.message);
-    process.exit(1);
+    throw error;
   }
 };
 
