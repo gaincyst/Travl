@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import "../styles/AuthModal.css";
 import API_BASE_URL from "../utils/api.js";
 
-const AuthModal = ({ onClose }) => {
+const AuthModal = ({ onClose, onAuthSuccess }) => {
   const [mode, setMode] = useState("login");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -80,7 +80,11 @@ const AuthModal = ({ onClose }) => {
         // Close modal after successful login
         setTimeout(() => {
           onClose();
-          window.location.reload(); // Refresh to update auth state
+          if (onAuthSuccess) {
+            onAuthSuccess(); // Update navbar state without reload
+          } else {
+            window.location.reload(); // Fallback to reload
+          }
         }, 1000);
       } else {
         setError(data.message || "Login failed");
@@ -152,7 +156,11 @@ const AuthModal = ({ onClose }) => {
         // Close modal after successful signup
         setTimeout(() => {
           onClose();
-          window.location.reload(); // Refresh to update auth state
+          if (onAuthSuccess) {
+            onAuthSuccess(); // Update navbar state without reload
+          } else {
+            window.location.reload(); // Fallback to reload
+          }
         }, 1000);
       } else {
         setError(data.message || "Registration failed");
