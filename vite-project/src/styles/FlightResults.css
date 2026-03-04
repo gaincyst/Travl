@@ -790,7 +790,7 @@
 .flight-route {
   display: flex;
   align-items: flex-start;
-  gap: 40px;
+  gap: 25px;
   width: 100%;
   justify-content: space-between;
 }
@@ -862,7 +862,7 @@
 }
 
 .duration-timeline-line {
-  width: 200px;
+  width: 120px;
   height: 1px;
   left: 10px;
   margin: 8px 0;
@@ -1580,10 +1580,11 @@ background-color: #c01313;
 
 /* Round Trip Card Wrapper - Contains card and its expandable details */
 .round-trip-card-wrapper {
-  flex: 1;
+  flex: 0 0 calc(50% - 7.5px);
   display: flex;
   flex-direction: column;
   gap: 0;
+  min-width: 0;
 }
 
 /* Round Trip Mini Card */

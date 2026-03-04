@@ -494,6 +494,79 @@ function FlightBookingPanel({ isOpen, onClose, flightData }) {
     setSelectedFare(fareType);
   };
   
+  // Helper function to generate stop city and segment details
+  const getStopCityDetails = (flight) => {
+    if (!flight || !flight.duration || !flight.departureTime) {
+      return null;
+    }
+    
+    const stopCities = [
+      { code: 'BOM', name: 'Mumbai', airport: 'Chhatrapati Shivaji Maharaj International Airport', terminal: 'Terminal T2' },
+      { code: 'BLR', name: 'Bangalore', airport: 'Kempegowda International Airport', terminal: 'Terminal T1' },
+      { code: 'HYD', name: 'Hyderabad', airport: 'Rajiv Gandhi International Airport', terminal: 'Terminal T1' },
+      { code: 'MAA', name: 'Chennai', airport: 'Chennai International Airport', terminal: 'Terminal T1' },
+      { code: 'CCU', name: 'Kolkata', airport: 'Netaji Subhas Chandra Bose International Airport', terminal: 'Terminal T2' }
+    ];
+    
+    // Use flight id or flight number hash to consistently pick same stop city for same flight
+    const flightHash = flight.id || flight.flightNumber?.charCodeAt(0) || 0;
+    const stopCity = stopCities[flightHash % stopCities.length];
+    
+    // Parse flight duration safely
+    const durationMatch = flight.duration.match(/(\d+)h\s*(\d+)?m?/);
+    if (!durationMatch) return null;
+    
+    const hours = parseInt(durationMatch[1]) || 0;
+    const mins = parseInt(durationMatch[2]) || 0;
+    const totalMinutes = hours * 60 + mins;
+    
+    // First segment: 45% of total time
+    const segment1Minutes = Math.floor(totalMinutes * 0.45);
+    const segment1Hours = Math.floor(segment1Minutes / 60);
+    const segment1Mins = segment1Minutes % 60;
+    
+    // Layover: between 2h to 4h 55m
+    const layoverMinutes = Math.floor(Math.random() * (295 - 120 + 1)) + 120;
+    const layoverHours = Math.floor(layoverMinutes / 60);
+    const layoverMins = layoverMinutes % 60;
+    
+    // Second segment: remaining flight time
+    const segment2Minutes = totalMinutes - segment1Minutes;
+    const segment2Hours = Math.floor(segment2Minutes / 60);
+    const segment2Mins = segment2Minutes % 60;
+    
+    // Calculate intermediate arrival time safely
+    const timeMatch = flight.departureTime.match(/(\d+):(\d+)/);
+    if (!timeMatch) return null;
+    
+    const depHour = parseInt(timeMatch[1]);
+    const depMin = parseInt(timeMatch[2]);
+    const intermediateMinutes = depHour * 60 + depMin + segment1Minutes;
+    const intermediateHour = Math.floor(intermediateMinutes / 60) % 24;
+    const intermediateMin = intermediateMinutes % 60;
+    
+    // Calculate second segment departure time
+    const segment2DepMinutes = intermediateMinutes + layoverMinutes;
+    const segment2DepHour = Math.floor(segment2DepMinutes / 60) % 24;
+    const segment2DepMin = segment2DepMinutes % 60;
+    
+    return {
+      stopCity,
+      segment1: {
+        duration: `${segment1Hours}h ${segment1Mins}m`,
+        arrivalTime: `${String(intermediateHour).padStart(2, '0')}:${String(intermediateMin).padStart(2, '0')}`
+      },
+      layover: {
+        duration: `${layoverHours}h ${layoverMins}m`,
+        changeType: flightHash % 2 === 0 ? 'Change of Terminal' : 'Change of planes'
+      },
+      segment2: {
+        duration: `${segment2Hours}h ${segment2Mins}m`,
+        departureTime: `${String(segment2DepHour).padStart(2, '0')}:${String(segment2DepMin).padStart(2, '0')}`
+      }
+    };
+  };
+  
   // Refs for scrolling to sections (for display reference only)
   const panelContentRef = useRef(null);
   
@@ -624,31 +697,136 @@ function FlightBookingPanel({ isOpen, onClose, flightData }) {
               </div>
 
               {/* Flight Timeline */}
-              <div className="flight-journey-timeline">
-                {/* Departure */}
-                <div className="journey-point-section">
-                  <div className="journey-time">{flightData.departureTime}</div>
-                  <div className="journey-city">{flightData.departureCity}</div>
-                  <div className="journey-location">{flightData.departureCity} Airport</div>
-                </div>
+              {flightData.stops !== "Non Stop" ? (
+                // Connected flight with stop
+                (() => {
+                  const stopDetails = getStopCityDetails(flightData);
+                  if (!stopDetails) {
+                    // Fall back to simple layout if calculations fail
+                    return (
+                      <div className="flight-journey-timeline">
+                        <div className="journey-point-section">
+                          <div className="journey-time">{flightData.departureTime}</div>
+                          <div className="journey-city">{flightData.departureCity}</div>
+                          <div className="journey-location">{flightData.departureCity} Airport</div>
+                        </div>
+                        <div className="journey-duration-line">
+                          <div className="duration-text-center">{flightData.duration}</div>
+                          <div className="timeline-visual">
+                            <div className="journey-circle"></div>
+                            <div className="dotted-line"></div>
+                            <div className="journey-circle"></div>
+                          </div>
+                        </div>
+                        <div className="journey-point-section">
+                          <div className="journey-time">{flightData.arrivalTime}</div>
+                          <div className="journey-city">{flightData.arrivalCity}</div>
+                          <div className="journey-location">{flightData.arrivalCity} International Airport, {flightData.arrivalTerminal}</div>
+                        </div>
+                      </div>
+                    );
+                  }
+                  return (
+                    <div className="connected-flight-timeline">
+                      {/* Segment 1 */}
+                      <div className="flight-segment">
+                        <div className="segment-airline-row">
+                          <img src={flightData.airlineLogo} alt={flightData.airlineName} className="segment-airline-logo" />
+                          <span className="segment-flight-number">{flightData.flightNumber}</span>
+                          <span className="segment-aircraft-badge">{flightData.aircraft || 'Airbus A320'}</span>
+                        </div>
+                        <div className="segment-journey">
+                          <div className="segment-point">
+                            <div className="segment-time">{flightData.departureTime}</div>
+                            <div className="segment-city">{flightData.departureCity}</div>
+                            <div className="segment-airport">{flightData.departureCity} Airport</div>
+                          </div>
+                          <div className="segment-duration">
+                            <div className="segment-duration-text">{stopDetails.segment1.duration}</div>
+                            <div className="segment-timeline-line">
+                              <div className="segment-circle"></div>
+                              <div className="segment-dotted"></div>
+                              <div className="segment-circle"></div>
+                            </div>
+                          </div>
+                          <div className="segment-point">
+                            <div className="segment-time">{stopDetails.segment1.arrivalTime}</div>
+                            <div className="segment-city">{stopDetails.stopCity.name}</div>
+                            <div className="segment-airport">{stopDetails.stopCity.airport}</div>
+                          </div>
+                        </div>
+                      </div>
 
-                {/* Duration Line */}
-                <div className="journey-duration-line">
-                  <div className="duration-text-center">{flightData.duration}</div>
-                  <div className="timeline-visual">
-                    <div className="journey-circle"></div>
-                    <div className="dotted-line"></div>
-                    <div className="journey-circle"></div>
+                      {/* Layover Section */}
+                      <div className="layover-section">
+                        <div className="layover-indicator">
+                          <div className="layover-dot"></div>
+                        </div>
+                        <div className="layover-details">
+                          <div className="layover-change-text">{stopDetails.layover.changeType}</div>
+                          <div className="layover-duration">{stopDetails.layover.duration} Layover in {stopDetails.stopCity.name}</div>
+                        </div>
+                      </div>
+
+                      {/* Segment 2 */}
+                      <div className="flight-segment">
+                        <div className="segment-airline-row">
+                          <img src={flightData.airlineLogo} alt={flightData.airlineName} className="segment-airline-logo" />
+                          <span className="segment-flight-number">{flightData.flightNumber}</span>
+                          <span className="segment-aircraft-badge">{flightData.aircraft || 'Airbus A320'}</span>
+                        </div>
+                        <div className="segment-journey">
+                          <div className="segment-point">
+                            <div className="segment-time">{stopDetails.segment2.departureTime}</div>
+                            <div className="segment-city">{stopDetails.stopCity.name}</div>
+                            <div className="segment-airport">{stopDetails.stopCity.airport}</div>
+                          </div>
+                          <div className="segment-duration">
+                            <div className="segment-duration-text">{stopDetails.segment2.duration}</div>
+                            <div className="segment-timeline-line">
+                              <div className="segment-circle"></div>
+                              <div className="segment-dotted"></div>
+                              <div className="segment-circle"></div>
+                            </div>
+                          </div>
+                          <div className="segment-point">
+                            <div className="segment-time">{flightData.arrivalTime}</div>
+                            <div className="segment-city">{flightData.arrivalCity}</div>
+                            <div className="segment-airport">{flightData.arrivalCity} International Airport, {flightData.arrivalTerminal}</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })()
+              ) : (
+                // Direct flight (Non Stop)
+                <div className="flight-journey-timeline">
+                  {/* Departure */}
+                  <div className="journey-point-section">
+                    <div className="journey-time">{flightData.departureTime}</div>
+                    <div className="journey-city">{flightData.departureCity}</div>
+                    <div className="journey-location">{flightData.departureCity} Airport</div>
+                  </div>
+
+                  {/* Duration Line */}
+                  <div className="journey-duration-line">
+                    <div className="duration-text-center">{flightData.duration}</div>
+                    <div className="timeline-visual">
+                      <div className="journey-circle"></div>
+                      <div className="dotted-line"></div>
+                      <div className="journey-circle"></div>
+                    </div>
+                  </div>
+
+                  {/* Arrival */}
+                  <div className="journey-point-section">
+                    <div className="journey-time">{flightData.arrivalTime}</div>
+                    <div className="journey-city">{flightData.arrivalCity}</div>
+                    <div className="journey-location">{flightData.arrivalCity} International Airport, {flightData.arrivalTerminal}</div>
                   </div>
                 </div>
-
-                {/* Arrival */}
-                <div className="journey-point-section">
-                  <div className="journey-time">{flightData.arrivalTime}</div>
-                  <div className="journey-city">{flightData.arrivalCity}</div>
-                  <div className="journey-location">{flightData.arrivalCity} International Airport, {flightData.arrivalTerminal}</div>
-                </div>
-              </div>
+              )}
 
               {/* Baggage Section */}
               <div className="baggage-section-bottom">
@@ -708,31 +886,136 @@ function FlightBookingPanel({ isOpen, onClose, flightData }) {
                 </div>
 
                 {/* Flight Timeline */}
-                <div className="flight-journey-timeline">
-                  {/* Departure */}
-                  <div className="journey-point-section">
-                    <div className="journey-time">{flightData.returnFlight.departureTime}</div>
-                    <div className="journey-city">{flightData.arrivalCity}</div>
-                    <div className="journey-location">{flightData.arrivalCity} Airport</div>
-                  </div>
+                {flightData.returnFlight.stops !== "Non Stop" ? (
+                  // Connected flight with stop
+                  (() => {
+                    const stopDetails = getStopCityDetails(flightData.returnFlight);
+                    if (!stopDetails) {
+                      // Fall back to simple layout if calculations fail
+                      return (
+                        <div className="flight-journey-timeline">
+                          <div className="journey-point-section">
+                            <div className="journey-time">{flightData.returnFlight.departureTime}</div>
+                            <div className="journey-city">{flightData.arrivalCity}</div>
+                            <div className="journey-location">{flightData.arrivalCity} Airport</div>
+                          </div>
+                          <div className="journey-duration-line">
+                            <div className="duration-text-center">{flightData.returnFlight.duration}</div>
+                            <div className="timeline-visual">
+                              <div className="journey-circle"></div>
+                              <div className="dotted-line"></div>
+                              <div className="journey-circle"></div>
+                            </div>
+                          </div>
+                          <div className="journey-point-section">
+                            <div className="journey-time">{flightData.returnFlight.arrivalTime}</div>
+                            <div className="journey-city">{flightData.departureCity}</div>
+                            <div className="journey-location">{flightData.departureCity} International Airport</div>
+                          </div>
+                        </div>
+                      );
+                    }
+                    return (
+                      <div className="connected-flight-timeline">
+                        {/* Segment 1 */}
+                        <div className="flight-segment">
+                          <div className="segment-airline-row">
+                            <img src={flightData.returnFlight.airlineLogo} alt={flightData.returnFlight.airlineName} className="segment-airline-logo" />
+                            <span className="segment-flight-number">{flightData.returnFlight.flightNumber}</span>
+                            <span className="segment-aircraft-badge">{flightData.returnFlight.aircraft || 'Airbus A320'}</span>
+                          </div>
+                          <div className="segment-journey">
+                            <div className="segment-point">
+                              <div className="segment-time">{flightData.returnFlight.departureTime}</div>
+                              <div className="segment-city">{flightData.arrivalCity}</div>
+                              <div className="segment-airport">{flightData.arrivalCity} Airport</div>
+                            </div>
+                            <div className="segment-duration">
+                              <div className="segment-duration-text">{stopDetails.segment1.duration}</div>
+                              <div className="segment-timeline-line">
+                                <div className="segment-circle"></div>
+                                <div className="segment-dotted"></div>
+                                <div className="segment-circle"></div>
+                              </div>
+                            </div>
+                            <div className="segment-point">
+                              <div className="segment-time">{stopDetails.segment1.arrivalTime}</div>
+                              <div className="segment-city">{stopDetails.stopCity.name}</div>
+                              <div className="segment-airport">{stopDetails.stopCity.airport}</div>
+                            </div>
+                          </div>
+                        </div>
 
-                  {/* Duration Line */}
-                  <div className="journey-duration-line">
-                    <div className="duration-text-center">{flightData.returnFlight.duration}</div>
-                    <div className="timeline-visual">
-                      <div className="journey-circle"></div>
-                      <div className="dotted-line"></div>
-                      <div className="journey-circle"></div>
+                        {/* Layover Section */}
+                        <div className="layover-section">
+                          <div className="layover-indicator">
+                            <div className="layover-dot"></div>
+                          </div>
+                          <div className="layover-details">
+                            <div className="layover-change-text">{stopDetails.layover.changeType}</div>
+                            <div className="layover-duration">{stopDetails.layover.duration} Layover in {stopDetails.stopCity.name}</div>
+                          </div>
+                        </div>
+
+                        {/* Segment 2 */}
+                        <div className="flight-segment">
+                          <div className="segment-airline-row">
+                            <img src={flightData.returnFlight.airlineLogo} alt={flightData.returnFlight.airlineName} className="segment-airline-logo" />
+                            <span className="segment-flight-number">{flightData.returnFlight.flightNumber}</span>
+                            <span className="segment-aircraft-badge">{flightData.returnFlight.aircraft || 'Airbus A320'}</span>
+                          </div>
+                          <div className="segment-journey">
+                            <div className="segment-point">
+                              <div className="segment-time">{stopDetails.segment2.departureTime}</div>
+                              <div className="segment-city">{stopDetails.stopCity.name}</div>
+                              <div className="segment-airport">{stopDetails.stopCity.airport}</div>
+                            </div>
+                            <div className="segment-duration">
+                              <div className="segment-duration-text">{stopDetails.segment2.duration}</div>
+                              <div className="segment-timeline-line">
+                                <div className="segment-circle"></div>
+                                <div className="segment-dotted"></div>
+                                <div className="segment-circle"></div>
+                              </div>
+                            </div>
+                            <div className="segment-point">
+                              <div className="segment-time">{flightData.returnFlight.arrivalTime}</div>
+                              <div className="segment-city">{flightData.departureCity}</div>
+                              <div className="segment-airport">{flightData.departureCity} International Airport</div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })()
+                ) : (
+                  // Direct flight (Non Stop)
+                  <div className="flight-journey-timeline">
+                    {/* Departure */}
+                    <div className="journey-point-section">
+                      <div className="journey-time">{flightData.returnFlight.departureTime}</div>
+                      <div className="journey-city">{flightData.arrivalCity}</div>
+                      <div className="journey-location">{flightData.arrivalCity} Airport</div>
+                    </div>
+
+                    {/* Duration Line */}
+                    <div className="journey-duration-line">
+                      <div className="duration-text-center">{flightData.returnFlight.duration}</div>
+                      <div className="timeline-visual">
+                        <div className="journey-circle"></div>
+                        <div className="dotted-line"></div>
+                        <div className="journey-circle"></div>
+                      </div>
+                    </div>
+
+                    {/* Arrival */}
+                    <div className="journey-point-section">
+                      <div className="journey-time">{flightData.returnFlight.arrivalTime}</div>
+                      <div className="journey-city">{flightData.departureCity}</div>
+                      <div className="journey-location">{flightData.departureCity} International Airport</div>
                     </div>
                   </div>
-
-                  {/* Arrival */}
-                  <div className="journey-point-section">
-                    <div className="journey-time">{flightData.returnFlight.arrivalTime}</div>
-                    <div className="journey-city">{flightData.departureCity}</div>
-                    <div className="journey-location">{flightData.departureCity} International Airport</div>
-                  </div>
-                </div>
+                )}
 
                 {/* Baggage Section */}
                 <div className="baggage-section-bottom">
