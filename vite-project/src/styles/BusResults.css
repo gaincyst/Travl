@@ -2443,7 +2443,7 @@ background-color: #c01313;
   font-size: 11px;
   color: #666;
   text-align: center;
-  margin: 0 24px 24px 24px;
+   padding: 4px 24px 14px 24px;
   line-height: 1.5;
 }
 
@@ -2485,15 +2485,15 @@ background-color: #c01313;
 }
 
 /* ============================================
-   REVIEW BOOKING SECTION (Same as Flight Page)
+   REVIEW BOOKING SECTION (Bus Specific)
    ============================================ */
    
 /* Review Booking Section */
-.review-booking-section {
+.bus-review-booking-section {
   padding: 0;
 }
 
-.review-booking-title {
+.bus-review-booking-title {
   font-size: 20px;
   font-weight: 700;
   color: #1a1a1a;
@@ -2501,7 +2501,7 @@ background-color: #c01313;
   padding: 0 24px;
 }
 
-.review-flight-card {
+.bus-review-card {
   background: #fff;
   border: 1px solid #e0e0e0;
   border-radius: 8px;
@@ -2509,32 +2509,32 @@ background-color: #c01313;
   margin: 0 24px 24px 24px;
 }
 
-.review-flight-header {
+.bus-review-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
 }
 
-.review-airline-info {
+.bus-review-operator-info {
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
-.review-airline-logo {
+.bus-review-operator-logo {
   width: 32px;
   height: 32px;
   object-fit: contain;
 }
 
-.review-airline-name {
+.bus-review-operator-name {
   font-size: 16px;
   font-weight: 600;
   color: #1a1a1a;
 }
 
-.review-fare-type {
+.bus-review-bus-type {
   background: #e8f5e9;
   color: #2e7d32;
   font-size: 12px;
@@ -2543,48 +2543,48 @@ background-color: #c01313;
   border-radius: 4px;
 }
 
-.review-flight-timing {
+.bus-review-timing {
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 20px;
 }
 
-.review-time-section {
+.bus-review-time-section {
   flex: 1;
   text-align: left;
 }
 
-.review-time-section:last-child {
+.bus-review-time-section:last-child {
   text-align: right;
 }
 
-.review-main-time {
+.bus-review-main-time {
   font-size: 24px;
   font-weight: 700;
   color: #1a1a1a;
   margin-bottom: 4px;
 }
 
-.review-date {
+.bus-review-date {
   font-size: 13px;
   color: #666;
   margin-bottom: 4px;
 }
 
-.review-airport {
+.bus-review-location {
   font-size: 14px;
   color: #1a1a1a;
   font-weight: 500;
 }
 
-.review-duration-section {
+.bus-review-duration-section {
   flex: 1;
   text-align: center;
   position: relative;
 }
 
-.review-duration-section::before {
+.bus-review-duration-section::before {
   content: '';
   position: absolute;
   top: 8px;
@@ -2595,7 +2595,7 @@ background-color: #c01313;
   z-index: 0;
 }
 
-.review-duration {
+.bus-bus-review-duration {
   font-size: 13px;
   color: #666;
   margin-bottom: 4px;
@@ -2606,8 +2606,8 @@ background-color: #c01313;
   padding: 0 8px;
 }
 
-.review-stop-type {
-  font-size: 12px;
+.bus-review-stop-type {
+  font-size: 22px;
   color: #666;
   position: relative;
   z-index: 1;
@@ -2616,32 +2616,32 @@ background-color: #c01313;
   padding: 0 8px;
 }
 
-.review-section {
+.bus-review-section {
   margin: 0 24px 24px 24px;
 }
 
-.review-section-title {
+.bus-review-section-title {
   font-size: 16px;
   font-weight: 700;
   color: #1a1a1a;
   margin: 0 0 16px 0;
 }
 
-.review-traveller-card {
+.bus-review-traveller-card {
   background: #f9f9f9;
   border: 1px solid #e0e0e0;
   border-radius: 8px;
   padding: 16px 20px;
 }
 
-.review-traveller-label {
+.bus-review-traveller-label {
   font-size: 14px;
   font-weight: 700;
   color: #1a1a1a;
   margin: 0 0 12px 0;
 }
 
-.review-detail-row {
+.bus-review-detail-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -2649,22 +2649,22 @@ background-color: #c01313;
   border-bottom: 1px solid #e0e0e0;
 }
 
-.review-detail-row:last-child {
+.bus-review-detail-row:last-child {
   border-bottom: none;
 }
 
-.review-detail-label {
+.bus-review-detail-label {
   font-size: 14px;
   color: #666;
 }
 
-.review-detail-value {
+.bus-review-detail-value {
   font-size: 14px;
   font-weight: 600;
   color: #1a1a1a;
 }
 
-.review-info-text {
+.bus-review-info-text {
   font-size: 13px;
   color: #666;
   line-height: 1.6;
@@ -2675,44 +2675,44 @@ background-color: #c01313;
   border-radius: 6px;
 }
 
-.review-selection-card {
+.bus-review-selection-card {
   background: #f9f9f9;
   border: 1px solid #e0e0e0;
   border-radius: 8px;
   padding: 16px 20px;
 }
 
-.review-total-card {
+.bus-review-total-card {
   background:  #f9f9f9;
   border: 2px solid #c8c6c6;
   border-radius: 8px;
   padding: 16px 20px;
 }
 
-.review-total-divider {
+.bus-review-total-divider {
   
   background: #c9c6c6;
   margin: 12px 0;
 }
 
-.review-detail-row.review-total-row {
+.bus-review-detail-row.bus-review-total-row {
   border-bottom: none;
   padding: 12px 0 0 0;
 }
 
-.review-total-label {
+.bus-review-total-label {
   font-size: 18px;
   font-weight: 700;
   color: #1a1a1a;
 }
 
-.review-total-value {
+.bus-review-total-value {
   font-size: 22px;
   font-weight: 700;
   color: #d42929;
 }
 
-/* Confirmation Modal (Same as Flight Page) */
+/* Confirmation Modal (Bus Specific) */
 .confirmation-modal-backdrop {
   position: fixed;
   top: 0;

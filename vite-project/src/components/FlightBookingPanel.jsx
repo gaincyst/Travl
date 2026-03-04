@@ -441,6 +441,20 @@ function FlightBookingPanel({ isOpen, onClose, flightData }) {
   
   const [visibleTravellers, setVisibleTravellers] = useState(1); // Number of traveller forms currently visible
   
+  // Travellers accordion state for Review Booking section
+  const [travellersExpanded, setTravellersExpanded] = useState(false);
+  
+  // Fare Rules modal state
+  const [fareRulesModalOpen, setFareRulesModalOpen] = useState(false);
+  const [selectedFlightForFareRules, setSelectedFlightForFareRules] = useState('outbound'); // 'outbound' or 'return'
+  const [fareRulesTab, setFareRulesTab] = useState('cancellation'); // 'cancellation' or 'dateChange'
+  
+  // Cancellation Policy modal state
+  const [cancellationPolicyModalOpen, setCancellationPolicyModalOpen] = useState(false);
+  const [cancellationPolicyTab, setCancellationPolicyTab] = useState('cancellation'); // 'cancellation' or 'reschedule'
+  const [termsExpanded, setTermsExpanded] = useState(false);
+  const [selectedCancellationFlight, setSelectedCancellationFlight] = useState('outbound'); // 'outbound' or 'return'
+  
   // Traveller form data state for all types
   const [travellersData, setTravellersData] = useState(
     Array.from({ length: 20 }, () => ({
@@ -580,7 +594,18 @@ function FlightBookingPanel({ isOpen, onClose, flightData }) {
                   <span className="flight-date-text">{flightData.departureDate || "Friday, Feb 13"}</span>
                   <span className="flight-stops-duration">{flightData.stops} · {flightData.duration}</span>
                 </div>
-                <a href="#" className="fare-rules-link">View Fare Rules</a>
+                <a 
+                  href="#" 
+                  className="fare-rules-link"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setSelectedFlightForFareRules('outbound');
+                    setFareRulesTab('cancellation');
+                    setFareRulesModalOpen(true);
+                  }}
+                >
+                  View Fare Rules
+                </a>
               </div>
 
               {/* Airline Info Row */}
@@ -653,7 +678,18 @@ function FlightBookingPanel({ isOpen, onClose, flightData }) {
                     <span className="flight-date-text">{flightData.returnFlight.departureDate || "Saturday, Feb 15"}</span>
                     <span className="flight-stops-duration">{flightData.returnFlight.stops} · {flightData.returnFlight.duration}</span>
                   </div>
-                  <a href="#" className="fare-rules-link">View Fare Rules</a>
+                  <a 
+                    href="#" 
+                    className="fare-rules-link"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setSelectedFlightForFareRules('return');
+                      setFareRulesTab('cancellation');
+                      setFareRulesModalOpen(true);
+                    }}
+                  >
+                    View Fare Rules
+                  </a>
                 </div>
 
                 {/* Airline Info Row */}
@@ -716,7 +752,19 @@ function FlightBookingPanel({ isOpen, onClose, flightData }) {
             <div className="refund-cancellation-section">
               <div className="refund-header">
                 <h3 className="refund-title">Refund on Cancellation</h3>
-                <a href="#" className="cancellation-policy-link">Cancellation &amp; Rescheduling Policy</a>
+                <a 
+                  href="#" 
+                  className="cancellation-policy-link"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setCancellationPolicyTab('cancellation');
+                    setTermsExpanded(false);
+                    setSelectedCancellationFlight('outbound');
+                    setCancellationPolicyModalOpen(true);
+                  }}
+                >
+                  Cancellation &amp; Rescheduling Policy
+                </a>
               </div>
 
               {/* Outbound Flight Refund Timeline */}
@@ -1495,8 +1543,19 @@ function FlightBookingPanel({ isOpen, onClose, flightData }) {
               
               {/* Travellers Section */}
               <div className="review-section">
-                <h3 className="review-section-title">Travellers</h3>
-                {Array.from({ length: visibleTravellers }).map((_, index) => {
+                <div className="review-section-header">
+                  <h3 className="review-section-title">Travellers</h3>
+                  {visibleTravellers > 1 && (
+                    <button 
+                      className="travellers-toggle-btn"
+                      onClick={() => setTravellersExpanded(!travellersExpanded)}
+                      aria-label={travellersExpanded ? "Collapse travellers" : "View all travellers"}
+                    >
+                      {travellersExpanded ? '▲' : '▼'}
+                    </button>
+                  )}
+                </div>
+                {Array.from({ length: travellersExpanded ? visibleTravellers : 1 }).map((_, index) => {
                   const travellerInfo = getTravellerInfo(index);
                   return (
                     <div key={index} className="review-traveller-card">
@@ -1759,6 +1818,371 @@ function FlightBookingPanel({ isOpen, onClose, flightData }) {
               }}>
                 Go Home
               </button>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* Fare Rules Modal */}
+      {fareRulesModalOpen && (
+        <>
+          <div className="fare-rules-modal-backdrop" onClick={() => setFareRulesModalOpen(false)}></div>
+          <div className="fare-rules-modal">
+            <div className="fare-rules-modal-header">
+              <h2 className="fare-rules-modal-title">Fare rules</h2>
+              <button 
+                className="fare-rules-modal-close"
+                onClick={() => setFareRulesModalOpen(false)}
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="fare-rules-tabs">
+              <button 
+                className={`fare-rules-tab ${fareRulesTab === 'cancellation' ? 'active' : ''}`}
+                onClick={() => setFareRulesTab('cancellation')}
+              >
+                Cancellation Charges
+              </button>
+              <button 
+                className={`fare-rules-tab ${fareRulesTab === 'dateChange' ? 'active' : ''}`}
+                onClick={() => setFareRulesTab('dateChange')}
+              >
+                Date change charges
+              </button>
+            </div>
+
+            <div className="fare-rules-content">
+              <div className="fare-rules-flight-code">
+                <img 
+                  src={selectedFlightForFareRules === 'outbound' ? flightData.airlineLogo : flightData.returnFlight?.airlineLogo || flightData.airlineLogo} 
+                  alt="airline" 
+                  className="fare-rules-airline-icon"
+                />
+                <span>
+                  {selectedFlightForFareRules === 'outbound' 
+                    ? `${flightData.departureCity?.substring(0, 3).toUpperCase()}-${flightData.arrivalCity?.substring(0, 3).toUpperCase()}`
+                    : `${flightData.arrivalCity?.substring(0, 3).toUpperCase()}-${flightData.departureCity?.substring(0, 3).toUpperCase()}`
+                  }
+                </span>
+              </div>
+
+              {fareRulesTab === 'cancellation' ? (
+                <div className="fare-rules-table">
+                  <div className="fare-rules-table-header">
+                    <div className="fare-rules-col-left">
+                      <div className="fare-rules-header-title">Time frame</div>
+                      <div className="fare-rules-header-subtitle">(From Scheduled Flight departure)</div>
+                    </div>
+                    <div className="fare-rules-col-right">
+                      <div className="fare-rules-header-title">Airline Fee + MMT Fee</div>
+                      <div className="fare-rules-header-subtitle">(Per passenger)</div>
+                    </div>
+                  </div>
+
+                  <div className="fare-rules-table-body">
+                    <div className="fare-rules-table-row">
+                      <div className="fare-rules-col-left">0 hours to 3 hours*</div>
+                      <div className="fare-rules-col-right">
+                        <div>ADULT : <strong>Non Refundable</strong></div>
+                      </div>
+                    </div>
+                    <div className="fare-rules-table-row">
+                      <div className="fare-rules-col-left">3 hours to 365 days*</div>
+                      <div className="fare-rules-col-right">
+                        <div>ADULT : <strong>Non Refundable</strong></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="fare-rules-footer-note">*From the Time of Departure</div>
+                </div>
+              ) : (
+                <div className="fare-rules-table">
+                  <div className="fare-rules-table-header">
+                    <div className="fare-rules-col-left">
+                      <div className="fare-rules-header-title">Time frame</div>
+                      <div className="fare-rules-header-subtitle">(From Scheduled Flight departure)</div>
+                    </div>
+                    <div className="fare-rules-col-right">
+                      <div className="fare-rules-header-title">Airline Fee + MMT Fee + Fare difference</div>
+                      <div className="fare-rules-header-subtitle">(Per passenger)</div>
+                    </div>
+                  </div>
+
+                  <div className="fare-rules-table-body">
+                    <div className="fare-rules-table-row">
+                      <div className="fare-rules-col-left">0 hours to 3 hours*</div>
+                      <div className="fare-rules-col-right">
+                        <div>ADULT : <strong>Non Changeable</strong></div>
+                      </div>
+                    </div>
+                    <div className="fare-rules-table-row">
+                      <div className="fare-rules-col-left">3 hours to 365 days*</div>
+                      <div className="fare-rules-col-right">
+                        <div>ADULT : <strong>₹ 2,999 + ₹ 350 + Fare difference</strong></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="fare-rules-footer-note">*From the Time of Departure</div>
+                </div>
+              )}
+
+              <div className="fare-rules-disclaimer">
+                <strong>*Important:</strong> The Airline fee is indicative. MakeMyTrip does not guarantee the accuracy of this information. All fees mentioned are per passenger. {fareRulesTab === 'dateChange' && 'Date change charges are applicable only on selecting the same Airline on a new date. The difference in fares between the old and the new booking will also be payable by the user. Please refer to the Date Change Charges section above for details on the number of allowed free date changes, if applicable'}
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* Cancellation & Rescheduling Policy Modal */}
+      {cancellationPolicyModalOpen && (
+        <>
+          <div className="cancellation-policy-modal-backdrop" onClick={() => {
+            setCancellationPolicyModalOpen(false);
+            setTermsExpanded(false);
+            setSelectedCancellationFlight('outbound');
+          }}></div>
+          <div className="cancellation-policy-modal">
+            <button 
+              className="cancellation-policy-modal-close"
+              onClick={() => {
+                setCancellationPolicyModalOpen(false);
+                setTermsExpanded(false);
+                setSelectedCancellationFlight('outbound');
+              }}
+            >
+              ×
+            </button>
+
+            <div className="cancellation-policy-tabs">
+              <button 
+                className={`cancellation-policy-tab ${cancellationPolicyTab === 'cancellation' ? 'active' : ''}`}
+                onClick={() => {
+                  setCancellationPolicyTab('cancellation');
+                  setTermsExpanded(false);
+                  setSelectedCancellationFlight('outbound');
+                }}
+              >
+                Cancellation
+              </button>
+              <button 
+                className={`cancellation-policy-tab ${cancellationPolicyTab === 'reschedule' ? 'active' : ''}`}
+                onClick={() => {
+                  setCancellationPolicyTab('reschedule');
+                  setTermsExpanded(false);
+                  setSelectedCancellationFlight('outbound');
+                }}
+              >
+                Reschedule
+              </button>
+            </div>
+
+            <div className="cancellation-policy-content">
+              {cancellationPolicyTab === 'cancellation' ? (
+                <>
+                  <p className="cancellation-policy-subtitle">
+                    *Cancellation charges applicable (Airline fee + ixigo fee)
+                  </p>
+
+                  {flightData.isRoundTrip && flightData.returnFlight && (
+                    <div className="flight-selector-buttons">
+                      <button 
+                        className={`flight-selector-btn ${selectedCancellationFlight === 'outbound' ? 'active' : ''}`}
+                        onClick={() => setSelectedCancellationFlight('outbound')}
+                      >
+                        {flightData.departureCity?.substring(0, 3).toUpperCase()} - {flightData.arrivalCity?.substring(0, 3).toUpperCase()}
+                      </button>
+                      <button 
+                        className={`flight-selector-btn ${selectedCancellationFlight === 'return' ? 'active' : ''}`}
+                        onClick={() => setSelectedCancellationFlight('return')}
+                      >
+                        {flightData.arrivalCity?.substring(0, 3).toUpperCase()} - {flightData.departureCity?.substring(0, 3).toUpperCase()}
+                      </button>
+                    </div>
+                  )}
+
+                  <div className="cancellation-policy-timeline">
+                    <div className="timeline-status-text">Non Refundable</div>
+                    
+                    <div className="timeline-bar-wrapper cancellation-timeline-wrapper">
+                      <div className="timeline-bar red-bar">
+                        <div className="timeline-icon left-icon">
+                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <circle cx="12" cy="12" r="10" fill="#ef4444"/>
+                            <path d="M12 7v5l3 3" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+                          </svg>
+                        </div>
+                        <div className="timeline-icon right-icon">
+                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <circle cx="12" cy="12" r="10" fill="#dc2626"/>
+                            <path d="M7 12h10M13 8l4 4-4 4" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="timeline-labels">
+                      <div className="timeline-label-left">
+                        <div className="timeline-label-title">Now</div>
+                        <div className="timeline-label-time">
+                          {new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })}
+                        </div>
+                      </div>
+                      <div className="timeline-label-right">
+                        <div className="timeline-label-title">Departure</div>
+                        <div className="timeline-label-time">
+                          {selectedCancellationFlight === 'outbound' 
+                            ? (flightData.departureDate ? `${flightData.departureDate.split(',')[1]?.trim().split(' ')[1] || '05'} Mar` : '05 Mar') + ', ' + (flightData.departureTime || '05:30')
+                            : (flightData.returnFlight?.departureDate ? `${flightData.returnFlight.departureDate.split(',')[1]?.trim().split(' ')[1] || '15'} Mar` : '15 Mar') + ', ' + (flightData.returnFlight?.departureTime || '23:40')
+                          }
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <p className="cancellation-policy-footer-text">
+                    Total refund amount applicable for {totalTravellers} traveller{totalTravellers > 1 ? 's' : ''}. In case of partial cancellation, refund amount will vary.
+                  </p>
+                  <a 
+                    href="#" 
+                    className="cancellation-policy-terms-link"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setTermsExpanded(!termsExpanded);
+                    }}
+                  >
+                    {termsExpanded ? 'Hide Terms & Conditions' : 'View Terms & Conditions'}
+                  </a>
+                  
+                  {termsExpanded && (
+                    <div className="terms-conditions-section">
+                      <h3 className="terms-conditions-title">Terms & Conditions</h3>
+                      <ol className="terms-conditions-list">
+                        <li>Cancellation charges are applicable per passenger per sector.</li>
+                        <li>Discount and Assured fee, if any, will be adjusted in the final refund amount.</li>
+                        <li>Partial cancellation cannot be made for tickets booked under special or discounted fares.</li>
+                        <li>In case of a no-show or for tickets cancelled post a specific time, only statutory taxes are refundable.</li>
+                        <li>Penalty charged by the airline is indicative only and may change without any prior notice. ixigo does not guarantee the accuracy of this information.</li>
+                        <li>Cancellation request will be processed only within the mentioned time period.</li>
+                        <li>If the flight fare is less than default cancellation penalty then taxes will be refundable.</li>
+                        <li>In the event of cancellation, the discount applied to your booking will be non-refundable and fully recovered from the refund amount.</li>
+                      </ol>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <>
+                  <p className="cancellation-policy-subtitle">
+                    *Rescheduling charges applicable (Airline fee + ixigo fee)
+                  </p>
+
+                  {flightData.isRoundTrip && flightData.returnFlight && (
+                    <div className="flight-selector-buttons">
+                      <button 
+                        className={`flight-selector-btn ${selectedCancellationFlight === 'outbound' ? 'active' : ''}`}
+                        onClick={() => setSelectedCancellationFlight('outbound')}
+                      >
+                        {flightData.departureCity?.substring(0, 3).toUpperCase()} - {flightData.arrivalCity?.substring(0, 3).toUpperCase()}
+                      </button>
+                      <button 
+                        className={`flight-selector-btn ${selectedCancellationFlight === 'return' ? 'active' : ''}`}
+                        onClick={() => setSelectedCancellationFlight('return')}
+                      >
+                        {flightData.arrivalCity?.substring(0, 3).toUpperCase()} - {flightData.departureCity?.substring(0, 3).toUpperCase()}
+                      </button>
+                    </div>
+                  )}
+
+                  <div className="cancellation-policy-timeline">
+                    <div className="timeline-status-left">₹6996 + fare difference</div>
+                    <div className="timeline-status-left-sub">(₹5998 + ₹998)*</div>
+                    <div className="timeline-status-right">Non Changeable</div>
+                    
+                    <div className="timeline-bar-wrapper">
+                      <div className="timeline-bar multi-bar">
+                        <div className="timeline-segment yellow-segment"></div>
+                        <div className="timeline-segment red-segment"></div>
+                        <div className="timeline-icon left-icon">
+                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <circle cx="12" cy="12" r="10" fill="#f59e0b"/>
+                            <path d="M12 7v5l3 3" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+                          </svg>
+                        </div>
+                        <div className="timeline-icon middle-icon">
+                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <circle cx="12" cy="12" r="10" fill="#ef4444"/>
+                          </svg>
+                        </div>
+                        <div className="timeline-icon right-icon">
+                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <circle cx="12" cy="12" r="10" fill="#dc2626"/>
+                            <path d="M7 12h10M13 8l4 4-4 4" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="timeline-labels reschedule-labels">
+                      <div className="timeline-label-left">
+                        <div className="timeline-label-title">Now</div>
+                        <div className="timeline-label-time">
+                          {new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })}
+                        </div>
+                      </div>
+                      <div className="timeline-label-middle">
+                        <div className="timeline-label-title">
+                          {selectedCancellationFlight === 'outbound'
+                            ? (flightData.departureDate ? `${flightData.departureDate.split(',')[1]?.trim().split(' ')[1] || '05'} Mar` : '05 Mar')
+                            : (flightData.returnFlight?.departureDate ? `${flightData.returnFlight.departureDate.split(',')[1]?.trim().split(' ')[1] || '15'} Mar` : '15 Mar')
+                          }
+                        </div>
+                        <div className="timeline-label-time">02:30</div>
+                      </div>
+                      <div className="timeline-label-right">
+                        <div className="timeline-label-title">Departure</div>
+                        <div className="timeline-label-time">
+                          {selectedCancellationFlight === 'outbound'
+                            ? (flightData.departureDate ? `${flightData.departureDate.split(',')[1]?.trim().split(' ')[1] || '05'} Mar` : '05 Mar') + ', ' + (flightData.departureTime || '05:30')
+                            : (flightData.returnFlight?.departureDate ? `${flightData.returnFlight.departureDate.split(',')[1]?.trim().split(' ')[1] || '15'} Mar` : '15 Mar') + ', ' + (flightData.returnFlight?.departureTime || '23:40')
+                          }
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <p className="cancellation-policy-footer-text">
+                    Rescheduling fee is applicable for {totalTravellers} traveller{totalTravellers > 1 ? 's' : ''}. In case of partial reschedule, rescheduling fee will vary.
+                  </p>
+                  <a 
+                    href="#" 
+                    className="cancellation-policy-terms-link"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setTermsExpanded(!termsExpanded);
+                    }}
+                  >
+                    {termsExpanded ? 'Hide Terms & Conditions' : 'View Terms & Conditions'}
+                  </a>
+                  
+                  {termsExpanded && (
+                    <div className="terms-conditions-section">
+                      <h3 className="terms-conditions-title">Terms & Conditions</h3>
+                      <p className="terms-conditions-intro">In case of flight rescheduling the following terms and conditions will apply:</p>
+                      <ol className="terms-conditions-list">
+                        <li>Penalty charged by the airline is indicative only and may change without any prior notice. ixigo does not guarantee the accuracy of this information.</li>
+                        <li>Get one free change of date, sector and airline per passenger with ixigo Flex.</li>
+                        <li>Discount and Flex fee, if any, will be adjusted in the final refund amount.</li>
+                        <li>Reschedule request will be processed only within the mentioned time period.</li>
+                        <li>The difference in fares between the old and the new booking will also be payable by the user.</li>
+                      </ol>
+                    </div>
+                  )}
+                </>
+              )}
             </div>
           </div>
         </>

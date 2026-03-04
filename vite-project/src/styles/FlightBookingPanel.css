@@ -947,7 +947,7 @@
   font-size: 11px;
   color: #666;
   text-align: center;
-  padding: 0 24px 24px 24px;
+   padding: 4px 24px 14px 24px;
   line-height: 1.5;
 }
 
@@ -958,25 +958,24 @@
 
 /* Continue Button for Flight Panel */
 .continue-button-flight-panel {
-  width: 100%;
-  padding: 16px;
-  background: linear-gradient(140deg, #d21919, #e85757);
-  color: #fff;
+  width: calc(100% - 48px);
+  margin: 0 24px 12px 24px;
+  padding: 14px;
+  background: radial-gradient(circle at top left, #851111, #fe6969);
+  background-color: #c01313;
+  color: white;
   border: none;
   border-radius: 8px;
-  font-size: 16px;
-  font-weight: 700;
+  font-size: 15px;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
-  text-transform: uppercase;
+  transition: background 0.3s ease;
   letter-spacing: 0.5px;
-  margin: 20px 24px;
-  width: calc(100% - 48px);
 }
 
 .continue-button-flight-panel:hover {
-  background: linear-gradient(140deg, #b01616, #c94545);
-  box-shadow: 0 4px 12px rgba(210, 25, 25, 0.3);
+  background: #f40606cf;
+  transform: translateY(0);
 }
 
 .continue-button-flight-panel:active {
@@ -987,7 +986,7 @@
   font-size: 11px;
   color: #666;
   text-align: center;
-  padding: 0 24px 24px 24px;
+  padding: 4px 24px 14px 24px;
   line-height: 1.5;
 }
 
@@ -3010,12 +3009,13 @@
 .review-duration {
   font-size: 13px;
   color: #666;
-  margin-bottom: 4px;
+  margin-bottom: 39px;
   position: relative;
   z-index: 1;
   background: #fff;
   display: inline-block;
   padding: 0 8px;
+  margin-top:10px;
 }
 
 .review-stop-type {
@@ -3025,18 +3025,51 @@
   z-index: 1;
   background: #fff;
   display: inline-block;
-  padding: 0 8px;
+  padding: 0 2px;
+  margin-top: 0px;
 }
 
 .review-section {
   margin: 0 24px 24px 24px;
 }
 
+.review-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
 .review-section-title {
   font-size: 16px;
   font-weight: 700;
   color: #1a1a1a;
-  margin: 0 0 16px 0;
+  margin: 0;
+}
+
+.travellers-toggle-btn {
+  background: transparent;
+  border: none;
+  font-size: 16px;
+  color: #cc0000;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  min-height: 32px;
+}
+
+.travellers-toggle-btn:hover {
+  background: #f0f0f0;
+  color: #990000;
+}
+
+.travellers-toggle-btn:active {
+  transform: scale(0.95);
 }
 
 .review-traveller-card {
@@ -3044,6 +3077,23 @@
   border: 1px solid #e0e0e0;
   border-radius: 8px;
   padding: 16px 20px;
+  margin-bottom: 12px;
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.review-traveller-card:last-child {
+  margin-bottom: 0;
 }
 
 .review-traveller-label {
@@ -3386,4 +3436,581 @@ background-color: #c01313;
   color: white;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(255, 90, 95, 0.9);
+}
+
+/* ============================================
+   FARE RULES MODAL STYLES
+   ============================================ */
+
+.fare-rules-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fare-rules-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 680px;
+  max-height: 85vh;
+  overflow-y: auto;
+  z-index: 10001;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  animation: fadeInScale 0.3s ease;
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+.fare-rules-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.fare-rules-modal-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+}
+
+.fare-rules-modal-close {
+  background: none;
+  border: none;
+  font-size: 32px;
+  color: #9ca3af;
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+  line-height: 1;
+}
+
+.fare-rules-modal-close:hover {
+  color: #4b5563;
+}
+
+.fare-rules-tabs {
+  display: flex;
+  border-bottom: 1px solid #ebe5e5;
+  background: #f9fafb;
+}
+
+.fare-rules-tab {
+  flex: 1;
+  background: none;
+  border: none;
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #6b7280;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s;
+}
+
+.fare-rules-tab.active {
+  color: #bc0707;
+  background: white;
+}
+
+.fare-rules-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: #bc0707;
+}
+
+.fare-rules-tab:hover:not(.active) {
+  background: #f3f4f6;
+}
+
+.fare-rules-content {
+  padding: 18px;
+}
+
+.fare-rules-flight-code {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  margin-bottom: 20px;
+}
+
+.fare-rules-airline-icon {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+}
+
+.fare-rules-flight-code span {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.fare-rules-table {
+  margin-bottom: 20px;
+}
+
+.fare-rules-table-header {
+  display: flex;
+  background: #f9fafb;
+  padding: 16px;
+  border: 1px solid #e5e7eb;
+  border-bottom: none;
+  border-radius: 6px 6px 0 0;
+}
+
+.fare-rules-table-header .fare-rules-col-left,
+.fare-rules-table-header .fare-rules-col-right {
+  flex: 1;
+}
+
+.fare-rules-header-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 4px;
+}
+
+.fare-rules-header-subtitle {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.fare-rules-table-body {
+  border: 1px solid #e5e7eb;
+}
+
+.fare-rules-table-row {
+  display: flex;
+  padding: 20px 16px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.fare-rules-table-row:last-child {
+  border-bottom: none;
+}
+
+.fare-rules-col-left {
+  flex: 1;
+  font-size: 14px;
+  color: #374151;
+  padding-right: 16px;
+}
+
+.fare-rules-col-right {
+  flex: 1;
+  font-size: 14px;
+  color: #374151;
+}
+
+.fare-rules-col-right div {
+  margin-bottom: 8px;
+}
+
+.fare-rules-col-right div:last-child {
+  margin-bottom: 0;
+}
+
+.fare-rules-col-right strong {
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.fare-rules-footer-note {
+  font-size: 12px;
+  color: #6b7280;
+  margin-top: 8px;
+  padding-left: 16px;
+}
+
+.fare-rules-disclaimer {
+  background: #fdecec;
+  border: 1px solid #f65e5e;
+  border-radius: 6px;
+  padding: 16px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #741010;
+}
+
+.fare-rules-disclaimer strong {
+  font-weight: 600;
+}
+
+/* ============================================
+   CANCELLATION & RESCHEDULING POLICY MODAL STYLES
+   ============================================ */
+
+.cancellation-policy-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cancellation-policy-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 620px;
+  max-height: 85vh;
+  overflow-y: auto;
+  z-index: 10001;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  animation: fadeInScale 0.3s ease;
+}
+
+.cancellation-policy-modal-close {
+  position: absolute;
+  top: 4px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 32px;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+  line-height: 1;
+  z-index: 1;
+}
+
+.cancellation-policy-modal-close:hover {
+  color: #1f2937;
+}
+
+.cancellation-policy-tabs {
+  display: flex;
+  border-bottom: 2px solid #e5e7eb;
+  padding-top: 14px;
+}
+
+.cancellation-policy-tab {
+  flex: 1;
+  background: none;
+  border: none;
+  padding: 16px 20px;
+  font-size: 16px;
+  font-weight: 500;
+  color: #6b7280;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s;
+}
+
+.cancellation-policy-tab.active {
+  color: #910808;
+  font-weight: 600;
+}
+
+.cancellation-policy-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: #920909;
+  border-radius: 2px 2px 0 0;
+}
+
+.cancellation-policy-content {
+  padding: 10px 24px;
+}
+
+.cancellation-policy-subtitle {
+  font-size: 14px;
+  color: #374151;
+  margin: 0 0 24px 0;
+}
+
+.flight-selector-buttons {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.flight-selector-btn {
+  flex: 1;
+  padding: 12px 16px;
+  background: white;
+  border: 2px solid #e5e7eb;
+  border-radius: 24px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.flight-selector-btn:hover {
+  border-color: #d60c0c;
+  color: #d20707;
+}
+
+.flight-selector-btn.active {
+  background: #ffe6e6;
+  border-color: #b30d0d;
+  color: #b00909;
+}
+
+.cancellation-policy-timeline {
+  position: relative;
+  margin-bottom: 22px;
+}
+
+.timeline-status-text {
+  text-align: center;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 4px;
+}
+
+.timeline-status-left {
+  position: absolute;
+  top: -46px;
+  left: 30px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.timeline-status-left-sub {
+  position: absolute;
+  top: -25px;
+  left: 30px;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.timeline-status-right {
+  position: absolute;
+  top: -36px;
+  right: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.timeline-bar-wrapper {
+  position: relative;
+  height: 6px;
+  margin: 68px 0 24px 0;
+}
+
+.timeline-bar-wrapper.cancellation-timeline-wrapper {
+  margin: 12px 0 24px 0;
+}
+
+.timeline-bar {
+  position: relative;
+  width: 100%;
+  height: 8px;
+  border-radius: 4px;
+  overflow: visible;
+}
+
+.timeline-bar.red-bar {
+  background: linear-gradient(to right, #ef4444, #dc2626);
+}
+
+.timeline-bar.multi-bar {
+  display: flex;
+  background: transparent;
+}
+
+.timeline-segment {
+  height: 8px;
+}
+
+.yellow-segment {
+  flex: 1;
+  background: #f59e0b;
+  border-radius: 4px 0 0 4px;
+}
+
+.red-segment {
+  flex: 1;
+  background: linear-gradient(to right, #ef4444, #dc2626);
+  border-radius: 0 4px 4px 0;
+}
+
+.timeline-icon {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.timeline-icon.left-icon {
+  left: -4px;
+}
+
+.timeline-icon.middle-icon {
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.timeline-icon.right-icon {
+  right: -4px;
+}
+
+.timeline-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 16px;
+}
+
+.timeline-labels.reschedule-labels {
+  position: relative;
+}
+
+.timeline-label-left,
+.timeline-label-right,
+.timeline-label-middle {
+  text-align: center;
+}
+
+.timeline-label-left {
+  text-align: left;
+}
+
+.timeline-label-right {
+  text-align: right;
+}
+
+.timeline-label-middle {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.timeline-label-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 4px;
+}
+
+.timeline-label-time {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.cancellation-policy-footer-text {
+  font-size: 13px;
+  color: #4b5563;
+  line-height: 1.6;
+  margin: 0 0 8px 0;
+}
+
+.cancellation-policy-terms-link {
+  font-size: 13px;
+  color: #a60808;
+  text-decoration: none;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-block;
+  margin-bottom: 8px;
+}
+
+.cancellation-policy-terms-link:hover {
+  text-decoration: underline;
+}
+
+.terms-conditions-section {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.terms-conditions-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 16px 0;
+}
+
+.terms-conditions-intro {
+  font-size: 14px;
+  color: #4b5563;
+  margin: 0 0 16px 0;
+  line-height: 1.6;
+}
+
+.terms-conditions-list {
+  margin: 0;
+  padding-left: 20px;
+  list-style-position: outside;
+}
+
+.terms-conditions-list li {
+  font-size: 14px;
+  color: #4b5563;
+  line-height: 1.8;
+  margin-bottom: 12px;
+  padding-left: 8px;
+}
+
+.terms-conditions-list li:last-child {
+  margin-bottom: 0;
 }

@@ -2525,62 +2525,62 @@ function BusResults() {
               ) : (
                 <>
                   {/* REVIEW BOOKING SECTION */}
-                  <div className="review-booking-section">
+                  <div className="bus-review-booking-section">
                     {/* Bus Journey Card */}
-                    <div className="review-flight-card">
-                      <div className="review-flight-header">
-                        <div className="review-airline-info">
-                          <span className="review-airline-name">{currentBookingBus.name}</span>
+                    <div className="bus-review-card">
+                      <div className="bus-review-header">
+                        <div className="bus-review-operator-info">
+                          <span className="bus-review-operator-name">{currentBookingBus.name}</span>
                         </div>
-                        <span className="review-fare-type">{currentBookingBus.type}</span>
+                        <span className="bus-review-bus-type">{currentBookingBus.type}</span>
                       </div>
                       
-                      <div className="review-flight-timing">
-                        <div className="review-time-section">
-                          <div className="review-main-time">{currentBookingBus.departureTime}</div>
-                          <div className="review-date">{currentBookingBus.departureDate}</div>
-                          <div className="review-airport">{currentBookingBus.departureCity}</div>
+                      <div className="bus-review-timing">
+                        <div className="bus-review-time-section">
+                          <div className="bus-review-main-time">{currentBookingBus.departureTime}</div>
+                          <div className="bus-review-date">{currentBookingBus.departureDate}</div>
+                          <div className="bus-review-location">{currentBookingBus.departureCity}</div>
                         </div>
                         
-                        <div className="review-duration-section">
-                          <div className="review-duration">{currentBookingBus.duration}</div>
+                        <div className="bus-review-duration-section">
+                          <div className="bus-review-duration">{currentBookingBus.duration}</div>
                         </div>
                         
-                        <div className="review-time-section">
-                          <div className="review-main-time">{currentBookingBus.arrivalTime}</div>
-                          <div className="review-date">{currentBookingBus.arrivalDate}</div>
-                          <div className="review-airport">{currentBookingBus.arrivalCity}</div>
+                        <div className="bus-review-time-section">
+                          <div className="bus-review-main-time">{currentBookingBus.arrivalTime}</div>
+                          <div className="bus-review-date">{currentBookingBus.arrivalDate}</div>
+                          <div className="bus-review-location">{currentBookingBus.arrivalCity}</div>
                         </div>
                       </div>
                     </div>
 
                     {/* Selected Seats */}
-                    <div className="review-section">
-                      <h3 className="review-section-title">Selected Seats</h3>
-                      <div className="review-selection-card">
-                        <div className="review-detail-row">
-                          <span className="review-detail-label">Seat Numbers:</span>
-                          <span className="review-detail-value">{(selectedSeats[currentBookingBus.id] || []).join(', ')}</span>
+                    <div className="bus-review-section">
+                      <h3 className="bus-review-section-title">Selected Seats</h3>
+                      <div className="bus-review-selection-card">
+                        <div className="bus-review-detail-row">
+                          <span className="bus-review-detail-label">Seat Numbers:</span>
+                          <span className="bus-review-detail-value">{(selectedSeats[currentBookingBus.id] || []).join(', ')}</span>
                         </div>
                       </div>
                     </div>
 
                     {/* Boarding & Dropping Points */}
-                    <div className="review-section">
-                      <h3 className="review-section-title">Pickup & Drop Points</h3>
-                      <div className="review-selection-card">
-                        <div className="review-detail-row">
-                          <span className="review-detail-label">Boarding Point:</span>
-                          <span className="review-detail-value">
+                    <div className="bus-review-section">
+                      <h3 className="bus-review-section-title">Pickup & Drop Points</h3>
+                      <div className="bus-review-selection-card">
+                        <div className="bus-review-detail-row">
+                          <span className="bus-review-detail-label">Boarding Point:</span>
+                          <span className="bus-review-detail-value">
                             {selectedBoardingPoint[currentBookingBus.id] === 'bp1' && 'Dhaula Kuan - Akshardham Metro Station, Delhi'}
                             {selectedBoardingPoint[currentBookingBus.id] === 'bp2' && 'Jhandewalan - Jhandewalan Metro Station'}
                             {selectedBoardingPoint[currentBookingBus.id] === 'bp3' && 'ISBT Kashmiri Gate - Akshardham Metro Station, Delhi'}
                             {selectedBoardingPoint[currentBookingBus.id] === 'bp4' && 'Anand Vihar - Anand Vihar ISBT'}
                           </span>
                         </div>
-                        <div className="review-detail-row">
-                          <span className="review-detail-label">Dropping Point:</span>
-                          <span className="review-detail-value">
+                        <div className="bus-review-detail-row">
+                          <span className="bus-review-detail-label">Dropping Point:</span>
+                          <span className="bus-review-detail-value">
                             {selectedDroppingPoint[currentBookingBus.id] === 'dp1' && 'Fazalganj'}
                           </span>
                         </div>
@@ -2588,89 +2588,89 @@ function BusResults() {
                     </div>
 
                     {/* Travellers Section */}
-                    <div className="review-section">
-                      <h3 className="review-section-title">Traveller Details</h3>
+                    <div className="bus-review-section">
+                      <h3 className="bus-review-section-title">Traveller Details</h3>
                       {(selectedSeats[currentBookingBus.id] || []).map((seat, index) => (
-                        <div key={seat} className="review-traveller-card" style={{ marginBottom: index < selectedSeats[currentBookingBus.id].length - 1 ? '12px' : '0' }}>
-                          <h4 className="review-traveller-label">Seat {seat}</h4>
-                          <div className="review-detail-row">
-                            <span className="review-detail-label">Name:</span>
-                            <span className="review-detail-value">{passengerFormData[seat]?.name || 'Not provided'}</span>
+                        <div key={seat} className="bus-review-traveller-card" style={{ marginBottom: index < selectedSeats[currentBookingBus.id].length - 1 ? '12px' : '0' }}>
+                          <h4 className="bus-review-traveller-label">Seat {seat}</h4>
+                          <div className="bus-review-detail-row">
+                            <span className="bus-review-detail-label">Name:</span>
+                            <span className="bus-review-detail-value">{passengerFormData[seat]?.name || 'Not provided'}</span>
                           </div>
-                          <div className="review-detail-row">
-                            <span className="review-detail-label">Age:</span>
-                            <span className="review-detail-value">{passengerFormData[seat]?.age || 'Not provided'}</span>
+                          <div className="bus-review-detail-row">
+                            <span className="bus-review-detail-label">Age:</span>
+                            <span className="bus-review-detail-value">{passengerFormData[seat]?.age || 'Not provided'}</span>
                           </div>
-                          <div className="review-detail-row">
-                            <span className="review-detail-label">Gender:</span>
-                            <span className="review-detail-value">{travellerGenders[seat] === 'female' ? 'Female' : 'Male'}</span>
+                          <div className="bus-review-detail-row">
+                            <span className="bus-review-detail-label">Gender:</span>
+                            <span className="bus-review-detail-value">{travellerGenders[seat] === 'female' ? 'Female' : 'Male'}</span>
                           </div>
                         </div>
                       ))}
                     </div>
 
                     {/* Contact Details */}
-                    <div className="review-section">
-                      <h3 className="review-section-title">Contact Details</h3>
-                      <div className="review-selection-card">
-                        <div className="review-detail-row">
-                          <span className="review-detail-label">Email:</span>
-                          <span className="review-detail-value">{contactDetails.email || 'Not provided'}</span>
+                    <div className="bus-review-section">
+                      <h3 className="bus-review-section-title">Contact Details</h3>
+                      <div className="bus-review-selection-card">
+                        <div className="bus-review-detail-row">
+                          <span className="bus-review-detail-label">Email:</span>
+                          <span className="bus-review-detail-value">{contactDetails.email || 'Not provided'}</span>
                         </div>
-                        <div className="review-detail-row">
-                          <span className="review-detail-label">Mobile:</span>
-                          <span className="review-detail-value">{contactDetails.mobile || 'Not provided'}</span>
+                        <div className="bus-review-detail-row">
+                          <span className="bus-review-detail-label">Mobile:</span>
+                          <span className="bus-review-detail-value">{contactDetails.mobile || 'Not provided'}</span>
                         </div>
-                        <div className="review-detail-row">
-                          <span className="review-detail-label">State:</span>
-                          <span className="review-detail-value">{contactDetails.state}</span>
+                        <div className="bus-review-detail-row">
+                          <span className="bus-review-detail-label">State:</span>
+                          <span className="bus-review-detail-value">{contactDetails.state}</span>
                         </div>
                       </div>
                     </div>
 
                     {/* Applied Offer */}
                     {appliedOffer && (
-                      <div className="review-section">
-                        <h3 className="review-section-title">Applied Offer</h3>
-                        <div className="review-selection-card">
-                          <div className="review-detail-row">
-                            <span className="review-detail-label">Offer Code:</span>
-                            <span className="review-detail-value">{appliedOffer.code}</span>
+                      <div className="bus-review-section">
+                        <h3 className="bus-review-section-title">Applied Offer</h3>
+                        <div className="bus-review-selection-card">
+                          <div className="bus-review-detail-row">
+                            <span className="bus-review-detail-label">Offer Code:</span>
+                            <span className="bus-review-detail-value">{appliedOffer.code}</span>
                           </div>
-                          <div className="review-detail-row">
-                            <span className="review-detail-label">Discount:</span>
-                            <span className="review-detail-value">₹{appliedOffer.discount}</span>
+                          <div className="bus-review-detail-row">
+                            <span className="bus-review-detail-label">Discount:</span>
+                            <span className="bus-review-detail-value">₹{appliedOffer.discount}</span>
                           </div>
                         </div>
                       </div>
                     )}
 
                     {/* Total Amount Summary */}
-                    <div className="review-section">
-                      <h3 className="review-section-title">Total Amount</h3>
-                      <div className="review-total-card">
-                        <div className="review-detail-row">
-                          <span className="review-detail-label">Base Fare:</span>
-                          <span className="review-detail-value">₹{baseFare.toFixed(1)}</span>
+                    <div className="bus-review-section">
+                      <h3 className="bus-review-section-title">Total Amount</h3>
+                      <div className="bus-review-total-card">
+                        <div className="bus-review-detail-row">
+                          <span className="bus-review-detail-label">Base Fare:</span>
+                          <span className="bus-review-detail-value">₹{baseFare.toFixed(1)}</span>
                         </div>
                         {appliedOffer && (
-                          <div className="review-detail-row">
-                            <span className="review-detail-label">Discount:</span>
-                            <span className="review-detail-value">-₹{discountAmount.toFixed(1)}</span>
+                          <div className="bus-review-detail-row">
+                            <span className="bus-review-detail-label">Discount:</span>
+                            <span className="bus-review-detail-value">-₹{discountAmount.toFixed(1)}</span>
                           </div>
                         )}
-                        <div className="review-total-divider"></div>
-                        <div className="review-detail-row review-total-row">
-                          <span className="review-total-label">Grand Total:</span>
-                          <span className="review-total-value">₹{finalAmount}</span>
+                        <div className="bus-review-total-divider"></div>
+                        <div className="bus-review-detail-row bus-review-total-row">
+                          <span className="bus-review-total-label">Grand Total:</span>
+                          <span className="bus-review-total-value">₹{finalAmount}</span>
                         </div>
                       </div>
                     </div>
 
                     {/* Important Information */}
-                    <div className="review-section">
-                      <h3 className="review-section-title">Important Information</h3>
-                      <p className="review-info-text">
+                    <div className="bus-review-section">
+                      <h3 className="bus-review-section-title">Important Information</h3>
+                      <p className="bus-review-info-text">
                         Please review your journey & traveller details carefully to avoid any cancellation penalties later.
                       </p>
                     </div>

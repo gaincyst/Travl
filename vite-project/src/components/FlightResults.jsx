@@ -740,7 +740,8 @@ function FlightResults() {
                   // ROUND TRIP LAYOUT - Two independent side-by-side mini cards
                   <>
                   <div className="round-trip-content">
-                    {/* Outbound Flight Card */}
+                    {/* Outbound Flight Card Wrapper */}
+                    <div className="round-trip-card-wrapper">
                     <div className="round-trip-mini-card">
                       <div className="mini-card-top-row">
                         <div className="mini-airline-info">
@@ -800,68 +801,7 @@ function FlightResults() {
                       </div>
                     </div>
                     
-                    {/* Return Flight Card */}
-                    <div className="round-trip-mini-card">
-                      <div className="mini-card-top-row">
-                        <div className="mini-airline-info">
-                          <img src={flight.returnFlight.airlineLogo} alt={flight.returnFlight.airline} className="mini-airline-logo" />
-                          <div className="mini-airline-details">
-                            <div className="mini-airline-name">{flight.returnFlight.airline}</div>
-                            <div className="mini-flight-code">{flight.returnFlight.flightCode}</div>
-                          </div>
-                        </div>
-                        <input 
-                          type="radio" 
-                          name="return-flight" 
-                          value={`${flight.id}-return`} 
-                          className="mini-radio-top" 
-                          checked={selectedReturn?.id === flight.id}
-                          onChange={() => handleReturnSelect(flight)}
-                        />
-                        <div className="mini-price-section">
-                          <div className="mini-price">{flight.returnFlight.price}</div>
-                        </div>
-                      </div>
-                      
-                      <div className="mini-card-main-row">
-                        <div className="mini-departure-section">
-                          <div className="mini-time">{flight.returnFlight.departureTime}</div>
-                          <div className="mini-date">Wed, 15-10-2025</div>
-                          <div className="mini-city">{flight.arrivalCity || flight.returnFlight.departureLocation}</div>
-                        </div>
-                        
-                        <div className="mini-duration-section">
-                          <div className="mini-duration">{flight.returnFlight.duration}</div>
-                          <div className="mini-flight-line">
-                            <div className="mini-line"></div>
-                          </div>
-                          <div className="mini-stops-info">{flight.returnFlight.stops}</div>
-                        </div>
-                        
-                        <div className="mini-arrival-section">
-                          <div className="mini-time">{flight.returnFlight.arrivalTime}</div>
-                          <div className="mini-date">Wed, 15-10-2025</div>
-                          <div className="mini-city">{flight.departureCity || flight.returnFlight.arrivalLocation}</div>
-                        </div>
-                      </div>
-                      
-                      <div className="mini-card-bottom-row">
-                        <div className="mini-seats-info">{flight.returnFlight.stops === "Non Stop" ? "32 Seats Available" : "670 Seats Available"}</div>
-                        <div className="mini-stop-details">{flight.returnFlight.stops === "Non Stop" ? "Non-stop" : `1 Stop`}</div>
-                      </div>
-                      
-                      <div className="mini-card-footer-btn">
-                        <button 
-                          className="mini-flight-details-btn"
-                          onClick={() => toggleFlightDetails(`${flight.id}-return`)}
-                        >
-                          {openFlightDetails[`${flight.id}-return`] ? 'Hide Details' : 'Flight Details'} →
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {/* FLIGHT DETAILS DROPDOWN FOR OUTBOUND */}
+                    {/* FLIGHT DETAILS DROPDOWN FOR OUTBOUND */}
                   {openFlightDetails[`${flight.id}-outbound`] && (
                     <div className="flight-details-dropdown">
                       {/* Tabs */}
@@ -886,13 +826,6 @@ function FlightResults() {
                         >
                           <FaSuitcase style={{marginRight: '6px', fontSize: '14px'}} />
                           BAGGAGE RULES
-                        </button>
-                        <button 
-                          className={`tab-btn ${activeTab[`${flight.id}-outbound`] === 'cancellation' ? 'active' : ''}`}
-                          onClick={() => handleTabChange(`${flight.id}-outbound`, 'cancellation')}
-                        >
-                          <FaLock style={{marginRight: '6px', fontSize: '14px'}} />
-                          CANCELLATION
                         </button>
                       </div>
 
@@ -1018,31 +951,72 @@ function FlightResults() {
                             </div>
                           </div>
                         )}
-
-                        {activeTab[`${flight.id}-outbound`] === 'cancellation' && (
-                          <div className="cancellation-tab">
-                            <div className="cancellation-empty-state">
-                              <div className="cancellation-icon">
-                                <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                  <circle cx="40" cy="12" r="3" fill="#999" />
-                                  <circle cx="68" cy="52" r="2" fill="#999" />
-                                  <circle cx="55" cy="18" r="2.5" fill="#999" />
-                                  <circle cx="16" cy="45" r="2" fill="#999" />
-                                  <rect x="28" y="28" width="24" height="32" rx="2" stroke="#666" strokeWidth="1.5" fill="none" />
-                                  <path d="M32 34 L36 34 M32 38 L38 38 M32 42 L36 42" stroke="#666" strokeWidth="1.2" strokeLinecap="round" />
-                                  <text x="34" y="36" fontSize="8" fill="#666" fontWeight="600">₹</text>
-                                  <circle cx="40" cy="54" r="8" fill="white" stroke="#666" strokeWidth="1.5" />
-                                  <path d="M40 50 L40 54 M40 58 L40 58" stroke="#e74c3c" strokeWidth="2" strokeLinecap="round" />
-                                  <circle cx="40" cy="58" r="1" fill="#e74c3c" />
-                                </svg>
-                              </div>
-                              <p className="cancellation-message">Sorry! Fare rules could not be<br />fetched at the moment.</p>
-                            </div>
-                          </div>
-                        )}
                       </div>
                     </div>
                   )}
+                    </div>
+                    
+                    {/* Return Flight Card Wrapper */}
+                    <div className="round-trip-card-wrapper">
+                    {/* Return Flight Card */}
+                    <div className="round-trip-mini-card">
+                      <div className="mini-card-top-row">
+                        <div className="mini-airline-info">
+                          <img src={flight.returnFlight.airlineLogo} alt={flight.returnFlight.airline} className="mini-airline-logo" />
+                          <div className="mini-airline-details">
+                            <div className="mini-airline-name">{flight.returnFlight.airline}</div>
+                            <div className="mini-flight-code">{flight.returnFlight.flightCode}</div>
+                          </div>
+                        </div>
+                        <input 
+                          type="radio" 
+                          name="return-flight" 
+                          value={`${flight.id}-return`} 
+                          className="mini-radio-top" 
+                          checked={selectedReturn?.id === flight.id}
+                          onChange={() => handleReturnSelect(flight)}
+                        />
+                        <div className="mini-price-section">
+                          <div className="mini-price">{flight.returnFlight.price}</div>
+                        </div>
+                      </div>
+                      
+                      <div className="mini-card-main-row">
+                        <div className="mini-departure-section">
+                          <div className="mini-time">{flight.returnFlight.departureTime}</div>
+                          <div className="mini-date">Wed, 15-10-2025</div>
+                          <div className="mini-city">{flight.arrivalCity || flight.returnFlight.departureLocation}</div>
+                        </div>
+                        
+                        <div className="mini-duration-section">
+                          <div className="mini-duration">{flight.returnFlight.duration}</div>
+                          <div className="mini-flight-line">
+                            <div className="mini-line"></div>
+                          </div>
+                          <div className="mini-stops-info">{flight.returnFlight.stops}</div>
+                        </div>
+                        
+                        <div className="mini-arrival-section">
+                          <div className="mini-time">{flight.returnFlight.arrivalTime}</div>
+                          <div className="mini-date">Wed, 15-10-2025</div>
+                          <div className="mini-city">{flight.departureCity || flight.returnFlight.arrivalLocation}</div>
+                        </div>
+                      </div>
+                      
+                      <div className="mini-card-bottom-row">
+                        <div className="mini-seats-info">{flight.returnFlight.stops === "Non Stop" ? "32 Seats Available" : "670 Seats Available"}</div>
+                        <div className="mini-stop-details">{flight.returnFlight.stops === "Non Stop" ? "Non-stop" : `1 Stop`}</div>
+                      </div>
+                      
+                      <div className="mini-card-footer-btn">
+                        <button 
+                          className="mini-flight-details-btn"
+                          onClick={() => toggleFlightDetails(`${flight.id}-return`)}
+                        >
+                          {openFlightDetails[`${flight.id}-return`] ? 'Hide Details' : 'Flight Details'} →
+                        </button>
+                      </div>
+                    </div>
                   
                   {/* FLIGHT DETAILS DROPDOWN FOR RETURN */}
                   {openFlightDetails[`${flight.id}-return`] && (
@@ -1069,13 +1043,6 @@ function FlightResults() {
                         >
                           <FaSuitcase style={{marginRight: '6px', fontSize: '14px'}} />
                           BAGGAGE RULES
-                        </button>
-                        <button 
-                          className={`tab-btn ${activeTab[`${flight.id}-return`] === 'cancellation' ? 'active' : ''}`}
-                          onClick={() => handleTabChange(`${flight.id}-return`, 'cancellation')}
-                        >
-                          <FaLock style={{marginRight: '6px', fontSize: '14px'}} />
-                          CANCELLATION
                         </button>
                       </div>
 
@@ -1199,31 +1166,11 @@ function FlightResults() {
                             </div>
                           </div>
                         )}
-
-                        {activeTab[`${flight.id}-return`] === 'cancellation' && (
-                          <div className="cancellation-tab">
-                            <div className="cancellation-empty-state">
-                              <div className="cancellation-icon">
-                                <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                  <circle cx="40" cy="12" r="3" fill="#999" />
-                                  <circle cx="68" cy="52" r="2" fill="#999" />
-                                  <circle cx="55" cy="18" r="2.5" fill="#999" />
-                                  <circle cx="16" cy="45" r="2" fill="#999" />
-                                  <rect x="28" y="28" width="24" height="32" rx="2" stroke="#666" strokeWidth="1.5" fill="none" />
-                                  <path d="M32 34 L36 34 M32 38 L38 38 M32 42 L36 42" stroke="#666" strokeWidth="1.2" strokeLinecap="round" />
-                                  <text x="34" y="36" fontSize="8" fill="#666" fontWeight="600">₹</text>
-                                  <circle cx="40" cy="54" r="8" fill="white" stroke="#666" strokeWidth="1.5" />
-                                  <path d="M40 50 L40 54 M40 58 L40 58" stroke="#e74c3c" strokeWidth="2" strokeLinecap="round" />
-                                  <circle cx="40" cy="58" r="1" fill="#e74c3c" />
-                                </svg>
-                              </div>
-                              <p className="cancellation-message">Sorry! Fare rules could not be<br />fetched at the moment.</p>
-                            </div>
-                          </div>
-                        )}
                       </div>
                     </div>
                   )}
+                    </div>
+                  </div>
                   </>
                 ) : (
                   <div className="flight-card">
@@ -2058,24 +2005,38 @@ function FlightResults() {
             <div className="fare-modal-footer">
               <div className="fare-total-section">
                 <div className="fare-total-prices">
-                  <span className="fare-cut-price">
-                    ₹ {(() => {
-                      const departurePrices = { 'saver': 5315, 'flexi-plus': 10957, 'premium': 12850 };
-                      const returnPrices = { 'saver': 8465, 'flexi': 10275, 'super-saver': 11890 };
-                      const depPrice = departurePrices[selectedDepartureFare] || 0;
-                      const retPrice = returnPrices[selectedReturnFare] || 0;
-                      return (depPrice + retPrice).toLocaleString('en-IN');
-                    })()}
-                  </span>
                   <span className="fare-main-price">
                     ₹ {(() => {
-                      const departurePrices = { 'saver': 5315, 'flexi-plus': 10957, 'premium': 12850 };
-                      const returnPrices = { 'saver': 8465, 'flexi': 10275, 'super-saver': 11890 };
-                      const depPrice = departurePrices[selectedDepartureFare] || 0;
-                      const retPrice = returnPrices[selectedReturnFare] || 0;
+                      // Extract numeric values from price strings
+                      const parsePrice = (priceString) => {
+                        if (!priceString) return 0;
+                        return parseInt(priceString.replace(/[₹,\s]/g, '')) || 0;
+                      };
+                      
+                      // Define fare prices for each type
+                      const departureFarePrices = {
+                        'saver': parsePrice(selectedOutbound?.price),
+                        'flexi-plus': 10957,
+                        'premium': 12850
+                      };
+                      
+                      const returnFarePrices = {
+                        'saver': parsePrice(selectedReturn?.returnFlight?.price),
+                        'flexi': 10275,
+                        'super-saver': 11890
+                      };
+                      
+                      // If no fare selected, default to saver prices (initial state)
+                      const depPrice = selectedDepartureFare 
+                        ? departureFarePrices[selectedDepartureFare] 
+                        : departureFarePrices['saver'];
+                        
+                      const retPrice = selectedReturnFare 
+                        ? returnFarePrices[selectedReturnFare] 
+                        : returnFarePrices['saver'];
+                      
                       const total = depPrice + retPrice;
-                      const discount = Math.floor(Math.random() * (1500 - 500 + 1)) + 500;
-                      return (total - discount).toLocaleString('en-IN');
+                      return total.toLocaleString('en-IN');
                     })()}
                   </span>
                 </div>
