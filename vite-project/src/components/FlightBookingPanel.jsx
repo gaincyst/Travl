@@ -1660,17 +1660,23 @@ function FlightBookingPanel({ isOpen, onClose, flightData }) {
         const numChildren = flightData?.children || 0;
         const numInfants = flightData?.infants || 0;
         
-        // Price per passenger type (base fare)
-        const adultBaseFare = 4500;
-        const childBaseFare = Math.floor(adultBaseFare * 0.75); // 75% of adult fare
-        const infantBaseFare = Math.floor(adultBaseFare * 0.10); // 10% of adult fare
+        // Extract actual flight prices
+        let outboundPrice = 0;
+        let returnPrice = 0;
         
-        // Calculate total base fare
-        const totalBaseFare = (numAdults * adultBaseFare) + (numChildren * childBaseFare) + (numInfants * infantBaseFare);
+        if (flightData?.price) {
+          outboundPrice = parseInt(flightData.price.replace(/[^0-9]/g, ""));
+        }
         
-        // Taxes and fees (proportional to base fare)
-        const taxesPerAdult = 850;
-        const totalTaxes = Math.floor(((numAdults + numChildren * 0.75 + numInfants * 0.10) * taxesPerAdult));
+        if (flightData?.isRoundTrip && flightData?.returnFlight?.price) {
+          returnPrice = parseInt(flightData.returnFlight.price.replace(/[^0-9]/g, ""));
+        }
+        
+        // Total base fare from actual flight prices
+        const totalBaseFare = outboundPrice + returnPrice;
+        
+        // Taxes and fees (approximately 15-20% of base fare)
+        const totalTaxes = Math.floor(totalBaseFare * 0.18);
         
         // Build passenger label
         let passengerLabel = '';
@@ -1693,27 +1699,17 @@ function FlightBookingPanel({ isOpen, onClose, flightData }) {
                   <span className="fare-value">₹{totalBaseFare.toLocaleString('en-IN')}</span>
                 </div>
                 
-                {/* Show detailed breakdown if multiple passenger types */}
-                {(numAdults > 0 || numChildren > 0 || numInfants > 0) && (numChildren > 0 || numInfants > 0) && (
+                {/* Show detailed breakdown for round trip flights */}
+                {flightData?.isRoundTrip && outboundPrice > 0 && returnPrice > 0 && (
                   <div className="fare-breakdown-details">
-                    {numAdults > 0 && (
-                      <div className="fare-sub-row">
-                        <span className="fare-sub-label">• {numAdults} Adult{numAdults > 1 ? 's' : ''} @ ₹{adultBaseFare.toLocaleString('en-IN')}</span>
-                        <span className="fare-sub-value">₹{(numAdults * adultBaseFare).toLocaleString('en-IN')}</span>
-                      </div>
-                    )}
-                    {numChildren > 0 && (
-                      <div className="fare-sub-row">
-                        <span className="fare-sub-label">• {numChildren} Child{numChildren > 1 ? 'ren' : ''} @ ₹{childBaseFare.toLocaleString('en-IN')}</span>
-                        <span className="fare-sub-value">₹{(numChildren * childBaseFare).toLocaleString('en-IN')}</span>
-                      </div>
-                    )}
-                    {numInfants > 0 && (
-                      <div className="fare-sub-row">
-                        <span className="fare-sub-label">• {numInfants} Infant{numInfants > 1 ? 's' : ''} @ ₹{infantBaseFare.toLocaleString('en-IN')}</span>
-                        <span className="fare-sub-value">₹{(numInfants * infantBaseFare).toLocaleString('en-IN')}</span>
-                      </div>
-                    )}
+                    <div className="fare-sub-row">
+                      <span className="fare-sub-label">• Outbound Flight: {flightData.departureCity} → {flightData.arrivalCity}</span>
+                      <span className="fare-sub-value">₹{outboundPrice.toLocaleString('en-IN')}</span>
+                    </div>
+                    <div className="fare-sub-row">
+                      <span className="fare-sub-label">• Return Flight: {flightData.arrivalCity} → {flightData.departureCity}</span>
+                      <span className="fare-sub-value">₹{returnPrice.toLocaleString('en-IN')}</span>
+                    </div>
                   </div>
                 )}
                 

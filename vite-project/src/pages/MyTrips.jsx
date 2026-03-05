@@ -10,16 +10,18 @@ function MyTrips() {
   const [activeFilter, setActiveFilter] = useState("Upcoming");
   const [activeService, setActiveService] = useState("Flights");
   const [currentImg, setCurrentImg] = useState(0);
+  
+  // Search filter states
+  const [searchFromDate, setSearchFromDate] = useState("");
+  const [searchToDate, setSearchToDate] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
 
   // List of background images from mytrips folder
   const images = [
-    "/mytrips/trip1.jpeg",
-    "/mytrips/trip2.jpg",
-    "/mytrips/trip3.jpeg",
-    "/mytrips/trip4.jpeg",
-    "/mytrips/trip5.jpeg",
-    "/mytrips/trip6.jpg",
-    "/mytrips/trip7.jpeg"
+    
+   
+    "/mytrips/trip6.jpg"
+   
   ];
 
   // Sample booking data with different statuses
@@ -385,7 +387,7 @@ function MyTrips() {
   // Filter data based on active filter and activeService
   const getFilteredData = () => {
     // Show data for selected service
-    return bookingData.filter(
+    let filtered = bookingData.filter(
       booking => booking.service === activeService &&
         (
           (activeFilter === "Past" && booking.status === "SUCCESS") ||
@@ -394,6 +396,44 @@ function MyTrips() {
           (activeFilter === "Failed" && booking.status === "FAILED")
         )
     );
+
+    // Apply search filters
+    if (searchFromDate) {
+      filtered = filtered.filter(booking => {
+        // Extract date part before "at" and parse it
+        const dateStr = booking.date.split(" at ")[0];
+        const bookingDate = new Date(dateStr);
+        const fromDate = new Date(searchFromDate);
+        fromDate.setHours(0, 0, 0, 0);
+        bookingDate.setHours(0, 0, 0, 0);
+        return bookingDate >= fromDate;
+      });
+    }
+
+    if (searchToDate) {
+      filtered = filtered.filter(booking => {
+        // Extract date part before "at" and parse it
+        const dateStr = booking.date.split(" at ")[0];
+        const bookingDate = new Date(dateStr);
+        const toDate = new Date(searchToDate);
+        toDate.setHours(23, 59, 59, 999);
+        bookingDate.setHours(0, 0, 0, 0);
+        return bookingDate <= toDate;
+      });
+    }
+
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(booking => 
+        booking.txnId?.toLowerCase().includes(query) ||
+        booking.mobile?.includes(query) ||
+        booking.email?.toLowerCase().includes(query) ||
+        booking.ticketNo?.toLowerCase().includes(query) ||
+        booking.hotelName?.toLowerCase().includes(query)
+      );
+    }
+
+    return filtered;
   };
 
   const filteredData = getFilteredData();
@@ -465,6 +505,40 @@ function MyTrips() {
             >
               <FaHotel className="service-icon" />
               <span>Hotels</span>
+            </div>
+          </div>
+
+          {/* Search Filter Section */}
+          <div className="search-filter-section">
+            <div className="search-filter-group">
+              <label className="search-filter-label">From Date</label>
+              <input 
+                type="date" 
+                className="search-filter-input"
+                placeholder="YYYY-MM-DD"
+                value={searchFromDate}
+                onChange={(e) => setSearchFromDate(e.target.value)}
+              />
+            </div>
+            <div className="search-filter-group">
+              <label className="search-filter-label">To Date</label>
+              <input 
+                type="date" 
+                className="search-filter-input"
+                placeholder="YYYY-MM-DD"
+                value={searchToDate}
+                onChange={(e) => setSearchToDate(e.target.value)}
+              />
+            </div>
+            <div className="search-filter-group search-filter-wide">
+              <label className="search-filter-label">Search</label>
+              <input 
+                type="text" 
+                className="search-filter-input"
+                placeholder="Booking ID, Name..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
             </div>
           </div>
 

@@ -39,6 +39,7 @@ function FlightResults() {
   // Fare Modal State
   const [isFareModalOpen, setIsFareModalOpen] = useState(false);
   const [selectedFlightData, setSelectedFlightData] = useState(null);
+  const [selectedOnewayFare, setSelectedOnewayFare] = useState(null);
 
   // Round Trip Fare Modal State
   const [isRoundTripFareModalOpen, setIsRoundTripFareModalOpen] = useState(false);
@@ -210,14 +211,29 @@ function FlightResults() {
   const closeFareModal = () => {
     setIsFareModalOpen(false);
     setSelectedFlightData(null);
+    setSelectedOnewayFare(null);
     document.body.style.overflow = 'auto';
   };
 
   // Open Booking Panel
-  const openBookingPanel = (flight) => {
+  const openBookingPanel = (flight, fareType = null, farePrice = null) => {
+    // Parse price helper
+    const parsePrice = (priceString) => {
+      if (!priceString) return 0;
+      return parseInt(priceString.replace(/[₹,\s]/g, '')) || 0;
+    };
+    
+    // If fareType and farePrice are provided (from one-way modal), use them
+    let finalPrice = flight.price;
+    if (fareType && farePrice) {
+      finalPrice = `₹${farePrice.toLocaleString('en-IN')}`;
+    }
+    
     // Add passenger counts from searchData to flight data
     const flightWithTravellers = {
       ...flight,
+      price: finalPrice,
+      selectedFareType: fareType || 'saver',
       adults: searchData.adults || 1, // Default to 1 if not specified
       children: searchData.children || 0,
       infants: searchData.infants || 0
@@ -321,9 +337,43 @@ function FlightResults() {
 
   // Open Booking Panel from Round Trip Fare Modal
   const openBookingPanelFromRoundTrip = () => {
+    // Parse price helper
+    const parsePrice = (priceString) => {
+      if (!priceString) return 0;
+      return parseInt(priceString.replace(/[₹,\s]/g, '')) || 0;
+    };
+    
+    // Define fare prices for each type
+    const departureFarePrices = {
+      'saver': parsePrice(selectedOutbound?.price),
+      'flexi-plus': 10957,
+      'premium': 12850
+    };
+    
+    const returnFarePrices = {
+      'saver': parsePrice(selectedReturn?.returnFlight?.price),
+      'flexi': 10275,
+      'super-saver': 11890
+    };
+    
+    // Get selected fare prices
+    const selectedDeparturePrice = selectedDepartureFare 
+      ? departureFarePrices[selectedDepartureFare] 
+      : departureFarePrices['saver'];
+      
+    const selectedReturnPrice = selectedReturnFare 
+      ? returnFarePrices[selectedReturnFare] 
+      : returnFarePrices['saver'];
+    
     const combinedFlightData = {
       ...selectedOutbound,
-      returnFlight: selectedReturn.returnFlight,
+      price: `₹${selectedDeparturePrice.toLocaleString('en-IN')}`,
+      selectedFareType: selectedDepartureFare || 'saver',
+      returnFlight: {
+        ...selectedReturn.returnFlight,
+        price: `₹${selectedReturnPrice.toLocaleString('en-IN')}`,
+        selectedFareType: selectedReturnFare || 'saver'
+      },
       adults: searchData.adults || 1,
       children: searchData.children || 0,
       infants: searchData.infants || 0,
@@ -1448,8 +1498,16 @@ function FlightResults() {
             <div className="fare-modal-content">
               <div className="fare-cards-wrapper">
                 {/* Saver Fare */}
-                <div className="fare-card">
+                <div className="fare-card" onClick={() => setSelectedOnewayFare('saver')}>
                   <div className="fare-card-price">
+                    <input 
+                      type="radio" 
+                      name="oneway-fare" 
+                      value="saver"
+                      checked={selectedOnewayFare === 'saver'}
+                      onChange={() => setSelectedOnewayFare('saver')}
+                      className="fare-radio-btn"
+                    />
                     <span className="fare-price-amount">₹ 5,315</span>
                     <span className="fare-price-label">per adult</span>
                     <span className="fare-type">SAVER</span>
@@ -1496,12 +1554,20 @@ function FlightResults() {
                     <span>FLAT ₹ 292 OFF using MMTSUPER | FLAT 10% OFF on KOTAK Credit cards using KOTAKEMI.</span>
                   </div>
 
-                  <button className="fare-btn-book-single" onClick={() => openBookingPanel(selectedFlightData)}>BOOK NOW</button>
+                  <button className="fare-btn-book-single" onClick={() => openBookingPanel(selectedFlightData, 'saver', 5315)}>BOOK NOW</button>
                 </div>
 
                 {/* Indigo Upfront */}
-                <div className="fare-card">
+                <div className="fare-card" onClick={() => setSelectedOnewayFare('upfront')}>
                   <div className="fare-card-price">
+                    <input 
+                      type="radio" 
+                      name="oneway-fare" 
+                      value="upfront"
+                      checked={selectedOnewayFare === 'upfront'}
+                      onChange={() => setSelectedOnewayFare('upfront')}
+                      className="fare-radio-btn"
+                    />
                     <span className="fare-price-amount">₹ 8,465</span>
                     <span className="fare-price-label">per adult</span>
                     <span className="fare-type">INDIGO UPFRONT</span>
@@ -1548,12 +1614,20 @@ function FlightResults() {
                     <span>₹ 423 OFF using RUNWAYDEAL | 600 OFF on ICICI Credit Cards using MMTICIFEST</span>
                   </div>
 
-                  <button className="fare-btn-book-single" onClick={() => openBookingPanel(selectedFlightData)}>BOOK NOW</button>
+                  <button className="fare-btn-book-single" onClick={() => openBookingPanel(selectedFlightData, 'upfront', 8465)}>BOOK NOW</button>
                 </div>
 
                 {/* Indigo Upfront - Third Card */}
-                <div className="fare-card">
+                <div className="fare-card" onClick={() => setSelectedOnewayFare('upfront-plus')}>
                   <div className="fare-card-price">
+                    <input 
+                      type="radio" 
+                      name="oneway-fare" 
+                      value="upfront-plus"
+                      checked={selectedOnewayFare === 'upfront-plus'}
+                      onChange={() => setSelectedOnewayFare('upfront-plus')}
+                      className="fare-radio-btn"
+                    />
                     <span className="fare-price-amount">₹ 8,465</span>
                     <span className="fare-price-label">per adult</span>
                     <span className="fare-type">INDIGO UPFRONT</span>
@@ -1600,7 +1674,7 @@ function FlightResults() {
                     <span>₹ 423 OFF using RUNWAYDEAL | 600 OFF on ICICI Credit Cards using MMTICIFEST</span>
                   </div>
 
-                  <button className="fare-btn-book-single" onClick={() => openBookingPanel(selectedFlightData)}>BOOK NOW</button>
+                  <button className="fare-btn-book-single" onClick={() => openBookingPanel(selectedFlightData, 'upfront-plus', 8465)}>BOOK NOW</button>
                 </div>
               </div>
             </div>

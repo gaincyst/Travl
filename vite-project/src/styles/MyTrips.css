@@ -7,6 +7,19 @@
   font-family: "Poppins", sans-serif;
 }
 
+/* Override navbar colors for MyTrips page only - make headings black */
+.navbar.mytrips-navbar:not(.navbar-scrolled) .nav-link {
+  color: black !important;
+}
+
+.navbar.mytrips-navbar:not(.navbar-scrolled) .my-trips-title {
+  color: black !important;
+}
+
+.navbar.mytrips-navbar:not(.navbar-scrolled) .my-trips-subtitle {
+  color: black !important;
+}
+
 /* Background Slideshow Container */
 .mytrips-background {
   position: fixed;
@@ -69,16 +82,17 @@
   gap: 8px;
   font-size: 15px;
   color: #6b7280;
+  font-weight: 600;
 }
 
 .breadcrumb-link {
   cursor: pointer;
-  color: #6b7280;
+  color: #353535;
   transition: color 0.2s;
 }
 
 .breadcrumb-link:hover {
-  color: #371f1f;
+  color: #5a5858;
 }
 
 .breadcrumb-arrow {
@@ -164,6 +178,60 @@
 
 .service-icon {
   font-size: 18px;
+}
+
+/* Search Filter Section */
+.search-filter-section {
+  display: flex;
+  gap: 20px;
+  align-items: flex-end;
+  background: white;
+  border-radius: 8px;
+  padding: 20px 30px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+  margin-bottom: 15px;
+}
+
+.search-filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.search-filter-wide {
+  flex: 2;
+}
+
+.search-filter-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+  font-family: "Poppins", sans-serif;
+}
+
+.search-filter-input {
+  padding: 10px 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: "Poppins", sans-serif;
+  color: #1f2937;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.search-filter-input::placeholder {
+  color: #9ca3af;
+}
+
+.search-filter-input:focus {
+  border-color: #f63b3b;
+  box-shadow: 0 0 0 3px rgba(246, 59, 59, 0.1);
+}
+
+.search-filter-input[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
 }
 
 /* Booking Cards Container */
