@@ -7,14 +7,17 @@ import "../styles/MyTrips.css";
 
 function MyTrips() {
   const navigate = useNavigate();
-  const [activeFilter, setActiveFilter] = useState("Upcoming");
+  const [activeFilter, setActiveFilter] = useState("All");
   const [activeService, setActiveService] = useState("Flights");
   const [currentImg, setCurrentImg] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
   
   // Search filter states
   const [searchFromDate, setSearchFromDate] = useState("");
   const [searchToDate, setSearchToDate] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  
+  const ITEMS_PER_PAGE = 10;
 
   // List of background images from mytrips folder
   const images = [
@@ -29,146 +32,262 @@ function MyTrips() {
     // FLIGHTS SUCCESS - Goes to Past tab
     {
       id: 1,
-      date: "Jan 02, 2026 at 10:42",
-      date2: "Jan 02, 2026 at 16:12",
-      txnId: "TXA7C0995A8",
+      date: "02 Jan 2026",
+      time: "10:42 AM",
+      txnId: "TXA7C095",
+      passengerName: "Rajesh Kumar",
+      additionalPassengers: 0,
       mobile: "9876543211",
       email: "cs@enginify.in",
       status: "SUCCESS",
-      travelDate: "16-10-2025",
-      ticketNo: "FBB7CCQA",
-      amount: "₹ 106.68",
-      commission: "₹ 12.12",
+      travelDate: "16 Oct 2025",
+      travelTime: "06:30 AM",
+      origin: "Delhi",
+      destination: "Mumbai",
+      amount: "₹ 5,106.68",
       service: "Flights"
     },
     {
       id: 2,
-      date: "Dec 30, 2025 at 09:45",
-      date2: "Dec 30, 2025 at 15:15",
-      txnId: "TX811B8781A",
+      date: "30 Dec 2025",
+      time: "09:45 AM",
+      txnId: "TX811B87",
+      passengerName: "Priya Sharma",
+      additionalPassengers: 1,
       mobile: "9464349465",
       email: "enginifytech@gmail.com",
       status: "SUCCESS",
-      travelDate: "16-10-2025",
-      ticketNo: "FBB7CCQA",
-      amount: "₹ 106.68",
-      commission: "₹ 12.12",
+      travelDate: "16 Oct 2025",
+      travelTime: "09:15 AM",
+      origin: "Bangalore",
+      destination: "Chennai",
+      amount: "₹ 3,106.68",
       service: "Flights"
     },
     // Dummy Past entries (Flights)
     {
       id: 6,
-      date: "Feb 10, 2026 at 09:00",
-      date2: "Feb 10, 2026 at 17:00",
-      txnId: "TXP1234567A",
+      date: "10 Feb 2026",
+      time: "09:00 AM",
+      txnId: "TXP12345",
+      passengerName: "Amit Singh",
+      additionalPassengers: 2,
       mobile: "9000000001",
       email: "dummy1@domain.com",
       status: "SUCCESS",
-      travelDate: "10-02-2026",
-      ticketNo: "PST1DUMMY",
-      amount: "₹ 250.00",
-      commission: "₹ 15.00",
+      travelDate: "10 Feb 2026",
+      travelTime: "11:00 AM",
+      origin: "Mumbai",
+      destination: "Goa",
+      amount: "₹ 8,250.00",
       service: "Flights"
     },
     {
       id: 7,
-      date: "Feb 11, 2026 at 08:30",
-      date2: "Feb 11, 2026 at 16:30",
-      txnId: "TXP2345678B",
+      date: "11 Feb 2026",
+      time: "08:30 AM",
+      txnId: "TXP23456",
+      passengerName: "Sneha Patel",
+      additionalPassengers: 0,
       mobile: "9000000002",
       email: "dummy2@domain.com",
       status: "SUCCESS",
-      travelDate: "11-02-2026",
-      ticketNo: "PST2DUMMY",
-      amount: "₹ 320.00",
-      commission: "₹ 18.00",
+      travelDate: "11 Feb 2026",
+      travelTime: "02:45 PM",
+      origin: "Ahmedabad",
+      destination: "Delhi",
+      amount: "₹ 6,320.00",
       service: "Flights"
     },
     {
       id: 8,
-      date: "Feb 12, 2026 at 07:45",
-      date2: "Feb 12, 2026 at 15:45",
-      txnId: "TXP3456789C",
+      date: "12 Feb 2026",
+      time: "07:45 AM",
+      txnId: "TXP34567",
+      passengerName: "Vikram Reddy",
+      additionalPassengers: 3,
       mobile: "9000000003",
       email: "dummy3@domain.com",
       status: "SUCCESS",
-      travelDate: "12-02-2026",
-      ticketNo: "PST3DUMMY",
-      amount: "₹ 410.00",
-      commission: "₹ 20.00",
+      travelDate: "12 Feb 2026",
+      travelTime: "05:30 PM",
+      origin: "Hyderabad",
+      destination: "Kolkata",
+      amount: "₹ 12,410.00",
       service: "Flights"
     },
     {
       id: 9,
-      date: "Feb 13, 2026 at 10:15",
-      date2: "Feb 13, 2026 at 18:15",
-      txnId: "TXP4567890D",
+      date: "13 Feb 2026",
+      time: "10:15 AM",
+      txnId: "TXP45678",
+      passengerName: "Meera Joshi",
+      additionalPassengers: 1,
       mobile: "9000000004",
       email: "dummy4@domain.com",
       status: "SUCCESS",
-      travelDate: "13-02-2026",
-      ticketNo: "PST4DUMMY",
-      amount: "₹ 500.00",
-      commission: "₹ 22.00",
+      travelDate: "13 Feb 2026",
+      travelTime: "07:20 AM",
+      origin: "Pune",
+      destination: "Jaipur",
+      amount: "₹ 7,500.00",
       service: "Flights"
     },
     {
       id: 10,
-      date: "Feb 14, 2026 at 11:30",
-      date2: "Feb 14, 2026 at 19:30",
-      txnId: "TXP5678901E",
+      date: "14 Feb 2026",
+      time: "11:30 AM",
+      txnId: "TXP56789",
+      passengerName: "Arjun Mehta",
+      additionalPassengers: 0,
       mobile: "9000000005",
       email: "dummy5@domain.com",
       status: "SUCCESS",
-      travelDate: "14-02-2026",
-      ticketNo: "PST5DUMMY",
-      amount: "₹ 600.00",
-      commission: "₹ 25.00",
+      travelDate: "14 Feb 2026",
+      travelTime: "10:00 AM",
+      origin: "Chennai",
+      destination: "Bangalore",
+      amount: "₹ 4,600.00",
       service: "Flights"
     },
     // INITIATE - Goes to Upcoming tab (Flights)
     {
       id: 3,
-      date: "Jan 02, 2026 at 10:38",
-      date2: "Jan 02, 2026 at 16:08",
-      txnId: "TX20554A9B6",
+      date: "02 Jan 2026",
+      time: "10:38 AM",
+      txnId: "TX205549",
+      passengerName: "Karan Malhotra",
+      additionalPassengers: 2,
       mobile: "9876543210",
       email: "cs@enginify.in",
       status: "INITIATE",
-      travelDate: "16-10-2025",
-      ticketNo: "FBB7CCQA",
-      amount: "₹ 28398.00",
-      commission: "₹ 24.24",
+      travelDate: "25 Mar 2026",
+      travelTime: "08:45 AM",
+      origin: "Delhi",
+      destination: "Dubai",
+      amount: "₹ 28,398.00",
       service: "Flights"
     },
     // CANCELLED - Goes to Cancelled tab (Flights)
     {
       id: 4,
-      date: "Jan 05, 2026 at 14:22",
-      date2: "Jan 05, 2026 at 14:25",
-      txnId: "TXC45D8921C",
+      date: "05 Jan 2026",
+      time: "02:22 PM",
+      txnId: "TXC45D89",
+      passengerName: "Sanjay Gupta",
+      additionalPassengers: 0,
       mobile: "9123456789",
       email: "customer@example.com",
       status: "CANCELLED",
-      travelDate: "20-11-2025",
-      ticketNo: "FCC8DDQB",
-      amount: "₹ 5420.00",
-      commission: "₹ 18.50",
+      travelDate: "20 Nov 2025",
+      travelTime: "03:30 PM",
+      origin: "Mumbai",
+      destination: "Goa",
+      amount: "₹ 5,420.00",
       service: "Flights"
     },
     // FAILED - Goes to Failed tab (Flights)
     {
       id: 5,
-      date: "Jan 08, 2026 at 11:15",
-      date2: "Jan 08, 2026 at 11:18",
-      txnId: "TXF88E7654F",
+      date: "08 Jan 2026",
+      time: "11:15 AM",
+      txnId: "TXF88E76",
+      passengerName: "Deepa Nair",
+      additionalPassengers: 1,
       mobile: "9988776655",
       email: "user@domain.com",
       status: "FAILED",
-      travelDate: "25-12-2025",
-      ticketNo: "FDD9EERC",
-      amount: "₹ 12850.00",
-      commission: "₹ 32.10",
+      travelDate: "25 Dec 2025",
+      travelTime: "06:00 AM",
+      origin: "Kochi",
+      destination: "Bangalore",
+      amount: "₹ 12,850.00",
+      service: "Flights"
+    },
+    // Additional 5 dummy flight entries to make 15 total
+    {
+      id: 11,
+      date: "15 Feb 2026",
+      time: "12:45 PM",
+      txnId: "TXP67890",
+      passengerName: "Ravi Shankar",
+      additionalPassengers: 0,
+      mobile: "9000000006",
+      email: "dummy6@domain.com",
+      status: "SUCCESS",
+      travelDate: "15 Feb 2026",
+      travelTime: "04:15 PM",
+      origin: "Kolkata",
+      destination: "Mumbai",
+      amount: "₹ 9,700.00",
+      service: "Flights"
+    },
+    {
+      id: 12,
+      date: "16 Feb 2026",
+      time: "02:00 PM",
+      txnId: "TXP78901",
+      passengerName: "Anjali Desai",
+      additionalPassengers: 2,
+      mobile: "9000000007",
+      email: "dummy7@domain.com",
+      status: "SUCCESS",
+      travelDate: "16 Feb 2026",
+      travelTime: "09:30 AM",
+      origin: "Jaipur",
+      destination: "Delhi",
+      amount: "₹ 5,800.00",
+      service: "Flights"
+    },
+    {
+      id: 13,
+      date: "17 Feb 2026",
+      time: "03:15 PM",
+      txnId: "TXP89012",
+      passengerName: "Rohit Verma",
+      additionalPassengers: 0,
+      mobile: "9000000008",
+      email: "dummy8@domain.com",
+      status: "SUCCESS",
+      travelDate: "17 Feb 2026",
+      travelTime: "12:00 PM",
+      origin: "Surat",
+      destination: "Bangalore",
+      amount: "₹ 8,900.00",
+      service: "Flights"
+    },
+    {
+      id: 14,
+      date: "18 Feb 2026",
+      time: "04:30 PM",
+      txnId: "TXP90123",
+      passengerName: "Pooja Iyer",
+      additionalPassengers: 1,
+      mobile: "9000000009",
+      email: "dummy9@domain.com",
+      status: "SUCCESS",
+      travelDate: "18 Feb 2026",
+      travelTime: "06:45 AM",
+      origin: "Chennai",
+      destination: "Hyderabad",
+      amount: "₹ 6,000.00",
+      service: "Flights"
+    },
+    {
+      id: 15,
+      date: "19 Feb 2026",
+      time: "05:45 PM",
+      txnId: "TXP01234",
+      passengerName: "Suresh Kapoor",
+      additionalPassengers: 3,
+      mobile: "9000000010",
+      email: "dummy10@domain.com",
+      status: "SUCCESS",
+      travelDate: "19 Feb 2026",
+      travelTime: "08:00 PM",
+      origin: "Ahmedabad",
+      destination: "Mumbai",
+      amount: "₹ 11,100.00",
       service: "Flights"
     },
     // BUS SUCCESS - Goes to Past tab (Dummy, same details)
@@ -381,7 +500,20 @@ function MyTrips() {
       amount: "₹ 8000.00",
       commission: "₹ 400.00",
       service: "Hotels"
-    }
+    },
+     {
+      id: 206,
+      date: "Aug 19, 2026",
+      txnId: "TXH4967890D",
+      hotelName: "Hotel ITC Rajputana",
+      city: "Kanpur",
+      checkIn: "19 Sept 2026",
+      checkOut: "15 Oct 2026",
+      status: "FAILED",
+      amount: "₹ 8780.00",
+      commission: "₹ 400.00",
+      service: "Hotels"
+    },
   ];
 
   // Filter data based on active filter and activeService
@@ -390,6 +522,7 @@ function MyTrips() {
     let filtered = bookingData.filter(
       booking => booking.service === activeService &&
         (
+          activeFilter === "All" ||
           (activeFilter === "Past" && booking.status === "SUCCESS") ||
           (activeFilter === "Upcoming" && booking.status === "INITIATE") ||
           (activeFilter === "Cancelled" && booking.status === "CANCELLED") ||
@@ -400,9 +533,8 @@ function MyTrips() {
     // Apply search filters
     if (searchFromDate) {
       filtered = filtered.filter(booking => {
-        // Extract date part before "at" and parse it
-        const dateStr = booking.date.split(" at ")[0];
-        const bookingDate = new Date(dateStr);
+        // Parse the date directly (format: "02 Jan 2026")
+        const bookingDate = new Date(booking.date);
         const fromDate = new Date(searchFromDate);
         fromDate.setHours(0, 0, 0, 0);
         bookingDate.setHours(0, 0, 0, 0);
@@ -412,9 +544,8 @@ function MyTrips() {
 
     if (searchToDate) {
       filtered = filtered.filter(booking => {
-        // Extract date part before "at" and parse it
-        const dateStr = booking.date.split(" at ")[0];
-        const bookingDate = new Date(dateStr);
+        // Parse the date directly (format: "02 Jan 2026")
+        const bookingDate = new Date(booking.date);
         const toDate = new Date(searchToDate);
         toDate.setHours(23, 59, 59, 999);
         bookingDate.setHours(0, 0, 0, 0);
@@ -429,14 +560,38 @@ function MyTrips() {
         booking.mobile?.includes(query) ||
         booking.email?.toLowerCase().includes(query) ||
         booking.ticketNo?.toLowerCase().includes(query) ||
-        booking.hotelName?.toLowerCase().includes(query)
+        booking.hotelName?.toLowerCase().includes(query) ||
+        booking.passengerName?.toLowerCase().includes(query)
       );
     }
+
+    // Sort by status: Upcoming -> Past -> Cancelled -> Failed
+    const statusOrder = {
+      'INITIATE': 1,
+      'SUCCESS': 2,
+      'CANCELLED': 3,
+      'FAILED': 4
+    };
+
+    filtered.sort((a, b) => {
+      return (statusOrder[a.status] || 5) - (statusOrder[b.status] || 5);
+    });
 
     return filtered;
   };
 
   const filteredData = getFilteredData();
+  
+  // Pagination calculations
+  const totalPages = Math.max(1, Math.ceil(filteredData.length / ITEMS_PER_PAGE));
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const paginatedData = filteredData.slice(startIndex, endIndex);
+  
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [activeFilter, activeService, searchFromDate, searchToDate, searchQuery]);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -444,6 +599,22 @@ function MyTrips() {
     }, 5000); // Change image every 5 seconds
     return () => clearInterval(timer);
   }, [images.length]);
+  
+  const handlePrevPage = (e) => {
+    e.preventDefault();
+    if (currentPage > 1) {
+      setCurrentPage(prev => prev - 1);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+  
+  const handleNextPage = (e) => {
+    e.preventDefault();
+    if (currentPage < totalPages) {
+      setCurrentPage(prev => prev + 1);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
 
   return (
     <>
@@ -471,7 +642,7 @@ function MyTrips() {
             </div>
             
             <div className="filter-pills">
-              {["Upcoming", "Past", "Cancelled", "Failed"].map((filter) => (
+              {["All", "Upcoming", "Past", "Cancelled", "Failed"].map((filter) => (
                 <button
                   key={filter}
                   className={`filter-pill ${activeFilter === filter ? "active" : ""}`}
@@ -555,6 +726,16 @@ function MyTrips() {
                     <th>Amount</th>
                     <th>Action</th>
                   </tr>
+                ) : activeService === "Flights" ? (
+                  <tr>
+                    <th>Date</th>
+                    <th>Booking Ref.</th>
+                    <th>Passenger Details</th>
+                    <th>Travelling Details</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
                 ) : (
                   <tr>
                     <th>DATE</th>
@@ -567,14 +748,14 @@ function MyTrips() {
                 )}
               </thead>
               <tbody>
-                {filteredData.length === 0 ? (
+                {paginatedData.length === 0 ? (
                   <tr>
-                    <td colSpan="6" className="no-bookings">
+                    <td colSpan={activeService === "Flights" ? "7" : "6"} className="no-bookings">
                       No bookings found
                     </td>
                   </tr>
                 ) : (
-                  filteredData.map((booking) => (
+                  paginatedData.map((booking) => (
                     <tr key={booking.id}>
                       {activeService === "Hotels" ? (
                         <>
@@ -603,6 +784,52 @@ function MyTrips() {
                                 <span className="action-separator">|</span>
                                 <button className="action-btn-print">Print Ticket</button>
                               </>
+                            )}
+                          </td>
+                        </>
+                      ) : activeService === "Flights" ? (
+                        <>
+                          <td className="date-column">
+                            <div className="booking-date">{booking.date}</div>
+                            <div className="booking-time">{booking.time}</div>
+                          </td>
+                          <td className="booking-ref-column">{booking.txnId}</td>
+                          <td className="passenger-details-column">
+                            <div className="passenger-name">
+                              {booking.passengerName}
+                              {booking.additionalPassengers > 0 && (
+                                <span className="additional-passengers">
+                                  {" "}+{booking.additionalPassengers}
+                                </span>
+                              )}
+                            </div>
+                            <div className="passenger-mobile">Mob No. - {booking.mobile}</div>
+                            <div className="passenger-email">E-Mail- {booking.email}</div>
+                          </td>
+                          <td className="travelling-details-column">
+                            <div className="travel-date">{booking.travelDate}</div>
+                            <div className="travel-time">{booking.travelTime}</div>
+                            <div>Origin- {booking.origin}</div>
+                            <div>Destination- {booking.destination}</div>
+                          </td>
+                          <td className="amount-column">
+                            <div className="amount-value">{booking.amount}</div>
+                          </td>
+                          <td className="status-column">
+                            <span className={`status-badge status-${booking.status.toLowerCase()}`}>
+                              <span className="status-dot"></span>
+                              {booking.status === "INITIATE" ? "Upcoming" : booking.status === "SUCCESS" ? "Past" : booking.status}
+                            </span>
+                          </td>
+                          <td className="action-column">
+                            {(booking.status === "SUCCESS" || booking.status === "INITIATE") && (
+                              <div className="action-buttons-group">
+                                <button className="action-btn-styled action-btn-print-styled">Print</button>
+                                <button className="action-btn-styled action-btn-cancel-styled">Cancel</button>
+                              </div>
+                            )}
+                            {(booking.status === "CANCELLED" || booking.status === "FAILED") && (
+                              <button className="action-btn-styled action-btn-refund-styled">Refund Status</button>
                             )}
                           </td>
                         </>
@@ -648,12 +875,31 @@ function MyTrips() {
             {filteredData.length > 0 && (
               <div className="pagination-section">
                 <div className="pagination-info">
-                  Showing 1 to {filteredData.length} of {filteredData.length} entries
+                  Showing {startIndex + 1} to {Math.min(endIndex, filteredData.length)} of {filteredData.length} entries
                 </div>
                 <div className="pagination-controls">
-                  <button className="pagination-btn prev-btn">←</button>
-                  <button className="pagination-btn active-page">1</button>
-                  <button className="pagination-btn next-btn">→</button>
+                  <button 
+                    className="pagination-btn prev-btn" 
+                    onClick={handlePrevPage}
+                    disabled={currentPage === 1}
+                    type="button"
+                  >
+                    ←
+                  </button>
+                  <button
+                    type="button"
+                    className="pagination-btn active-page"
+                  >
+                    {currentPage}
+                  </button>
+                  <button 
+                    className="pagination-btn next-btn"
+                    onClick={handleNextPage}
+                    disabled={currentPage === totalPages}
+                    type="button"
+                  >
+                    →
+                  </button>
                 </div>
               </div>
             )}

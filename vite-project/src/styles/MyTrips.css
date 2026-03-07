@@ -29,6 +29,7 @@
   height: 100%;
   z-index: 0;
   background-color: #f0f2f5;
+
 }
 
 /* Ensure footer stays above background with proper styling */
@@ -51,6 +52,8 @@
   background-repeat: no-repeat;
   opacity: 0;
   transition: opacity 1.5s ease-in-out;
+  filter: blur(6px);
+  -webkit-filter: blur(6px);
 }
 
 .mytrips-bg-image.active {
@@ -265,6 +268,12 @@
   letter-spacing: 0.5px;
 }
 
+.bookings-table thead tr th:nth-child(6),
+.bookings-table thead tr th:nth-child(7) {
+  padding-left: 80px;
+  
+}
+
 .bookings-table tbody tr {
   border-bottom: 1px solid #e5e7eb;
 }
@@ -283,6 +292,18 @@
 /* Date Column */
 .date-column {
   font-size: 13px;
+}
+
+.booking-date {
+  font-weight: 500;
+  color: #1f2937;
+  margin-bottom: 4px;
+}
+
+.booking-time {
+  color: #6b7280;
+  font-size: 12px;
+  font-weight: 700;
 }
 
 .date-column div:first-child {
@@ -327,6 +348,13 @@
   text-align: center;
 }
 
+.action-column .action-btn-print,
+.action-column .action-btn-cancel,
+.action-column .action-btn-refund {
+  display: inline-block;
+  vertical-align: middle;
+}
+
 .action-btn-print,
 .action-btn-cancel {
   background: transparent;
@@ -349,6 +377,215 @@
 .action-separator {
   margin: 0 8px;
   color: #d1d5db;
+}
+
+.action-separator-text {
+  margin: 0 8px;
+  color: #d1d5db;
+  display: inline;
+}
+
+.action-btn-refund {
+  background: transparent;
+  border: none;
+  color: #f63b3b;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0;
+  font-family: "Poppins", sans-serif;
+  transition: color 0.2s;
+}
+
+.action-btn-refund:hover {
+  color: #eb2525;
+  text-decoration: underline;
+}
+
+/* Flights Specific Columns */
+.booking-ref-column {
+  font-weight: 600;
+  font-size: 14px;
+  color: #1f2937;
+}
+
+/* Passenger Details Column */
+.passenger-details-column {
+  line-height: 1.6;
+}
+
+.passenger-name {
+  font-weight: 600;
+  font-size: 14px;
+  color: #1f2937;
+  margin-bottom: 6px;
+}
+
+.additional-passengers {
+  font-size: 11px;
+  vertical-align: super;
+  font-weight: 700;
+  color: #f63b3b;
+}
+
+.passenger-mobile {
+  font-size: 13px;
+  color: #6b7280;
+  margin-bottom: 4px;
+}
+
+.passenger-email {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+/* Travelling Details Column */
+.travelling-details-column {
+  line-height: 1.6;
+}
+
+.travel-date {
+  font-weight: 500;
+  color: #1f2937;
+  font-size: 13px;
+  margin-bottom: 2px;
+}
+
+.travel-time {
+  color: #7d7f81;
+  font-size: 12px;
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+
+.travelling-details-column div {
+  font-size: 13px;
+  color: #374151;
+  margin-bottom: 4px;
+}
+
+.travelling-details-column div:last-child {
+  margin-bottom: 0;
+}
+
+/* Amount Value Bold */
+.amount-value {
+  font-weight: 700;
+  font-size: 14px;
+  color: #1f2937;
+}
+
+/* Status Column */
+.status-column {
+  text-align: center;
+  
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: capitalize;
+  font-family: "Poppins", sans-serif;
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.status-badge.status-initiate {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.status-badge.status-initiate .status-dot {
+  background-color: #065f46;
+}
+
+.status-badge.status-success {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.status-badge.status-success .status-dot {
+  background-color: #1e40af;
+}
+
+.status-badge.status-cancelled {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.status-badge.status-cancelled .status-dot {
+  background-color: #92400e;
+}
+
+.status-badge.status-failed {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.status-badge.status-failed .status-dot {
+  background-color: #991b1b;
+}
+
+/* Styled Action Buttons for Flights */
+.action-buttons-group {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  align-items: center;
+}
+
+.action-btn-styled {
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: "Poppins", sans-serif;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.action-btn-print-styled {
+  background-color: #1e40af;
+  color: white;
+}
+
+.action-btn-print-styled:hover {
+  background-color: #1e3a8a;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(30, 64, 175, 0.3);
+}
+
+.action-btn-cancel-styled {
+  background-color: #dc2626;
+  color: white;
+}
+
+.action-btn-cancel-styled:hover {
+  background-color: #b91c1c;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(220, 38, 38, 0.3);
+}
+
+.action-btn-refund-styled {
+  background-color: #f59e0b;
+  color: white;
+}
+
+.action-btn-refund-styled:hover {
+  background-color: #d97706;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(245, 158, 11, 0.3);
 }
 
 /* No Bookings Message */
@@ -405,6 +642,12 @@
 .pagination-btn.prev-btn,
 .pagination-btn.next-btn {
   font-weight: 600;
+}
+
+.pagination-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
 }
 
 /* Responsive Design for Table */
