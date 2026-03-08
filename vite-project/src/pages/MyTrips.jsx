@@ -29,7 +29,7 @@ function MyTrips() {
 
   // Sample booking data with different statuses
   const bookingData = [
-    // FLIGHTS SUCCESS - Goes to Past tab
+    // FLIGHTS SUCCESS - Goes to Confirmed tab
     {
       id: 1,
       date: "02 Jan 2026",
@@ -64,7 +64,7 @@ function MyTrips() {
       amount: "₹ 3,106.68",
       service: "Flights"
     },
-    // Dummy Past entries (Flights)
+    // Dummy Confirmed entries (Flights)
     {
       id: 6,
       date: "10 Feb 2026",
@@ -290,228 +290,300 @@ function MyTrips() {
       amount: "₹ 11,100.00",
       service: "Flights"
     },
-    // BUS SUCCESS - Goes to Past tab (Dummy, same details)
+    // BUS SUCCESS - Goes to Confirmed tab
     {
       id: 101,
-      date: "Jan 02, 2026 at 10:42",
-      date2: "Jan 02, 2026 at 16:12",
-      txnId: "TXA7C0995A8",
+      date: "02 Jan 2026",
+      time: "10:42 AM",
+      txnId: "BXA7C095",
+      passengerName: "Anita Desai",
+      additionalPassengers: 1,
       mobile: "9876543211",
       email: "cs@enginify.in",
       status: "SUCCESS",
-      travelDate: "16-10-2025",
-      ticketNo: "FBB7CCQA",
-      amount: "₹ 106.68",
-      commission: "₹ 12.12",
+      travelDate: "16 Oct 2025",
+      travelTime: "06:30 AM",
+      origin: "Delhi",
+      destination: "Jaipur",
+      amount: "₹ 1,500.68",
       service: "Buses"
     },
     {
       id: 102,
-      date: "Dec 30, 2025 at 09:45",
-      date2: "Dec 30, 2025 at 15:15",
-      txnId: "TX811B8781A",
+      date: "30 Dec 2025",
+      time: "09:45 AM",
+      txnId: "BX811B87",
+      passengerName: "Ramesh Gupta",
+      additionalPassengers: 0,
       mobile: "9464349465",
       email: "enginifytech@gmail.com",
       status: "SUCCESS",
-      travelDate: "16-10-2025",
-      ticketNo: "FBB7CCQA",
-      amount: "₹ 106.68",
-      commission: "₹ 12.12",
+      travelDate: "16 Oct 2025",
+      travelTime: "09:15 PM",
+      origin: "Mumbai",
+      destination: "Pune",
+      amount: "₹ 850.00",
       service: "Buses"
     },
-    // Dummy Past entries (Buses)
+    // Dummy Confirmed entries (Buses)
     {
       id: 106,
-      date: "Feb 10, 2026 at 09:00",
-      date2: "Feb 10, 2026 at 17:00",
-      txnId: "TXP1234567A",
+      date: "10 Feb 2026",
+      time: "09:00 AM",
+      txnId: "BXP12345",
+      passengerName: "Kavita Sharma",
+      additionalPassengers: 2,
       mobile: "9000000001",
       email: "dummy1@domain.com",
       status: "SUCCESS",
-      travelDate: "10-02-2026",
-      ticketNo: "PST1DUMMY",
-      amount: "₹ 250.00",
-      commission: "₹ 15.00",
+      travelDate: "10 Feb 2026",
+      travelTime: "11:00 PM",
+      origin: "Bangalore",
+      destination: "Hyderabad",
+      amount: "₹ 2,250.00",
       service: "Buses"
     },
     {
       id: 107,
-      date: "Feb 11, 2026 at 08:30",
-      date2: "Feb 11, 2026 at 16:30",
-      txnId: "TXP2345678B",
+      date: "11 Feb 2026",
+      time: "08:30 AM",
+      txnId: "BXP23456",
+      passengerName: "Sunil Yadav",
+      additionalPassengers: 0,
       mobile: "9000000002",
       email: "dummy2@domain.com",
       status: "SUCCESS",
-      travelDate: "11-02-2026",
-      ticketNo: "PST2DUMMY",
-      amount: "₹ 320.00",
-      commission: "₹ 18.00",
+      travelDate: "11 Feb 2026",
+      travelTime: "02:45 AM",
+      origin: "Ahmedabad",
+      destination: "Udaipur",
+      amount: "₹ 1,320.00",
       service: "Buses"
     },
     {
       id: 108,
-      date: "Feb 12, 2026 at 07:45",
-      date2: "Feb 12, 2026 at 15:45",
-      txnId: "TXP3456789C",
+      date: "12 Feb 2026",
+      time: "07:45 AM",
+      txnId: "BXP34567",
+      passengerName: "Neha Kapoor",
+      additionalPassengers: 1,
       mobile: "9000000003",
       email: "dummy3@domain.com",
       status: "SUCCESS",
-      travelDate: "12-02-2026",
-      ticketNo: "PST3DUMMY",
-      amount: "₹ 410.00",
-      commission: "₹ 20.00",
+      travelDate: "12 Feb 2026",
+      travelTime: "05:30 PM",
+      origin: "Chennai",
+      destination: "Coimbatore",
+      amount: "₹ 1,410.00",
       service: "Buses"
     },
     {
       id: 109,
-      date: "Feb 13, 2026 at 10:15",
-      date2: "Feb 13, 2026 at 18:15",
-      txnId: "TXP4567890D",
+      date: "13 Feb 2026",
+      time: "10:15 AM",
+      txnId: "BXP45678",
+      passengerName: "Manoj Singh",
+      additionalPassengers: 3,
       mobile: "9000000004",
       email: "dummy4@domain.com",
       status: "SUCCESS",
-      travelDate: "13-02-2026",
-      ticketNo: "PST4DUMMY",
-      amount: "₹ 500.00",
-      commission: "₹ 22.00",
+      travelDate: "13 Feb 2026",
+      travelTime: "07:20 AM",
+      origin: "Pune",
+      destination: "Goa",
+      amount: "₹ 3,500.00",
       service: "Buses"
     },
     {
       id: 110,
-      date: "Feb 14, 2026 at 11:30",
-      date2: "Feb 14, 2026 at 19:30",
-      txnId: "TXP5678901E",
+      date: "14 Feb 2026",
+      time: "11:30 AM",
+      txnId: "BXP56789",
+      passengerName: "Priyanka Jain",
+      additionalPassengers: 0,
       mobile: "9000000005",
       email: "dummy5@domain.com",
       status: "SUCCESS",
-      travelDate: "14-02-2026",
-      ticketNo: "PST5DUMMY",
-      amount: "₹ 600.00",
-      commission: "₹ 25.00",
+      travelDate: "14 Feb 2026",
+      travelTime: "10:00 PM",
+      origin: "Jaipur",
+      destination: "Delhi",
+      amount: "₹ 900.00",
       service: "Buses"
     },
     // INITIATE - Goes to Upcoming tab (Buses)
     {
       id: 103,
-      date: "Jan 02, 2026 at 10:38",
-      date2: "Jan 02, 2026 at 16:08",
-      txnId: "TX20554A9B6",
+      date: "02 Jan 2026",
+      time: "10:38 AM",
+      txnId: "BX205549",
+      passengerName: "Vikas Mehta",
+      additionalPassengers: 2,
       mobile: "9876543210",
       email: "cs@enginify.in",
       status: "INITIATE",
-      travelDate: "16-10-2025",
-      ticketNo: "FBB7CCQA",
-      amount: "₹ 28398.00",
-      commission: "₹ 24.24",
+      travelDate: "25 Mar 2026",
+      travelTime: "08:45 PM",
+      origin: "Mumbai",
+      destination: "Shirdi",
+      amount: "₹ 2,398.00",
       service: "Buses"
     },
     // CANCELLED - Goes to Cancelled tab (Buses)
     {
       id: 104,
-      date: "Jan 05, 2026 at 14:22",
-      date2: "Jan 05, 2026 at 14:25",
-      txnId: "TXC45D8921C",
+      date: "05 Jan 2026",
+      time: "02:22 PM",
+      txnId: "BXC45D89",
+      passengerName: "Rakesh Verma",
+      additionalPassengers: 1,
       mobile: "9123456789",
       email: "customer@example.com",
       status: "CANCELLED",
-      travelDate: "20-11-2025",
-      ticketNo: "FCC8DDQB",
-      amount: "₹ 5420.00",
-      commission: "₹ 18.50",
+      travelDate: "20 Nov 2025",
+      travelTime: "03:30 AM",
+      origin: "Delhi",
+      destination: "Chandigarh",
+      amount: "₹ 1,420.00",
       service: "Buses"
     },
     // FAILED - Goes to Failed tab (Buses)
     {
       id: 105,
-      date: "Jan 08, 2026 at 11:15",
-      date2: "Jan 08, 2026 at 11:18",
-      txnId: "TXF88E7654F",
+      date: "08 Jan 2026",
+      time: "11:15 AM",
+      txnId: "BXF88E76",
+      passengerName: "Seema Nair",
+      additionalPassengers: 0,
       mobile: "9988776655",
       email: "user@domain.com",
       status: "FAILED",
-      travelDate: "25-12-2025",
-      ticketNo: "FDD9EERC",
-      amount: "₹ 12850.00",
-      commission: "₹ 32.10",
+      travelDate: "25 Dec 2025",
+      travelTime: "06:00 PM",
+      origin: "Kochi",
+      destination: "Trivandrum",
+      amount: "₹ 850.00",
       service: "Buses"
     },
     // HOTELS DUMMY DATA
     {
       id: 201,
-      date: "Jan 02, 2026",
-      txnId: "TX20554A9B6",
+      date: "02 Jan 2026",
+      time: "10:42 AM",
+      txnId: "HX205549",
+      guestName: "Rajiv Malhotra",
+      additionalGuests: 1,
+      mobile: "9876543211",
+      email: "rajiv@example.com",
       hotelName: "Hotel Taj Palace",
       city: "Jaipur",
       checkIn: "16 Oct 2025",
       checkOut: "18 Oct 2025",
+      rooms: 2,
+      roomType: "Deluxe",
+      days: 2,
       status: "SUCCESS",
-      amount: "₹ 28398.00",
-      commission: "₹ 24.24",
+      amount: "₹ 28,398.00",
       service: "Hotels"
     },
     {
       id: 202,
-      date: "Feb 10, 2026",
-      txnId: "TXH1234567A",
+      date: "10 Feb 2026",
+      time: "09:30 AM",
+      txnId: "HXH12345",
+      guestName: "Ananya Sharma",
+      additionalGuests: 2,
+      mobile: "9123456789",
+      email: "ananya@example.com",
       hotelName: "Hotel Grand Hyatt",
       city: "Mumbai",
       checkIn: "10 Feb 2026",
       checkOut: "12 Feb 2026",
+      rooms: 1,
+      roomType: "Suite",
+      days: 2,
       status: "SUCCESS",
-      amount: "₹ 12000.00",
-      commission: "₹ 600.00",
+      amount: "₹ 12,000.00",
       service: "Hotels"
     },
     {
       id: 203,
-      date: "Feb 11, 2026",
-      txnId: "TXH2345678B",
+      date: "11 Feb 2026",
+      time: "02:15 PM",
+      txnId: "HXH23456",
+      guestName: "Vikram Singh",
+      additionalGuests: 0,
+      mobile: "9988776655",
+      email: "vikram@example.com",
       hotelName: "Hotel Oberoi",
       city: "Delhi",
       checkIn: "11 Feb 2026",
       checkOut: "13 Feb 2026",
+      rooms: 1,
+      roomType: "Executive",
+      days: 2,
       status: "INITIATE",
-      amount: "₹ 15000.00",
-      commission: "₹ 750.00",
+      amount: "₹ 15,000.00",
       service: "Hotels"
     },
     {
       id: 204,
-      date: "Feb 12, 2026",
-      txnId: "TXH3456789C",
+      date: "12 Feb 2026",
+      time: "11:20 AM",
+      txnId: "HXH34567",
+      guestName: "Priya Reddy",
+      additionalGuests: 3,
+      mobile: "9765432100",
+      email: "priya@example.com",
       hotelName: "Hotel Leela Palace",
       city: "Bangalore",
       checkIn: "12 Feb 2026",
       checkOut: "14 Feb 2026",
+      rooms: 2,
+      roomType: "Prime",
+      days: 2,
       status: "CANCELLED",
-      amount: "₹ 9000.00",
-      commission: "₹ 450.00",
+      amount: "₹ 9,000.00",
       service: "Hotels"
     },
     {
       id: 205,
-      date: "Feb 13, 2026",
-      txnId: "TXH4567890D",
+      date: "13 Feb 2026",
+      time: "03:45 PM",
+      txnId: "HXH45678",
+      guestName: "Arjun Kapoor",
+      additionalGuests: 1,
+      mobile: "9876501234",
+      email: "arjun@example.com",
       hotelName: "Hotel ITC Rajputana",
       city: "Jaipur",
       checkIn: "13 Feb 2026",
       checkOut: "15 Feb 2026",
+      rooms: 1,
+      roomType: "Standard",
+      days: 2,
       status: "FAILED",
-      amount: "₹ 8000.00",
-      commission: "₹ 400.00",
+      amount: "₹ 8,000.00",
       service: "Hotels"
     },
      {
       id: 206,
-      date: "Aug 19, 2026",
-      txnId: "TXH4967890D",
+      date: "19 Aug 2026",
+      time: "10:00 AM",
+      txnId: "HXH49678",
+      guestName: "Kavita Verma",
+      additionalGuests: 0,
+      mobile: "9123405678",
+      email: "kavita@example.com",
       hotelName: "Hotel ITC Rajputana",
       city: "Kanpur",
       checkIn: "19 Sept 2026",
       checkOut: "15 Oct 2026",
+      rooms: 3,
+      roomType: "Deluxe",
+      days: 26,
       status: "FAILED",
-      amount: "₹ 8780.00",
-      commission: "₹ 400.00",
+      amount: "₹ 8,780.00",
       service: "Hotels"
     },
   ];
@@ -523,7 +595,7 @@ function MyTrips() {
       booking => booking.service === activeService &&
         (
           activeFilter === "All" ||
-          (activeFilter === "Past" && booking.status === "SUCCESS") ||
+          (activeFilter === "Confirmed" && booking.status === "SUCCESS") ||
           (activeFilter === "Upcoming" && booking.status === "INITIATE") ||
           (activeFilter === "Cancelled" && booking.status === "CANCELLED") ||
           (activeFilter === "Failed" && booking.status === "FAILED")
@@ -561,11 +633,12 @@ function MyTrips() {
         booking.email?.toLowerCase().includes(query) ||
         booking.ticketNo?.toLowerCase().includes(query) ||
         booking.hotelName?.toLowerCase().includes(query) ||
-        booking.passengerName?.toLowerCase().includes(query)
+        booking.passengerName?.toLowerCase().includes(query) ||
+        booking.guestName?.toLowerCase().includes(query)
       );
     }
 
-    // Sort by status: Upcoming -> Past -> Cancelled -> Failed
+    // Sort by status: Upcoming -> Confirmed -> Cancelled -> Failed
     const statusOrder = {
       'INITIATE': 1,
       'SUCCESS': 2,
@@ -642,7 +715,7 @@ function MyTrips() {
             </div>
             
             <div className="filter-pills">
-              {["All", "Upcoming", "Past", "Cancelled", "Failed"].map((filter) => (
+              {["All", "Upcoming", "Confirmed", "Cancelled", "Failed"].map((filter) => (
                 <button
                   key={filter}
                   className={`filter-pill ${activeFilter === filter ? "active" : ""}`}
@@ -720,13 +793,14 @@ function MyTrips() {
                 {activeService === "Hotels" ? (
                   <tr>
                     <th>Date</th>
-                    <th>User ID</th>
+                    <th>Booking Ref.</th>
+                    <th>Guest Details</th>
                     <th>Hotel Details</th>
-                    <th>Check-in Date / Check-out Date</th>
                     <th>Amount</th>
+                    <th>Status</th>
                     <th>Action</th>
                   </tr>
-                ) : activeService === "Flights" ? (
+                ) : (activeService === "Flights" || activeService === "Buses") ? (
                   <tr>
                     <th>Date</th>
                     <th>Booking Ref.</th>
@@ -750,7 +824,7 @@ function MyTrips() {
               <tbody>
                 {paginatedData.length === 0 ? (
                   <tr>
-                    <td colSpan={activeService === "Flights" ? "7" : "6"} className="no-bookings">
+                    <td colSpan="7" className="no-bookings">
                       No bookings found
                     </td>
                   </tr>
@@ -760,34 +834,51 @@ function MyTrips() {
                       {activeService === "Hotels" ? (
                         <>
                           <td className="date-column">
-                            <div>{booking.date}</div>
+                            <div className="booking-date">{booking.date}</div>
+                            <div className="booking-time">{booking.time}</div>
                           </td>
-                          <td className="txn-column">{booking.txnId}</td>
+                          <td className="booking-ref-column">{booking.txnId}</td>
+                          <td className="guest-details-column">
+                            <div className="guest-name">
+                              {booking.guestName}
+                              {booking.additionalGuests > 0 && (
+                                <span className="additional-passengers">
+                                  {" "}+{booking.additionalGuests}
+                                </span>
+                              )}
+                            </div>
+                            <div className="guest-mobile">Mob No. - {booking.mobile}</div>
+                            <div className="guest-email">E-Mail- {booking.email}</div>
+                          </td>
                           <td className="hotel-details-column">
-                            <div>{booking.hotelName}, {booking.city}</div>
-                          </td>
-                          <td className="checkinout-column">
-                            <div>Check-in: {booking.checkIn}</div>
-                            <div>Check-out: {booking.checkOut}</div>
+                            <div className="hotel-name">{booking.hotelName}, {booking.city}</div>
+                            <div>Rooms - {booking.rooms}, {booking.roomType}</div>
+                            <div>Check-In - {booking.checkIn}</div>
+                            <div>Check-Out - {booking.checkOut}</div>
+                            <div>{booking.days === 1 ? 'Day' : 'Days'} - {booking.days}</div>
                           </td>
                           <td className="amount-column">
-                            <div>Amount: {booking.amount}</div>
-                            <div>Commission: {booking.commission}</div>
+                            <div className="amount-value">{booking.amount}</div>
+                          </td>
+                          <td className="status-column">
+                            <span className={`status-badge status-${booking.status.toLowerCase()}`}>
+                              <span className="status-dot"></span>
+                              {booking.status === "INITIATE" ? "Upcoming" : booking.status === "SUCCESS" ? "Confirmed" : booking.status}
+                            </span>
                           </td>
                           <td className="action-column">
-                            {booking.status === "SUCCESS" && (
-                              <button className="action-btn-print">Print Ticket</button>
+                            {(booking.status === "SUCCESS" || booking.status === "INITIATE") && (
+                              <div className="action-buttons-group">
+                                <button className="action-btn-styled action-btn-print-styled">Print</button>
+                                <button className="action-btn-styled action-btn-cancel-styled">Cancel</button>
+                              </div>
                             )}
-                            {booking.status === "INITIATE" && (
-                              <>
-                                <button className="action-btn-cancel">Cancel Ticket</button>
-                                <span className="action-separator">|</span>
-                                <button className="action-btn-print">Print Ticket</button>
-                              </>
+                            {(booking.status === "CANCELLED" || booking.status === "FAILED") && (
+                              <button className="action-btn-styled action-btn-refund-styled">Refund Status</button>
                             )}
                           </td>
                         </>
-                      ) : activeService === "Flights" ? (
+                      ) : (activeService === "Flights" || activeService === "Buses") ? (
                         <>
                           <td className="date-column">
                             <div className="booking-date">{booking.date}</div>
@@ -818,7 +909,7 @@ function MyTrips() {
                           <td className="status-column">
                             <span className={`status-badge status-${booking.status.toLowerCase()}`}>
                               <span className="status-dot"></span>
-                              {booking.status === "INITIATE" ? "Upcoming" : booking.status === "SUCCESS" ? "Past" : booking.status}
+                              {booking.status === "INITIATE" ? "Upcoming" : booking.status === "SUCCESS" ? "Confirmed" : booking.status}
                             </span>
                           </td>
                           <td className="action-column">

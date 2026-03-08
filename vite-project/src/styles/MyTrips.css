@@ -268,12 +268,21 @@
   letter-spacing: 0.5px;
 }
 
-.bookings-table thead tr th:nth-child(6),
 .bookings-table thead tr th:nth-child(7) {
   padding-left: 80px;
   
 }
 
+
+.bookings-table thead tr th:nth-child(6) {
+  padding-left: 60px;
+  
+}
+
+.bookings-table thead tr th:nth-child(1) {
+  padding-left: 40px;
+  
+}
 .bookings-table tbody tr {
   border-bottom: 1px solid #e5e7eb;
 }
@@ -355,8 +364,7 @@
   vertical-align: middle;
 }
 
-.action-btn-print,
-.action-btn-cancel {
+.action-btn-print {
   background: transparent;
   border: none;
   color: #f63b3b;
@@ -368,9 +376,25 @@
   transition: color 0.2s;
 }
 
-.action-btn-print:hover,
-.action-btn-cancel:hover {
+.action-btn-print:hover {
   color: #eb2525;
+  text-decoration: underline;
+}
+
+.action-btn-cancel {
+  background: transparent;
+  border: none;
+  color: #6b7280;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0;
+  font-family: "Poppins", sans-serif;
+  transition: color 0.2s;
+}
+
+.action-btn-cancel:hover {
+  color: #4b5563;
   text-decoration: underline;
 }
 
@@ -556,25 +580,25 @@
 }
 
 .action-btn-print-styled {
-  background-color: #1e40af;
-  color: white;
-}
-
-.action-btn-print-styled:hover {
-  background-color: #1e3a8a;
-  transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(30, 64, 175, 0.3);
-}
-
-.action-btn-cancel-styled {
   background-color: #dc2626;
   color: white;
 }
 
-.action-btn-cancel-styled:hover {
+.action-btn-print-styled:hover {
   background-color: #b91c1c;
   transform: translateY(-1px);
   box-shadow: 0 2px 4px rgba(220, 38, 38, 0.3);
+}
+
+.action-btn-cancel-styled {
+  background-color: #6b7280;
+  color: white;
+}
+
+.action-btn-cancel-styled:hover {
+  background-color: #4b5563;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(107, 114, 128, 0.3);
 }
 
 .action-btn-refund-styled {
@@ -586,6 +610,57 @@
   background-color: #d97706;
   transform: translateY(-1px);
   box-shadow: 0 2px 4px rgba(245, 158, 11, 0.3);
+}
+
+/* Guest Details Column (Hotels) */
+.guest-details-column {
+  line-height: 1.6;
+}
+
+.guest-name {
+  font-weight: 600;
+  font-size: 14px;
+  color: #1f2937;
+  margin-bottom: 6px;
+}
+
+.checkin-checkout {
+  font-size: 13px;
+  color: #374151;
+  margin-bottom: 4px;
+}
+
+.guest-mobile {
+  font-size: 13px;
+  color: #6b7280;
+  margin-bottom: 4px;
+}
+
+.guest-email {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+/* Hotel Details Column */
+.hotel-details-column {
+  line-height: 1.6;
+}
+
+.hotel-name {
+  font-weight: 500;
+  font-size: 13px;
+  color: #1f2937;
+  margin-bottom: 6px;
+}
+
+.hotel-details-column div {
+  font-size: 13px;
+  color: #374151;
+  margin-bottom: 4px;
+}
+
+.hotel-details-column div:last-child {
+  margin-bottom: 0;
 }
 
 /* No Bookings Message */
