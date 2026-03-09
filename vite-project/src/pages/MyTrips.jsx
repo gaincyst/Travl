@@ -715,7 +715,7 @@ function MyTrips() {
             </div>
             
             <div className="filter-pills">
-              {["All", "Upcoming", "Confirmed", "Cancelled", "Failed"].map((filter) => (
+              {["All", "Upcoming", "Completed", "Cancelled", "Failed"].map((filter) => (
                 <button
                   key={filter}
                   className={`filter-pill ${activeFilter === filter ? "active" : ""}`}
@@ -727,62 +727,65 @@ function MyTrips() {
             </div>
           </div>
 
-          {/* Service Strip */}
-          <div className="service-strip">
-            <div
-              className={`service-option ${activeService === "Flights" ? "active" : ""}`}
-              onClick={() => setActiveService("Flights")}
-            >
-              <FaPlane className="service-icon" />
-              <span>Flights</span>
+          {/* Combined Service Strip and Search Filter Section */}
+          <div className="combined-section">
+            {/* Service Strip */}
+            <div className="service-strip">
+              <div
+                className={`service-option ${activeService === "Flights" ? "active" : ""}`}
+                onClick={() => setActiveService("Flights")}
+              >
+                <FaPlane className="service-icon" />
+                <span>Flights</span>
+              </div>
+              <div
+                className={`service-option ${activeService === "Buses" ? "active" : ""}`}
+                onClick={() => setActiveService("Buses")}
+              >
+                <FaBus className="service-icon" />
+                <span>Buses</span>
+              </div>
+              <div
+                className={`service-option ${activeService === "Hotels" ? "active" : ""}`}
+                onClick={() => setActiveService("Hotels")}
+              >
+                <FaHotel className="service-icon" />
+                <span>Hotels</span>
+              </div>
             </div>
-            <div
-              className={`service-option ${activeService === "Buses" ? "active" : ""}`}
-              onClick={() => setActiveService("Buses")}
-            >
-              <FaBus className="service-icon" />
-              <span>Buses</span>
-            </div>
-            <div
-              className={`service-option ${activeService === "Hotels" ? "active" : ""}`}
-              onClick={() => setActiveService("Hotels")}
-            >
-              <FaHotel className="service-icon" />
-              <span>Hotels</span>
-            </div>
-          </div>
 
-          {/* Search Filter Section */}
-          <div className="search-filter-section">
-            <div className="search-filter-group">
-              <label className="search-filter-label">From Date</label>
-              <input 
-                type="date" 
-                className="search-filter-input"
-                placeholder="YYYY-MM-DD"
-                value={searchFromDate}
-                onChange={(e) => setSearchFromDate(e.target.value)}
-              />
-            </div>
-            <div className="search-filter-group">
-              <label className="search-filter-label">To Date</label>
-              <input 
-                type="date" 
-                className="search-filter-input"
-                placeholder="YYYY-MM-DD"
-                value={searchToDate}
-                onChange={(e) => setSearchToDate(e.target.value)}
-              />
-            </div>
-            <div className="search-filter-group search-filter-wide">
-              <label className="search-filter-label">Search</label>
-              <input 
-                type="text" 
-                className="search-filter-input"
-                placeholder="Booking ID, Name..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
+            {/* Search Filter Section */}
+            <div className="search-filter-section">
+              <div className="search-filter-group">
+                <label className="search-filter-label">From Date</label>
+                <input 
+                  type="date" 
+                  className="search-filter-input"
+                  placeholder="YYYY-MM-DD"
+                  value={searchFromDate}
+                  onChange={(e) => setSearchFromDate(e.target.value)}
+                />
+              </div>
+              <div className="search-filter-group">
+                <label className="search-filter-label">To Date</label>
+                <input 
+                  type="date" 
+                  className="search-filter-input"
+                  placeholder="YYYY-MM-DD"
+                  value={searchToDate}
+                  onChange={(e) => setSearchToDate(e.target.value)}
+                />
+              </div>
+              <div className="search-filter-group search-filter-wide">
+                <label className="search-filter-label">Search</label>
+                <input 
+                  type="text" 
+                  className="search-filter-input"
+                  placeholder="Booking ID, Name..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </div>
             </div>
           </div>
 
@@ -863,7 +866,7 @@ function MyTrips() {
                           <td className="status-column">
                             <span className={`status-badge status-${booking.status.toLowerCase()}`}>
                               <span className="status-dot"></span>
-                              {booking.status === "INITIATE" ? "Upcoming" : booking.status === "SUCCESS" ? "Confirmed" : booking.status}
+                              {booking.status === "INITIATE" ? "Upcoming" : booking.status === "SUCCESS" ? "Completed" : booking.status}
                             </span>
                           </td>
                           <td className="action-column">
@@ -909,7 +912,7 @@ function MyTrips() {
                           <td className="status-column">
                             <span className={`status-badge status-${booking.status.toLowerCase()}`}>
                               <span className="status-dot"></span>
-                              {booking.status === "INITIATE" ? "Upcoming" : booking.status === "SUCCESS" ? "Confirmed" : booking.status}
+                              {booking.status === "INITIATE" ? "Upcoming" : booking.status === "SUCCESS" ? "Completed" : booking.status}
                             </span>
                           </td>
                           <td className="action-column">
