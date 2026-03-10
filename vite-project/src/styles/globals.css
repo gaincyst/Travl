@@ -2546,11 +2546,10 @@ body.dark-theme .site-footer::before {
 }
 
 .navbar-logo-img {
-  height: 170px; /* Adjust this to fit your navbar height */
+  height: 170px;
   width: auto;
   display: block;
   object-fit: contain;
-  /* If your logo is dark, this filter makes it white in Dark Mode */
   transition: filter 0.3s ease;
   margin-left: -50px;
   margin-top: 50px;

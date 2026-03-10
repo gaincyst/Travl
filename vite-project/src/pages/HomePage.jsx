@@ -55,8 +55,8 @@ function HomePage() {
 
         {/* Hero Text and SearchBox - Now z-indexed to stay on top */}
         <div className="hero-content">
-          <h1>Welcome to Travel2</h1>
-          <p>Book flights, hotels, and buses at the best prices</p>
+          <h1>Welcome to Voyago</h1>
+          <p>Your Gateway to Every Destination</p>
           <SearchBox activeService={searchBoxType} />
         </div>
 

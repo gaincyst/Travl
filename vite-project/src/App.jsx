@@ -5,6 +5,8 @@ import BusResults from "./components/BusResults";
 import HotelResults from "./components/HotelResults";
 import HotelBooking from "./pages/HotelBooking";
 import MyTrips from "./pages/MyTrips";
+import CancelPage from "./pages/CancelPage";
+import ProfilePage from "./pages/ProfilePage";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
@@ -46,6 +48,12 @@ function App() {
                 <MyTrips />
               </ProtectedRoute>
             } />
+            
+            {/* Cancel page - Blank page with logo */}
+            <Route path="/cancel" element={<CancelPage />} />
+            
+            {/* Profile page */}
+            <Route path="/profile" element={<ProfilePage />} />
           </Routes>
         </div>
       </div>

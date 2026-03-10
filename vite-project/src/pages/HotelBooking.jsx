@@ -195,8 +195,12 @@ const handleConfirmHotelBooking = () => {
 };
 
 // Handle cancel booking
-const handleCancelBooking = () => {
-  setShowConfirmationModal(false);
+const handleCancelBooking = (e) => {
+  if (e) e.stopPropagation();
+  window.alert('CANCEL BUTTON CLICKED!');
+  console.log('Cancel hotel booking clicked - navigating to /cancel');
+  alert('Cancel button clicked! Navigating now...');
+  navigate('/cancel', { replace: true });
 };
 
 // Handle success modal close and navigate to home
@@ -3293,7 +3297,7 @@ const handleSuccessClose = () => {
         {showConfirmationModal && (
           <>
             <div className="hotel-confirmation-modal-backdrop" onClick={handleCancelBooking}></div>
-            <div className="hotel-confirmation-modal">
+            <div className="hotel-confirmation-modal" onClick={(e) => e.stopPropagation()} style={{ zIndex: 10001, position: 'fixed' }}>
               <div className="hotel-confirmation-modal-icon">
                 <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <circle cx="40" cy="40" r="38" stroke="#9CA3AF" strokeWidth="4"/>
@@ -3302,10 +3306,20 @@ const handleSuccessClose = () => {
               </div>
               <h3 className="hotel-confirmation-modal-title">Want to book this hotel ?</h3>
               <div className="hotel-confirmation-modal-actions">
-                <button className="hotel-confirm-yes-btn" onClick={handleConfirmHotelBooking}>
+                <button 
+                  type="button" 
+                  className="hotel-confirm-yes-btn" 
+                  onClick={handleConfirmHotelBooking}
+                  style={{ cursor: 'pointer', pointerEvents: 'auto', zIndex: 10002 }}
+                >
                   Yes, I Want
                 </button>
-                <button className="hotel-confirm-cancel-btn" onClick={handleCancelBooking}>
+                <button 
+                  type="button" 
+                  className="hotel-confirm-cancel-btn" 
+                  onClick={handleCancelBooking}
+                  style={{ cursor: 'pointer', pointerEvents: 'auto', zIndex: 10002 }}
+                >
                   No, Cancel
                 </button>
               </div>

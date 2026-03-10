@@ -627,8 +627,12 @@ function FlightBookingPanel({ isOpen, onClose, flightData }) {
     }
   };
 
-  const handleCancelBooking = () => {
-    setShowConfirmationModal(false);
+  const handleCancelBooking = (e) => {
+    if (e) e.stopPropagation();
+    window.alert('CANCEL BUTTON CLICKED!');
+    console.log('Cancel booking clicked - navigating to /cancel');
+    alert('Cancel button clicked! Navigating now...');
+    navigate('/cancel', { replace: true });
   };
 
   // Baggage options
@@ -2053,7 +2057,7 @@ function FlightBookingPanel({ isOpen, onClose, flightData }) {
       {showConfirmationModal && (
         <>
           <div className="confirmation-modal-backdrop" onClick={handleCancelBooking}></div>
-          <div className="confirmation-modal">
+          <div className="confirmation-modal" onClick={(e) => e.stopPropagation()} style={{ zIndex: 10001, position: 'fixed' }}>
             <div className="confirmation-modal-icon">
               <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <circle cx="40" cy="40" r="38" stroke="#9CA3AF" strokeWidth="4"/>
@@ -2062,10 +2066,20 @@ function FlightBookingPanel({ isOpen, onClose, flightData }) {
             </div>
             <h3 className="confirmation-modal-title">Want to book Oneway trip flight ?</h3>
             <div className="confirmation-modal-buttons">
-              <button className="confirmation-btn-yes" onClick={handleConfirmBooking}>
+              <button 
+                type="button" 
+                className="confirmation-btn-yes" 
+                onClick={handleConfirmBooking}
+                style={{ cursor: 'pointer', pointerEvents: 'auto', zIndex: 10002 }}
+              >
                 Yes, I Want
               </button>
-              <button className="confirmation-btn-no" onClick={handleCancelBooking}>
+              <button 
+                type="button" 
+                className="confirmation-btn-no" 
+                onClick={handleCancelBooking}
+                style={{ cursor: 'pointer', pointerEvents: 'auto', zIndex: 10002 }}
+              >
                 No, Cancel
               </button>
             </div>

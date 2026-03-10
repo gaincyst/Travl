@@ -151,7 +151,7 @@ function MyTripsNavbar() {
             
             {showProfileDropdown && (
               <div className="profile-dropdown-menu">
-                <div className="profile-menu-item" onClick={() => { setShowProfileDropdown(false); }}>
+                <div className="profile-menu-item" onClick={() => { setShowProfileDropdown(false); navigate('/profile'); }}>
                   <FaUser className="profile-menu-icon" />
                   <span>My Profile</span>
                 </div>

@@ -873,7 +873,12 @@ function MyTrips() {
                             {(booking.status === "SUCCESS" || booking.status === "INITIATE") && (
                               <div className="action-buttons-group">
                                 <button className="action-btn-styled action-btn-print-styled">Print</button>
-                                <button className="action-btn-styled action-btn-cancel-styled">Cancel</button>
+                                <button 
+                                  className="action-btn-styled action-btn-cancel-styled"
+                                  onClick={() => navigate('/cancel', { state: { booking, service: activeService } })}
+                                >
+                                  Cancel
+                                </button>
                               </div>
                             )}
                             {(booking.status === "CANCELLED" || booking.status === "FAILED") && (
@@ -919,7 +924,12 @@ function MyTrips() {
                             {(booking.status === "SUCCESS" || booking.status === "INITIATE") && (
                               <div className="action-buttons-group">
                                 <button className="action-btn-styled action-btn-print-styled">Print</button>
-                                <button className="action-btn-styled action-btn-cancel-styled">Cancel</button>
+                                <button 
+                                  className="action-btn-styled action-btn-cancel-styled"
+                                  onClick={() => navigate('/cancel', { state: { booking, service: activeService } })}
+                                >
+                                  Cancel
+                                </button>
                               </div>
                             )}
                             {(booking.status === "CANCELLED" || booking.status === "FAILED") && (
@@ -952,7 +962,12 @@ function MyTrips() {
                             )}
                             {booking.status === "INITIATE" && (
                               <>
-                                <button className="action-btn-cancel">Cancel Ticket</button>
+                                <button 
+                                  className="action-btn-cancel"
+                                  onClick={() => navigate('/cancel', { state: { booking, service: activeService } })}
+                                >
+                                  Cancel Ticket
+                                </button>
                                 <span className="action-separator">|</span>
                                 <button className="action-btn-print">Print Ticket</button>
                               </>

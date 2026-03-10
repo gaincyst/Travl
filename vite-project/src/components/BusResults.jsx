@@ -308,8 +308,12 @@ function BusResults() {
   };
   
   // Handle cancel booking
-  const handleCancelBusBooking = () => {
-    setShowConfirmationModal(false);
+  const handleCancelBusBooking = (e) => {
+    if (e) e.stopPropagation();
+    window.alert('CANCEL BUTTON CLICKED!');
+    console.log('Cancel bus booking clicked - navigating to /cancel');
+    alert('Cancel button clicked! Navigating now...');
+    navigate('/cancel', { replace: true });
   };
 
   // Available offers
@@ -2700,7 +2704,7 @@ function BusResults() {
       {showConfirmationModal && (
         <>
           <div className="confirmation-modal-backdrop" onClick={handleCancelBusBooking}></div>
-          <div className="confirmation-modal">
+          <div className="confirmation-modal" onClick={(e) => e.stopPropagation()} style={{ zIndex: 10001, position: 'fixed' }}>
             <div className="confirmation-modal-icon">
               <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <circle cx="40" cy="40" r="38" stroke="#9CA3AF" strokeWidth="4"/>
@@ -2709,10 +2713,20 @@ function BusResults() {
             </div>
             <h3 className="confirmation-modal-title">Want to confirm your bus booking?</h3>
             <div className="confirmation-modal-buttons">
-              <button className="confirmation-btn-yes" onClick={handleConfirmBusBooking}>
+              <button 
+                type="button" 
+                className="confirmation-btn-yes" 
+                onClick={handleConfirmBusBooking}
+                style={{ cursor: 'pointer', pointerEvents: 'auto', zIndex: 10002 }}
+              >
                 Yes, Confirm
               </button>
-              <button className="confirmation-btn-no" onClick={handleCancelBusBooking}>
+              <button 
+                type="button" 
+                className="confirmation-btn-no" 
+                onClick={handleCancelBusBooking}
+                style={{ cursor: 'pointer', pointerEvents: 'auto', zIndex: 10002 }}
+              >
                 No, Cancel
               </button>
             </div>
