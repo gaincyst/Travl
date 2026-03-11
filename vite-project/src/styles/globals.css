@@ -2002,11 +2002,14 @@ background-color: #c01313;
 }
 
 .contact-item span {
-  color: #374151;
+  color: white;
+  font-weight: 600;
+  margin-top: 18px;
 }
 
 .contact-icon {
   color: #ef4444; /* Theme Accent Color */
+  margin-top: 18px;
 }
 
 .reply-note {
