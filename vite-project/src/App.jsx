@@ -7,6 +7,7 @@ import HotelBooking from "./pages/HotelBooking";
 import MyTrips from "./pages/MyTrips";
 import CancelPage from "./pages/CancelPage";
 import ProfilePage from "./pages/ProfilePage";
+import DashboardPage from "./pages/DashboardPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
@@ -54,6 +55,13 @@ function App() {
             
             {/* Profile page */}
             <Route path="/profile" element={<ProfilePage />} />
+            
+            {/* Dashboard page - Protected */}
+            <Route path="/dashboard" element={
+              <ProtectedRoute>
+                <DashboardPage />
+              </ProtectedRoute>
+            } />
           </Routes>
         </div>
       </div>

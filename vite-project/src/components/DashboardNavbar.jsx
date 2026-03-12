@@ -16,7 +16,7 @@ import {
 import AuthModal from "../components/AuthModal";
 import { isAuthenticated, getCurrentUser, logout } from "../utils/auth";
 
-function MyTripsNavbar() {
+function DashboardNavbar() {
   const navigate = useNavigate();
   const [scrolled, setScrolled] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
@@ -192,4 +192,4 @@ function MyTripsNavbar() {
   );
 }
 
-export default MyTripsNavbar;
+export default DashboardNavbar;

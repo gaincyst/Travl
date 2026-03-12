@@ -261,7 +261,7 @@ function Navbar() {
                   <FaHeart className="profile-menu-icon" />
                   <span>Wishlist</span>
                 </div>
-                <div className="profile-menu-item" onClick={() => { setShowProfileDropdown(false); }}>
+                <div className="profile-menu-item" onClick={() => { setShowProfileDropdown(false); navigate('/dashboard'); }}>
                   <FaTachometerAlt className="profile-menu-icon" />
                   <span>Dashboard</span>
                 </div>
