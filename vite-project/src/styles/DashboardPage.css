@@ -394,7 +394,7 @@
   background: white;
   border-radius: 16px;
   padding: 24px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.9);
   border: 1px solid rgba(255, 255, 255, 0.7);
   transition: all 0.4s ease;
   position: relative;
@@ -467,7 +467,7 @@
 }
 
 .service-header {
-  padding: 24px;
+  padding: 15px;
   color: white;
   display: flex;
   align-items: center;
@@ -514,14 +514,14 @@
 }
 
 .service-stats {
-  padding: 24px;
+  padding: 20px;
 }
 
 .stat-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 14px 0;
+  padding: 6px 0;
   border-bottom: 1px solid #f0f0f0;
   transition: all 0.3s ease;
 }
@@ -670,7 +670,7 @@
 }
 
 .activities-table td {
-  padding: 16px 15px;
+  padding: 10px 5px;
   border-bottom: 1px solid #f0f0f0;
   font-size: 13px;
   color: #1a1a1a;
@@ -701,10 +701,10 @@
 }
 
 .activity-icon {
-  font-size: 16px;
-  color: #e74c3c;
-  background: rgba(231, 76, 60, 0.1);
-  width: 32px;
+  font-size: 10px;
+  color: #636060;
+  
+  width: 17px;
   height: 32px;
   display: flex;
   align-items: center;
@@ -719,17 +719,22 @@
 }
 
 .passenger-info {
-  font-size: 12px;
-  color: #999;
+  font-size: 15px;
+  color: #2d3748;
   font-weight: 500;
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 4px;
 }
 
 .passenger-info sup {
-  background: #e74c3c;
-  color: white;
-  padding: 1px 4px;
-  border-radius: 3px;
+  color: #ff3b30;
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
   font-weight: 700;
+  font-size: 12px;
+  line-height: 1;
 }
 
 .amount {

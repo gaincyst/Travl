@@ -106,7 +106,7 @@
   background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('/hotels/h1.jpg');
   background-size: cover;
   background-position: center;
-  height: 300px;
+  height: 220px;
   display: flex;
   align-items: center;
   justify-content: center;

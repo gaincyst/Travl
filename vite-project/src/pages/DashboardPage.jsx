@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import DashboardNavbar from "../components/DashboardNavbar";
 import { getCurrentUser } from "../utils/auth";
-import { FaPlane, FaBus, FaHotel, FaCheckCircle, FaTimesCircle, FaClock, FaWallet, FaCreditCard, FaMoneyBill } from "react-icons/fa";
+import { FaPlane, FaBus, FaHotel, FaCheckCircle, FaTimesCircle, FaClock } from "react-icons/fa";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import "../styles/DashboardPage.css";
 
@@ -160,19 +160,6 @@ function DashboardPage() {
     }
   };
 
-  const getPaymentIcon = (payment) => {
-    switch(payment) {
-      case 'Online Mode':
-        return <FaMoneyBill />;
-      case 'Card':
-        return <FaCreditCard />;
-      case 'My Wallet':
-        return <FaWallet />;
-      default:
-        return null;
-    }
-  };
-
   const totals = getTotalStats();
   const successRate = ((totals.totalSuccessful / totals.totalBookings) * 100).toFixed(1);
   const failureRate = ((totals.totalFailed / totals.totalBookings) * 100).toFixed(1);
@@ -306,57 +293,6 @@ function DashboardPage() {
           </div>
         </div>
 
-        {/* Service Stats Section */}
-        <div className="service-stats-container">
-          {/* Flights Chart */}
-          <div className="service-chart-card">
-            <h3 className="service-chart-title">
-              <FaPlane /> Flights Booking Trend
-            </h3>
-            <ResponsiveContainer width="100%" height={250}>
-              <LineChart data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                <XAxis dataKey="month" stroke="#999" style={{ fontSize: '12px' }} />
-                <YAxis stroke="#999" style={{ fontSize: '12px' }} />
-                <Tooltip contentStyle={{ backgroundColor: '#fff', border: '1px solid #e74c3c', borderRadius: '8px', fontSize: '12px' }} />
-                <Line type="monotone" dataKey="flights" stroke="#e74c3c" strokeWidth={2.5} dot={{ fill: '#e74c3c', r: 4 }} />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-
-          {/* Hotels Chart */}
-          <div className="service-chart-card">
-            <h3 className="service-chart-title">
-              <FaHotel /> Hotels Booking Trend
-            </h3>
-            <ResponsiveContainer width="100%" height={250}>
-              <LineChart data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                <XAxis dataKey="month" stroke="#999" style={{ fontSize: '12px' }} />
-                <YAxis stroke="#999" style={{ fontSize: '12px' }} />
-                <Tooltip contentStyle={{ backgroundColor: '#fff', border: '1px solid #3498db', borderRadius: '8px', fontSize: '12px' }} />
-                <Line type="monotone" dataKey="hotels" stroke="#3498db" strokeWidth={2.5} dot={{ fill: '#3498db', r: 4 }} />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-
-          {/* Buses Chart */}
-          <div className="service-chart-card">
-            <h3 className="service-chart-title">
-              <FaBus /> Buses Booking Trend
-            </h3>
-            <ResponsiveContainer width="100%" height={250}>
-              <LineChart data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                <XAxis dataKey="month" stroke="#999" style={{ fontSize: '12px' }} />
-                <YAxis stroke="#999" style={{ fontSize: '12px' }} />
-                <Tooltip contentStyle={{ backgroundColor: '#fff', border: '1px solid #f39c12', borderRadius: '8px', fontSize: '12px' }} />
-                <Line type="monotone" dataKey="buses" stroke="#f39c12" strokeWidth={2.5} dot={{ fill: '#f39c12', r: 4 }} />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-
         {/* Service Stats Detail Cards */}
         <div className="service-stats-detail-container">
           <div className="service-stat-card">
@@ -461,20 +397,16 @@ function DashboardPage() {
             <table>
               <thead>
                 <tr>
-                  <th><input type="checkbox" /></th>
                   <th>Booking ID</th>
                   <th>Activity</th>
                   <th>Amount</th>
                   <th>Status</th>
                   <th>Date</th>
-                  <th>Payment Mode</th>
-                  <th></th>
                 </tr>
               </thead>
               <tbody>
                 {recentBookings.map((booking, index) => (
                   <tr key={index}>
-                    <td><input type="checkbox" /></td>
                     <td><span className="booking-id">{booking.id}</span></td>
                     <td>
                       <div className="activity-name">
@@ -483,7 +415,7 @@ function DashboardPage() {
                           {booking.service} 
                           <span className="passenger-info">
                             {booking.passenger}
-                            <sup>{booking.totalPassengers}</sup>
+                            <sup>+{booking.totalPassengers}</sup>
                           </span>
                         </span>
                       </div>
@@ -496,13 +428,6 @@ function DashboardPage() {
                       </span>
                     </td>
                     <td><span className="date">{booking.date}</span></td>
-                    <td>
-                      <div className="payment-mode">
-                        {getPaymentIcon(booking.payment)}
-                        <span>{booking.payment}</span>
-                      </div>
-                    </td>
-                    <td><span className="action-menu">•••</span></td>
                   </tr>
                 ))}
               </tbody>

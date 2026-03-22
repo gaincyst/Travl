@@ -10,32 +10,24 @@ import {
   FaMoon,
   FaSignOutAlt,
   FaUser,
-  FaHeart,
   FaTachometerAlt
 } from "react-icons/fa";
 import AuthModal from "../components/AuthModal";
-import { isAuthenticated, getCurrentUser, logout } from "../utils/auth";
+import { useAuth } from "../context/AuthContext";
 
 function MyTripsNavbar() {
   const navigate = useNavigate();
   const [scrolled, setScrolled] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [currentUser, setCurrentUser] = useState(null);
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
   const profileDropdownRef = useRef(null);
+  const { isLoggedIn, currentUser, refreshAuth, logoutUser } = useAuth();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 120);
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  useEffect(() => {
-    // Check authentication status
-    setIsLoggedIn(isAuthenticated());
-    setCurrentUser(getCurrentUser());
   }, []);
 
   useEffect(() => {
@@ -61,15 +53,13 @@ function MyTripsNavbar() {
   };
 
   const handleLogout = () => {
-    logout();
-    setIsLoggedIn(false);
-    setCurrentUser(null);
+    logoutUser();
     setShowProfileDropdown(false);
+    navigate('/');
   };
 
   const handleAuthSuccess = () => {
-    setIsLoggedIn(isAuthenticated());
-    setCurrentUser(getCurrentUser());
+    refreshAuth();
   };
 
   const getInitial = (name) => {
@@ -154,10 +144,6 @@ function MyTripsNavbar() {
                 <div className="profile-menu-item" onClick={() => { setShowProfileDropdown(false); navigate('/profile'); }}>
                   <FaUser className="profile-menu-icon" />
                   <span>My Profile</span>
-                </div>
-                <div className="profile-menu-item" onClick={() => { setShowProfileDropdown(false); }}>
-                  <FaHeart className="profile-menu-icon" />
-                  <span>Wishlist</span>
                 </div>
                 <div className="profile-menu-item" onClick={() => { setShowProfileDropdown(false); navigate('/dashboard'); }}>
                   <FaTachometerAlt className="profile-menu-icon" />

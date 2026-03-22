@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   FaPlane,
@@ -14,11 +14,14 @@ import {
   FaChevronRight,
   FaChevronDown,
   FaUser,
-  FaBed
+  FaBed,
+  FaSignOutAlt,
+  FaTachometerAlt
 } from "react-icons/fa";
 import HotelSearchHeader from "../components/HotelSearchHeader";
 import AuthModal from "../components/AuthModal";
 import Footer from "../components/Footer";
+import { useAuth } from "../context/AuthContext";
 import "../styles/HotelBooking.css";
 
 function HotelBooking() {
@@ -64,6 +67,9 @@ function HotelBooking() {
   // Confirmation and success modal states
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showProfileDropdown, setShowProfileDropdown] = useState(false);
+  const profileDropdownRef = useRef(null);
+  const { isLoggedIn, currentUser, refreshAuth, logoutUser } = useAuth();
 
   const totalAdults = bookingData.adults || 2;
   const totalChildren = bookingData.children || 0;
@@ -210,6 +216,44 @@ const handleSuccessClose = () => {
   navigate('/');
 };
 
+useEffect(() => {
+  const handleClickOutside = (event) => {
+    if (profileDropdownRef.current && !profileDropdownRef.current.contains(event.target)) {
+      setShowProfileDropdown(false);
+    }
+  };
+
+  if (showProfileDropdown) {
+    document.addEventListener("mousedown", handleClickOutside);
+  }
+
+  return () => {
+    document.removeEventListener("mousedown", handleClickOutside);
+  };
+}, [showProfileDropdown]);
+
+const handleNavbarLogout = () => {
+  logoutUser();
+  setShowProfileDropdown(false);
+  navigate("/");
+};
+
+const handleAuthSuccess = () => {
+  refreshAuth();
+};
+
+const getInitial = (name) => {
+  return name ? name.charAt(0).toUpperCase() : "U";
+};
+
+const getGradientStyle = (name) => {
+  const charCode = name ? name.charCodeAt(0) : 85;
+  const hue = (charCode * 137.508) % 360;
+  return {
+    background: `linear-gradient(135deg, hsl(${hue}, 70%, 50%), hsl(${(hue + 60) % 360}, 70%, 60%))`
+  };
+};
+
 
   return (
     <div className="hotel-booking-page">
@@ -249,10 +293,39 @@ const handleSuccessClose = () => {
               {darkMode ? <FaSun className="sun-icon" /> : <FaMoon className="moon-icon" />}
             </button>
 
-            <div className="login-signup" onClick={() => setShowAuthModal(true)} style={{ cursor: 'pointer' }}>
-              <FaUserCircle className="user-login-icon" />
-              <span>Login / Signup</span>
-            </div>
+            {isLoggedIn && currentUser ? (
+              <div className="profile-avatar-container" ref={profileDropdownRef}>
+                <div
+                  className="profile-avatar"
+                  style={getGradientStyle(currentUser.name)}
+                  onClick={() => setShowProfileDropdown(!showProfileDropdown)}
+                >
+                  {getInitial(currentUser.name)}
+                </div>
+
+                {showProfileDropdown && (
+                  <div className="profile-dropdown-menu">
+                    <div className="profile-menu-item" onClick={() => { setShowProfileDropdown(false); navigate('/profile'); }}>
+                      <FaUser className="profile-menu-icon" />
+                      <span>My Profile</span>
+                    </div>
+                    <div className="profile-menu-item" onClick={() => { setShowProfileDropdown(false); navigate('/dashboard'); }}>
+                      <FaTachometerAlt className="profile-menu-icon" />
+                      <span>Dashboard</span>
+                    </div>
+                    <div className="profile-menu-item logout-item" onClick={handleNavbarLogout}>
+                      <FaSignOutAlt className="profile-menu-icon" />
+                      <span>Logout</span>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="login-signup" onClick={() => setShowAuthModal(true)} style={{ cursor: "pointer" }}>
+                <FaUserCircle className="user-login-icon" />
+                <span>Login / Signup</span>
+              </div>
+            )}
           </div>
         </div>
       </nav>
@@ -3355,7 +3428,8 @@ const handleSuccessClose = () => {
         {showAuthModal && (
           <AuthModal 
             isOpen={showAuthModal} 
-            onClose={() => setShowAuthModal(false)} 
+            onClose={() => setShowAuthModal(false)}
+            onAuthSuccess={handleAuthSuccess}
           />
         )}
         

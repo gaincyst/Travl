@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import MyTripsNavbar from "../components/MyTripsNavbar";
-import { getCurrentUser, logout } from "../utils/auth";
-import { FaCamera, FaPhone, FaEnvelope, FaUser, FaUsers, FaSignOutAlt, FaKey, FaTrash, FaPencilAlt, FaEye, FaEyeSlash } from "react-icons/fa";
+import { logout } from "../utils/auth";
+import { useAuth } from "../context/AuthContext";
+import { FaCamera, FaPhone, FaEnvelope, FaUser, FaUsers, FaSignOutAlt, FaTrash, FaPencilAlt, FaEye, FaEyeSlash } from "react-icons/fa";
 import "../styles/ProfilePage.css";
 
 function ProfilePage() {
   const navigate = useNavigate();
-  const [currentUser, setCurrentUser] = useState(null);
+  const { currentUser } = useAuth();
   const [activeTab, setActiveTab] = useState("profile");
   const [phoneNumber, setPhoneNumber] = useState('');
-  const [email, setEmail] = useState('');
-  const [showEmailInput, setShowEmailInput] = useState(false);
+  const [isContactDetailsOpen, setIsContactDetailsOpen] = useState(false);
+  const [isDocumentsDetailsOpen, setIsDocumentsDetailsOpen] = useState(false);
+  const [isResetPasswordOpen, setIsResetPasswordOpen] = useState(false);
   const [showAddCoTraveller, setShowAddCoTraveller] = useState(false);
   const [selectedRelationship, setSelectedRelationship] = useState('');
   const [selectedCountryCode, setSelectedCountryCode] = useState({ code: '+91', flag: '🇮🇳', name: 'India' });
@@ -24,6 +26,8 @@ function ProfilePage() {
   const [newPassword, setNewPassword] = useState('');
   const [showOldPassword, setShowOldPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
+  const [isCoTravellerPassportOpen, setIsCoTravellerPassportOpen] = useState(false);
+  const [isCoTravellerContactOpen, setIsCoTravellerContactOpen] = useState(false);
   const [coTravellerForm, setCoTravellerForm] = useState({
     firstName: '',
     lastName: '',
@@ -95,10 +99,8 @@ function ProfilePage() {
   ];
 
   useEffect(() => {
-    const user = getCurrentUser();
-    setCurrentUser(user);
-    setPhoneNumber(user?.mobile || '9236614228');
-  }, []);
+    setPhoneNumber(currentUser?.mobile || '');
+  }, [currentUser]);
 
   const handleLogoutClick = () => {
     setShowLogoutModal(true);
@@ -246,11 +248,7 @@ function ProfilePage() {
       {/* Profile Hero Section */}
       <div className="profile-hero">
         <div className="profile-hero-content">
-          <div className="breadcrumb">
-            <span onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>Home</span>
-            <span className="breadcrumb-separator">›</span>
-            <span>My Account</span>
-          </div>
+         
           
           <div className="profile-hero-info">
             <div className="profile-avatar-large">
@@ -261,21 +259,18 @@ function ProfilePage() {
             <div className="profile-user-info">
               <h1 className="profile-username">{currentUser?.name || 'Guest'}</h1>
               <div className="profile-contact-quick">
-                <div className="contact-item">
-                  <FaPhone className="contact-icon" />
-                  <span>{phoneNumber}</span>
-                </div>
-                {email ? (
+                {phoneNumber ? (
                   <div className="contact-item">
-                    <FaEnvelope className="contact-icon" />
-                    <span>{email}</span>
+                    <FaPhone className="contact-icon" />
+                    <span>{phoneNumber}</span>
                   </div>
                 ) : (
-                  <button className="add-email-btn" onClick={() => setShowEmailInput(true)}>
-                    <FaEnvelope className="email-icon" />
-                    Add Email Address
-                  </button>
+                  <></>
                 )}
+                <div className="contact-item">
+                  <FaEnvelope className="contact-icon" />
+                  <span>{currentUser?.email || ''}</span>
+                </div>
               </div>
             </div>
           </div>
@@ -317,16 +312,6 @@ function ProfilePage() {
               </div>
             </div>
             
-            <div className="sidebar-footer">
-              <div 
-                className={`sidebar-menu-item ${activeTab === 'reset' ? 'active' : ''}`}
-                onClick={() => setActiveTab('reset')}
-              >
-                <FaKey className="sidebar-icon" />
-                <span>Reset Password</span>
-                {activeTab === 'reset' && <span className="active-dot"></span>}
-              </div>
-            </div>
           </div>
 
           {/* Right Content Area */}
@@ -391,24 +376,9 @@ function ProfilePage() {
                   </select>
                 </div>
                 
-                <div className="form-group">
-                  <label>MARITAL STATUS</label>
-                  <select>
-                    <option value="">Select Marital Status</option>
-                    <option value="single">Single</option>
-                    <option value="married">Married</option>
-                  </select>
-                </div>
                 
-                <div className="form-group">
-                  <label>ANNIVERSARY</label>
-                  <input 
-                    type="date" 
-                    min="1950-01-01" 
-                    max={new Date().toISOString().split('T')[0]}
-                    placeholder="Select Anniversary"
-                  />
-                </div>
+                
+                
                 
                 <div className="form-group">
                   <label>CITY OF RESIDENCE</label>
@@ -446,81 +416,159 @@ function ProfilePage() {
 
             {/* Contact Details */}
             <div className="profile-section">
-              <h3 className="section-title">Contact Details</h3>
-              <p className="section-subtitle">Add contact information to receive booking details & other alerts</p>
-              
-              <div className="form-grid">
-                <div className="form-group verified">
-                  <label>MOBILE NUMBER</label>
-                  <div className="input-with-icon">
-                    <input 
-                      type="text" 
-                      value={phoneNumber} 
-                      onChange={(e) => setPhoneNumber(e.target.value)}
-                    />
-                    <span className="verified-icon">✓</span>
-                  </div>
-                </div>
-                
-                {showEmailInput || email ? (
-                  <div className="form-group">
-                    <label>EMAIL ADDRESS</label>
-                    <input 
-                      type="email" 
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="Enter your email"
-                    />
-                  </div>
-                ) : (
-                  <div className="form-group">
-                    <button className="add-email-id-btn" onClick={() => setShowEmailInput(true)}>ADD EMAIL ID</button>
-                  </div>
-                )}
+              <div className="section-header">
+                <h3 className="section-title">Contact Details</h3>
+                <button
+                  type="button"
+                  className="section-accordion-toggle"
+                  onClick={() => setIsContactDetailsOpen((prev) => !prev)}
+                  aria-label="Toggle Contact Details"
+                >
+                  {isContactDetailsOpen ? '▾' : '▸'}
+                </button>
               </div>
+
+              {isContactDetailsOpen && (
+                <>
+                  <p className="section-subtitle">Add contact information to receive booking details & other alerts</p>
+
+                  <div className="form-grid">
+                    <div className="form-group verified">
+                      <label>MOBILE NUMBER</label>
+                      <div className="input-with-icon">
+                        <input
+                          type="text"
+                          value={phoneNumber}
+                          onChange={(e) => setPhoneNumber(e.target.value)}
+                        />
+                        {phoneNumber && <span className="verified-icon">✓</span>}
+                      </div>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
 
             {/* Documents Details */}
             <div className="profile-section">
-              <h3 className="section-title">Documents Details</h3>
-              
-              <div className="form-grid">
-                <div className="form-group">
-                  <label>PASSPORT NO.</label>
-                  <input type="text" placeholder="" />
-                </div>
-                
-                <div className="form-group">
-                  <label>EXPIRY DATE</label>
-                  <input 
-                    type="date" 
-                    min={new Date().toISOString().split('T')[0]}
-                    max={new Date(new Date().setFullYear(new Date().getFullYear() + 20)).toISOString().split('T')[0]}
-                    placeholder="Select Expiry Date"
-                  />
-                </div>
-                
-                <div className="form-group">
-                  <label>ISSUING COUNTRY</label>
-                  <select>
-                    <option value="">Select Country</option>
-                    <option value="india">India</option>
-                    <option value="usa">USA</option>
-                    <option value="canada">Canada</option>
-                    <option value="north_korea">North Korea</option>
-                    <option value="russia">Russia</option>
-                  </select>
-                </div>
-                
-                <div className="form-group">
-                  <label>PAN CARD NUMBER</label>
-                  <input type="text" placeholder="" />
-                </div>
+              <div className="section-header">
+                <h3 className="section-title">Documents Details</h3>
+                <button
+                  type="button"
+                  className="section-accordion-toggle"
+                  onClick={() => setIsDocumentsDetailsOpen((prev) => !prev)}
+                  aria-label="Toggle Documents Details"
+                >
+                  {isDocumentsDetailsOpen ? '▾' : '▸'}
+                </button>
               </div>
-              
-              <p className="documents-note">
-                <strong>NOTE:</strong> Your PAN No. will only be used for international bookings as per RBI Guidelines
-              </p>
+
+              {isDocumentsDetailsOpen && (
+                <>
+                  <div className="form-grid">
+                    <div className="form-group">
+                      <label>PASSPORT NO.</label>
+                      <input type="text" placeholder="" />
+                    </div>
+
+                    <div className="form-group">
+                      <label>EXPIRY DATE</label>
+                      <input
+                        type="date"
+                        min={new Date().toISOString().split('T')[0]}
+                        max={new Date(new Date().setFullYear(new Date().getFullYear() + 20)).toISOString().split('T')[0]}
+                        placeholder="Select Expiry Date"
+                      />
+                    </div>
+
+                    <div className="form-group">
+                      <label>ISSUING COUNTRY</label>
+                      <select>
+                        <option value="">Select Country</option>
+                        <option value="india">India</option>
+                        <option value="usa">USA</option>
+                        <option value="canada">Canada</option>
+                        <option value="north_korea">North Korea</option>
+                        <option value="russia">Russia</option>
+                      </select>
+                    </div>
+
+                    <div className="form-group">
+                      <label>PAN CARD NUMBER</label>
+                      <input type="text" placeholder="" />
+                    </div>
+                  </div>
+
+                  <p className="documents-note">
+                    <strong>NOTE:</strong> Your PAN No. will only be used for international bookings as per RBI Guidelines
+                  </p>
+                </>
+              )}
+            </div>
+
+            {/* Reset Password */}
+            <div className="profile-section">
+              <div className="section-header">
+                <h3 className="section-title">Reset Password</h3>
+                <button
+                  type="button"
+                  className="section-accordion-toggle"
+                  onClick={() => setIsResetPasswordOpen((prev) => !prev)}
+                  aria-label="Toggle Reset Password"
+                >
+                  {isResetPasswordOpen ? '▾' : '▸'}
+                </button>
+              </div>
+
+              {isResetPasswordOpen && (
+                <>
+                  <p className="section-subtitle">
+                    Your password must be at least 8 characters long and include both small and uppercase letters, numbers, and special characters (e.g., $!@%)
+                  </p>
+
+                  <div className="form-grid">
+                    <div className="form-group">
+                      <label>OLD PASSWORD</label>
+                      <div className="input-with-icon">
+                        <input
+                          type={showOldPassword ? "text" : "password"}
+                          placeholder="Enter old password"
+                          value={oldPassword}
+                          onChange={(e) => setOldPassword(e.target.value)}
+                        />
+                        <button
+                          className="password-toggle-icon"
+                          onClick={() => setShowOldPassword(!showOldPassword)}
+                        >
+                          {showOldPassword ? <FaEyeSlash /> : <FaEye />}
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="form-group">
+                      <label>NEW PASSWORD</label>
+                      <div className="input-with-icon">
+                        <input
+                          type={showNewPassword ? "text" : "password"}
+                          placeholder="Enter new password"
+                          value={newPassword}
+                          onChange={(e) => setNewPassword(e.target.value)}
+                        />
+                        <button
+                          className="password-toggle-icon"
+                          onClick={() => setShowNewPassword(!showNewPassword)}
+                        >
+                          {showNewPassword ? <FaEyeSlash /> : <FaEye />}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <button className="reset-password-save-btn" onClick={handleResetPassword}>RESET PASSWORD</button>
+
+                  <a href="#" className="forgot-password-link">Forgot your password?</a>
+                </>
+              )}
             </div>
               </>
             )}
@@ -588,15 +636,15 @@ function ProfilePage() {
                     </div>
 
                     {/* Warning Banner */}
-                    <div className="cotraveller-warning-banner">
+                    
                       <div className="warning-icon">📋</div>
                       <p className="warning-text">
                         Please double check if your First and Last name, Gender & Date of Birth match your Govt. ID such as Aadhaar or Passport
                       </p>
-                    </div>
+                    
 
                     {/* General Information */}
-                    <div className="cotraveller-section">
+                 
                       <h3 className="cotraveller-section-title">General Information</h3>
                       
                       <div className="cotraveller-form-grid">
@@ -633,16 +681,7 @@ function ProfilePage() {
                           </select>
                         </div>
                         
-                        <div className="cotraveller-form-group">
-                          <label>DATE OF BIRTH</label>
-                          <input 
-                            type="date" 
-                            min="1950-01-01" 
-                            max={new Date().toISOString().split('T')[0]}
-                            value={coTravellerForm.dob}
-                            onChange={(e) => setCoTravellerForm({...coTravellerForm, dob: e.target.value})}
-                          />
-                        </div>
+                      
                         
                         <div className="cotraveller-form-group">
                           <label>NATIONALITY</label>
@@ -659,7 +698,7 @@ function ProfilePage() {
                         </div>
                       </div>
 
-                      {/* Relationship Section */}
+                      {/* Relationship Section
                       <div className="relationship-section">
                         <label className="relationship-label">RELATIONSHIP WITH TRAVELLER</label>
                         <div className="relationship-buttons">
@@ -676,7 +715,7 @@ function ProfilePage() {
                         <p className="relationship-helper-text">
                           This helps to give us personalised travel recommendations when travelling
                         </p>
-                      </div>
+                      </div> */}
 
                       {/* Preferences */}
                       <div className="cotraveller-form-grid">
@@ -708,167 +747,126 @@ function ProfilePage() {
                           </select>
                         </div>
                       </div>
-                    </div>
+                    
 
                     {/* Passport Details */}
-                    <div className="cotraveller-section">
-                      <h3 className="cotraveller-section-title">Passport Details</h3>
-                      
-                      <div className="cotraveller-form-grid">
-                        <div className="cotraveller-form-group">
-                          <label>PASSPORT NO.</label>
-                          <input 
-                            type="text" 
-                            placeholder="" 
-                            value={coTravellerForm.passportNo}
-                            onChange={(e) => setCoTravellerForm({...coTravellerForm, passportNo: e.target.value})}
-                          />
-                        </div>
-                        
-                        <div className="cotraveller-form-group">
-                          <label>EXPIRY DATE</label>
-                          <input 
-                            type="date" 
-                            min={new Date().toISOString().split('T')[0]}
-                            max={new Date(new Date().setFullYear(new Date().getFullYear() + 20)).toISOString().split('T')[0]}
-                            value={coTravellerForm.expiryDate}
-                            onChange={(e) => setCoTravellerForm({...coTravellerForm, expiryDate: e.target.value})}
-                          />
-                        </div>
-                        
-                        <div className="cotraveller-form-group">
-                          <label>ISSUING COUNTRY</label>
-                          <select 
-                            value={coTravellerForm.issuingCountry}
-                            onChange={(e) => setCoTravellerForm({...coTravellerForm, issuingCountry: e.target.value})}
-                          >
-                            <option value="">Select Country</option>
-                            <option value="India">India</option>
-                            <option value="USA">USA</option>
-                            <option value="Canada">Canada</option>
-                            <option value="North Korea">North Korea</option>
-                            <option value="Russia">Russia</option>
-                          </select>
-                        </div>
+                   
+                      <div className="section-header">
+                        <h3 className="cotraveller-section-title">Passport Details</h3>
+                        <button
+                          type="button"
+                          className="section-accordion-toggle"
+                          onClick={() => setIsCoTravellerPassportOpen((prev) => !prev)}
+                          aria-label="Toggle Co-Traveller Passport Details"
+                        >
+                          {isCoTravellerPassportOpen ? '▾' : '▸'}
+                        </button>
                       </div>
-                    </div>
 
-                    {/* Contact Information */}
-                    <div className="cotraveller-section">
-                      <h3 className="cotraveller-section-title">Add contact information to receive booking details & other alerts</h3>
-                      
-                      <div className="cotraveller-form-grid">
-                        <div className="cotraveller-form-group phone-group">
-                          <label>MOBILE NUMBER</label>
-                          <div className="phone-input-wrapper">
-                            <div 
-                              className="country-code-selector"
-                              onClick={() => setShowCountryDropdown(!showCountryDropdown)}
-                            >
-                              <span className="flag-icon">{selectedCountryCode.flag}</span>
-                              <span>{selectedCountryCode.code}</span>
-                              <span className="dropdown-arrow">▼</span>
-                              
-                              {showCountryDropdown && (
-                                <div className="country-dropdown">
-                                  {countryCodes.map((country, index) => (
-                                    <div
-                                      key={index}
-                                      className="country-option"
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        setSelectedCountryCode(country);
-                                        setShowCountryDropdown(false);
-                                      }}
-                                    >
-                                      <span className="flag-icon">{country.flag}</span>
-                                      <span className="country-name">{country.name} ({country.code})</span>
-                                    </div>
-                                  ))}
-                                </div>
-                              )}
-                            </div>
+                      {isCoTravellerPassportOpen && (
+                        <div className="cotraveller-form-grid">
+                          <div className="cotraveller-form-group">
+                            <label>PASSPORT NO.</label>
                             <input 
-                              type="tel" 
+                              type="text" 
                               placeholder="" 
-                              className="phone-input" 
-                              value={coTravellerForm.mobile}
-                              onChange={(e) => setCoTravellerForm({...coTravellerForm, mobile: e.target.value})}
+                              value={coTravellerForm.passportNo}
+                              onChange={(e) => setCoTravellerForm({...coTravellerForm, passportNo: e.target.value})}
                             />
                           </div>
+
+                          <div className="cotraveller-form-group">
+                            <label>EXPIRY DATE</label>
+                            <input 
+                              type="date" 
+                              min={new Date().toISOString().split('T')[0]}
+                              max={new Date(new Date().setFullYear(new Date().getFullYear() + 20)).toISOString().split('T')[0]}
+                              value={coTravellerForm.expiryDate}
+                              onChange={(e) => setCoTravellerForm({...coTravellerForm, expiryDate: e.target.value})}
+                            />
+                          </div>
+
+                          <div className="cotraveller-form-group">
+                            <label>ISSUING COUNTRY</label>
+                            <select 
+                              value={coTravellerForm.issuingCountry}
+                              onChange={(e) => setCoTravellerForm({...coTravellerForm, issuingCountry: e.target.value})}
+                            >
+                              <option value="">Select Country</option>
+                              <option value="India">India</option>
+                              <option value="USA">USA</option>
+                              <option value="Canada">Canada</option>
+                              <option value="North Korea">North Korea</option>
+                              <option value="Russia">Russia</option>
+                            </select>
+                          </div>
                         </div>
-                        
-                        <div className="cotraveller-form-group">
-                          <label>EMAIL ID</label>
-                          <input 
-                            type="email" 
-                            placeholder="" 
-                            value={coTravellerForm.email}
-                            onChange={(e) => setCoTravellerForm({...coTravellerForm, email: e.target.value})}
-                          />
-                        </div>
+                      )}
+                   
+
+                    {/* Contact Information */}
+                    
+                      <div className="section-header">
+                        <h3 className="cotraveller-section-title">Add contact information to receive booking details & other alerts</h3>
+                        <button
+                          type="button"
+                          className="section-accordion-toggle"
+                          onClick={() => setIsCoTravellerContactOpen((prev) => !prev)}
+                          aria-label="Toggle Co-Traveller Contact Information"
+                        >
+                          {isCoTravellerContactOpen ? '▾' : '▸'}
+                        </button>
                       </div>
-                    </div>
+
+                      {isCoTravellerContactOpen && (
+                        <div className="cotraveller-form-grid">
+                          <div className="cotraveller-form-group phone-group">
+                            <label>MOBILE NUMBER</label>
+                            <div className="phone-input-wrapper">
+                              <div 
+                                className="country-code-selector"
+                                onClick={() => setShowCountryDropdown(!showCountryDropdown)}
+                              >
+                                <span className="flag-icon">{selectedCountryCode.flag}</span>
+                                <span>{selectedCountryCode.code}</span>
+                                <span className="dropdown-arrow">▼</span>
+
+                                {showCountryDropdown && (
+                                  <div className="country-dropdown">
+                                    {countryCodes.map((country, index) => (
+                                      <div
+                                        key={index}
+                                        className="country-option"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          setSelectedCountryCode(country);
+                                          setShowCountryDropdown(false);
+                                        }}
+                                      >
+                                        <span className="flag-icon">{country.flag}</span>
+                                        <span className="country-name">{country.name} ({country.code})</span>
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                              <input 
+                                type="tel" 
+                                placeholder="" 
+                                className="phone-input" 
+                                value={coTravellerForm.mobile}
+                                onChange={(e) => setCoTravellerForm({...coTravellerForm, mobile: e.target.value})}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    
                   </>
                 )}
               </>
             )}
 
-            {activeTab === 'reset' && (
-              <>
-                <div className="profile-content-header">
-                  <h2>Reset Password</h2>
-                </div>
-
-                <div className="profile-section">
-                  <p className="section-subtitle">
-                    Your password must be at least 8 characters long and include both small and uppercase letters, numbers, and special characters (e.g., $!@%)
-                  </p>
-                  
-                  <div className="form-grid">
-                    <div className="form-group">
-                      <label>OLD PASSWORD</label>
-                      <div className="input-with-icon">
-                        <input
-                          type={showOldPassword ? "text" : "password"}
-                          placeholder="Enter old password"
-                          value={oldPassword}
-                          onChange={(e) => setOldPassword(e.target.value)}
-                        />
-                        <button 
-                          className="password-toggle-icon"
-                          onClick={() => setShowOldPassword(!showOldPassword)}
-                        >
-                          {showOldPassword ? <FaEyeSlash /> : <FaEye />}
-                        </button>
-                      </div>
-                    </div>
-                    
-                    <div className="form-group">
-                      <label>NEW PASSWORD</label>
-                      <div className="input-with-icon">
-                        <input
-                          type={showNewPassword ? "text" : "password"}
-                          placeholder="Enter new password"
-                          value={newPassword}
-                          onChange={(e) => setNewPassword(e.target.value)}
-                        />
-                        <button 
-                          className="password-toggle-icon"
-                          onClick={() => setShowNewPassword(!showNewPassword)}
-                        >
-                          {showNewPassword ? <FaEyeSlash /> : <FaEye />}
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-
-                  <a href="#" className="forgot-password-link">Forgot your password?</a>
-                  
-                  <button className="reset-password-save-btn" onClick={handleResetPassword}>RESET PASSWORD</button>
-                </div>
-              </>
-            )}
           </div>
         </div>
       </div>

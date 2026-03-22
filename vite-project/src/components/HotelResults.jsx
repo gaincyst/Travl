@@ -7,12 +7,14 @@ import {
   FaMoon,
   FaSun,
   FaThLarge,
-  FaUserCircle, FaChevronLeft, FaChevronRight, FaArrowUp, FaArrowDown, FaStar, FaHeart, FaRegHeart, FaWifi, FaSwimmingPool, FaUtensils, FaConciergeBell, FaImage
+  FaUserCircle, FaChevronLeft, FaChevronRight, FaArrowUp, FaArrowDown, FaStar, FaHeart, FaRegHeart, FaWifi, FaSwimmingPool, FaUtensils, FaConciergeBell, FaImage,
+  FaSignOutAlt, FaUser, FaTachometerAlt
 } from "react-icons/fa";
 
 import SearchBox from "./SearchBox";
 import HotelFiltersPanel from "./HotelFiltersPanel";
 import AuthModal from "./AuthModal";
+import { useAuth } from "../context/AuthContext";
 import "../styles/HotelResults.css";
 
 function HotelResults() {
@@ -22,6 +24,9 @@ function HotelResults() {
 
   const [darkMode, setDarkMode] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [showProfileDropdown, setShowProfileDropdown] = useState(false);
+  const profileDropdownRef = useRef(null);
+  const { isLoggedIn, currentUser, refreshAuth, logoutUser } = useAuth();
 
   // Hotel Sorting state management - 3 states: null (no sort), 'asc', 'desc'
   // Smart is 'active' by default
@@ -227,6 +232,44 @@ function HotelResults() {
     return () => window.removeEventListener("resize", checkArrows);
   }, []);
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (profileDropdownRef.current && !profileDropdownRef.current.contains(event.target)) {
+        setShowProfileDropdown(false);
+      }
+    };
+
+    if (showProfileDropdown) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showProfileDropdown]);
+
+  const handleLogout = () => {
+    logoutUser();
+    setShowProfileDropdown(false);
+    navigate("/");
+  };
+
+  const handleAuthSuccess = () => {
+    refreshAuth();
+  };
+
+  const getInitial = (name) => {
+    return name ? name.charAt(0).toUpperCase() : "U";
+  };
+
+  const getGradientStyle = (name) => {
+    const charCode = name ? name.charCodeAt(0) : 85;
+    const hue = (charCode * 137.508) % 360;
+    return {
+      background: `linear-gradient(135deg, hsl(${hue}, 70%, 50%), hsl(${(hue + 60) % 360}, 70%, 60%))`
+    };
+  };
+
   // Hotel-specific offers (isolated from flight and bus offers)
   const hotelOffers = [
     { id: 1, logo: "/banks/b1.png", title: "Up to 15,000 Off", sub: "with ICICI Bank Credit Card EMI", bgColor: "#fff3e6" },
@@ -273,10 +316,39 @@ function HotelResults() {
               {darkMode ? <FaSun className="sun-icon" /> : <FaMoon className="moon-icon" />}
             </button>
 
-            <div className="login-signup" onClick={() => setShowAuthModal(true)} style={{ cursor: 'pointer' }}>
-              <FaUserCircle className="user-login-icon" />
-              <span>Login / Signup</span>
-            </div>
+            {isLoggedIn && currentUser ? (
+              <div className="profile-avatar-container" ref={profileDropdownRef}>
+                <div
+                  className="profile-avatar"
+                  style={getGradientStyle(currentUser.name)}
+                  onClick={() => setShowProfileDropdown(!showProfileDropdown)}
+                >
+                  {getInitial(currentUser.name)}
+                </div>
+
+                {showProfileDropdown && (
+                  <div className="profile-dropdown-menu">
+                    <div className="profile-menu-item" onClick={() => { setShowProfileDropdown(false); navigate('/profile'); }}>
+                      <FaUser className="profile-menu-icon" />
+                      <span>My Profile</span>
+                    </div>
+                    <div className="profile-menu-item" onClick={() => { setShowProfileDropdown(false); navigate('/dashboard'); }}>
+                      <FaTachometerAlt className="profile-menu-icon" />
+                      <span>Dashboard</span>
+                    </div>
+                    <div className="profile-menu-item logout-item" onClick={handleLogout}>
+                      <FaSignOutAlt className="profile-menu-icon" />
+                      <span>Logout</span>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="login-signup" onClick={() => setShowAuthModal(true)} style={{ cursor: "pointer" }}>
+                <FaUserCircle className="user-login-icon" />
+                <span>Login / Signup</span>
+              </div>
+            )}
           </div>
         </div>
       </nav>
@@ -526,7 +598,8 @@ function HotelResults() {
       {showAuthModal && (
         <AuthModal 
           isOpen={showAuthModal} 
-          onClose={() => setShowAuthModal(false)} 
+          onClose={() => setShowAuthModal(false)}
+          onAuthSuccess={handleAuthSuccess}
         />
       )}
     </div>

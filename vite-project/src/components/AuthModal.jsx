@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import "../styles/AuthModal.css";
 import API_BASE_URL from "../utils/api.js";
+import { setAuthSession } from "../utils/auth";
 
 const AuthModal = ({ onClose, onAuthSuccess }) => {
   const [mode, setMode] = useState("login");
@@ -68,12 +69,14 @@ const AuthModal = ({ onClose, onAuthSuccess }) => {
 
       if (data.success) {
         // Store user data and token
-        localStorage.setItem("token", data.data.token);
-        localStorage.setItem("user", JSON.stringify({
+        setAuthSession({
+          token: data.data.token,
+          user: {
           userId: data.data.userId,
           name: data.data.name,
           email: data.data.email
-        }));
+          }
+        });
 
         setSuccess("Login successful! Redirecting...");
         
@@ -144,12 +147,14 @@ const AuthModal = ({ onClose, onAuthSuccess }) => {
 
       if (data.success) {
         // Store user data and token
-        localStorage.setItem("token", data.data.token);
-        localStorage.setItem("user", JSON.stringify({
+        setAuthSession({
+          token: data.data.token,
+          user: {
           userId: data.data.userId,
           name: data.data.name,
           email: data.data.email
-        }));
+          }
+        });
 
         setSuccess("Registration successful! Redirecting...");
         
