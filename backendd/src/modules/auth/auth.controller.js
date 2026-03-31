@@ -1,4 +1,4 @@
-import { signupService, loginService } from './auth.service.js';
+import { signupService, loginService, googleLoginService } from './auth.service.js';
 import { successResponse, errorResponse } from '../../utils/response.js';
 
 // Signup controller
@@ -61,6 +61,28 @@ export const login = async (req, res) => {
     return successResponse(res, 200, 'Login successful', result.data);
   } catch (error) {
     console.error('Login controller error:', error);
+    return errorResponse(res, 500, 'Internal server error');
+  }
+};
+
+// Google OAuth login controller
+export const googleLogin = async (req, res) => {
+  try {
+    const { credential } = req.body;
+
+    if (!credential) {
+      return errorResponse(res, 400, 'Google credential token is required');
+    }
+
+    const result = await googleLoginService(credential);
+
+    if (!result.success) {
+      return errorResponse(res, 401, result.message);
+    }
+
+    return successResponse(res, 200, 'Google login successful', result.data);
+  } catch (error) {
+    console.error('Google login controller error:', error);
     return errorResponse(res, 500, 'Internal server error');
   }
 };

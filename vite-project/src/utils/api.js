@@ -1,11 +1,16 @@
-// API Configuration - Points to Render backend
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://travl-99lq.onrender.com/api";
+// API Configuration
+const rawApiBaseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api";
+const trimmedApiBaseUrl = rawApiBaseUrl.replace(/\/+$/, "");
+const API_BASE_URL = trimmedApiBaseUrl.endsWith("/api")
+  ? trimmedApiBaseUrl
+  : `${trimmedApiBaseUrl}/api`;
 
 // API endpoints
 export const API_ENDPOINTS = {
   // Authentication
   LOGIN: `${API_BASE_URL}/auth/login`,
   SIGNUP: `${API_BASE_URL}/auth/signup`,
+  GOOGLE_LOGIN: `${API_BASE_URL}/auth/google`,
   
   // Profile (Protected)
   PROFILE: `${API_BASE_URL}/profile`,

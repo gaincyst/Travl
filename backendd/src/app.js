@@ -35,7 +35,8 @@ app.get('/', (req, res) => {
       health: '/api/health',
       auth: {
         signup: 'POST /api/auth/signup',
-        login: 'POST /api/auth/login'
+        login: 'POST /api/auth/login',
+        google: 'POST /api/auth/google'
       },
       profile: 'GET /api/profile (protected)'
     }

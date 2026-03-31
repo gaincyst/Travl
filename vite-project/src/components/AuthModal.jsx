@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
+import { GoogleLogin } from "@react-oauth/google";
 import "../styles/AuthModal.css";
-import API_BASE_URL from "../utils/api.js";
+import { API_ENDPOINTS } from "../utils/api.js";
 import { setAuthSession } from "../utils/auth";
 
 const AuthModal = ({ onClose, onAuthSuccess }) => {
@@ -54,7 +55,7 @@ const AuthModal = ({ onClose, onAuthSuccess }) => {
     setLoading(true);
 
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/login`, {
+      const response = await fetch(API_ENDPOINTS.LOGIN, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -130,7 +131,7 @@ const AuthModal = ({ onClose, onAuthSuccess }) => {
     setLoading(true);
 
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/signup`, {
+      const response = await fetch(API_ENDPOINTS.SIGNUP, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -186,6 +187,66 @@ const AuthModal = ({ onClose, onAuthSuccess }) => {
     } else {
       handleSignup(e);
     }
+  };
+
+  const handleGoogleSuccess = async (credentialResponse) => {
+    setError("");
+    setSuccess("");
+
+    if (!credentialResponse?.credential) {
+      setError("Google login failed. Credential was not returned.");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const response = await fetch(API_ENDPOINTS.GOOGLE_LOGIN, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          credential: credentialResponse.credential,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setAuthSession({
+          token: data.data.token,
+          user: {
+            userId: data.data.userId,
+            name: data.data.name,
+            email: data.data.email,
+          },
+        });
+
+        setSuccess("Google login successful! Redirecting...");
+
+        setTimeout(() => {
+          onClose();
+          if (onAuthSuccess) {
+            onAuthSuccess();
+          } else {
+            window.location.reload();
+          }
+        }, 1000);
+      } else {
+        const backendMessage = data.message || "Google login failed";
+        setError(`${backendMessage} (endpoint: ${API_ENDPOINTS.GOOGLE_LOGIN})`);
+      }
+    } catch (err) {
+      setError("Unable to connect to server. Please try again.");
+      console.error("Google login error:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleError = () => {
+    setError("Google login was cancelled or failed.");
   };
 
   // Reset form when switching modes
@@ -402,14 +463,28 @@ const AuthModal = ({ onClose, onAuthSuccess }) => {
             <span></span>
           </div>
 
-          <button className="google-btn" disabled={loading}>
-            <img src="./google.png" alt="Google" className="google-icon" />
-            <span>
-              {mode === "login"
-                ? "Sign in with Google"
-                : "Sign up with Google"}
-            </span>
-          </button>
+          {loading ? (
+            <button className="google-btn" disabled>
+              Processing...
+            </button>
+          ) : import.meta.env.VITE_GOOGLE_CLIENT_ID ? (
+            <GoogleLogin
+              onSuccess={handleGoogleSuccess}
+              onError={handleGoogleError}
+              useOneTap={false}
+              text={mode === "login" ? "signin_with" : "signup_with"}
+              theme="outline"
+              shape="pill"
+              size="large"
+            />
+          ) : (
+            <button
+              className="google-btn"
+              onClick={() => setError("Google Client ID is missing in frontend environment")}
+            >
+              {mode === "login" ? "Sign in with Google" : "Sign up with Google"}
+            </button>
+          )}
 
           <p className="signup-text">
             {mode === "login" ? (
