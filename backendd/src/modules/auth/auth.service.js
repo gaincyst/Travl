@@ -105,7 +105,7 @@ export const loginService = async (email, password) => {
 // Google OAuth credential login service
 export const googleLoginService = async (credentialToken) => {
   try {
-    if (!process.env.GOOGLE_CLIENT_ID) {
+    if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
       return { success: false, message: 'Google OAuth is not configured on server' };
     }
 
