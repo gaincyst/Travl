@@ -28,12 +28,13 @@
   backdrop-filter: blur(20px);
   color: black;
   box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  margin-left: 0px;
 }
 
 .nav-center {
   display: flex;
   gap: 24px;
-  margin-left: 230px;  /* Pushes the center items to the right */
+  margin-left: 70px;  /* Pushes the center items to the right */
   margin-right: 12px; /* Adds space before nav-right items */
 }
 
@@ -2549,20 +2550,20 @@ body.dark-theme .site-footer::before {
 }
 
 .navbar-logo-img {
-  height: 170px;
+  height: 80px;
   width: auto;
   display: block;
   object-fit: contain;
   transition: filter 0.3s ease;
-  margin-left: -50px;
-  margin-top: 50px;
+  margin-left: -30px;
+  margin-top: 10px;
 }
 
 /* It's good practice to shrink it slightly when scrolled so the navbar stays slim */
 .navbar-scrolled .navbar-logo-img {
-  height: 100px; 
+  height: 60px; 
   margin-left: -40px;
-  margin-top: 5px;
+  margin-top: -10px;
 }
 
 body.dark-theme .navbar-scrolled.navbar-logo-img {

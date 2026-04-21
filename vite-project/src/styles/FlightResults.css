@@ -21,16 +21,16 @@
   align-items: center;
 }
 
-/* Logo Group */
-.nav-logo {
-  height:120px; /* Adjust this to fit your navbar height */
+/* Logo Group (scoped to Flight Results to avoid cross-page overrides) */
+.flight-results-page .nav-logo {
+  height:70px; /* Adjust this to fit your navbar height */
   width: auto;
   display: block;
   object-fit: contain;
   align-items: center;
   gap: 10px;
-  margin-top: 1px;
-    margin-left: -60px;
+  margin-top: -8px;
+    margin-left: -40px;
 }
 
 

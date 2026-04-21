@@ -111,7 +111,9 @@ export const googleLoginService = async (credentialToken) => {
 
     const payload = await verifyGoogleCredentialToken(credentialToken);
 
-    if (!payload || !payload.email || payload.email_verified !== 'true') {
+    const isEmailVerified = payload?.email_verified === true || payload?.email_verified === 'true';
+
+    if (!payload || !payload.email || !isEmailVerified) {
       return { success: false, message: 'Google account email is not verified' };
     }
 

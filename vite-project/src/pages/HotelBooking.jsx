@@ -3360,7 +3360,7 @@ const getGradientStyle = (name) => {
                 <button className="continue-button-hotel-panel" onClick={handlePanelContinue}>
                   {panelView === 'guest-details' ? 'CONTINUE' : 'COMPLETE BOOKING'}
                 </button>
-                <p className="terms-text-hotel">By proceeding, I agree to MakeMyTrip's <a href="#">User Agreement</a>, <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></p>
+                <p className="terms-text-hotel">By proceeding, I agree to Voyago's <a href="#">User Agreement</a>, <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></p>
               </div>
             </div>
           </>

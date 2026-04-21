@@ -2596,7 +2596,7 @@ function BusResults() {
 
               {/* Continue Button */}
               <button className="continue-button-panel" onClick={handlePanelContinue}>CONTINUE</button>
-              <p className="terms-text">By proceeding, I agree to MakeMyTrip's <a href="#">User Agreement</a>, <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></p>
+              <p className="terms-text">By proceeding, I agree to Voyago's <a href="#">User Agreement</a>, <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></p>
                 </>
               ) : (
                 <>
@@ -2754,7 +2754,7 @@ function BusResults() {
 
                   {/* Complete Booking Button */}
                   <button className="continue-button-panel" onClick={handlePanelContinue}>COMPLETE BOOKING</button>
-                  <p className="terms-text">By proceeding, I agree to MakeMyTrip's <a href="#">User Agreement</a>, <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></p>
+                  <p className="terms-text">By proceeding, I agree to Voyago's <a href="#">User Agreement</a>, <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></p>
                 </>
               )}
 

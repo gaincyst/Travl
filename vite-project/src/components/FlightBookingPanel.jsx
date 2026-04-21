@@ -2049,7 +2049,7 @@ function FlightBookingPanel({ isOpen, onClose, flightData }) {
           >
             {currentStepIndex === 3 ? 'COMPLETE BOOKING' : 'CONTINUE'}
           </button>
-          <p className="terms-text-flight">By proceeding, I agree to MakeMyTrip's <a href="#">User Agreement</a>, <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></p>
+          <p className="terms-text-flight">By proceeding, I agree to Voyago's <a href="#">User Agreement</a>, <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></p>
         </div>
       </div>
 
@@ -2224,7 +2224,7 @@ function FlightBookingPanel({ isOpen, onClose, flightData }) {
               )}
 
               <div className="fare-rules-disclaimer">
-                <strong>*Important:</strong> The Airline fee is indicative. MakeMyTrip does not guarantee the accuracy of this information. All fees mentioned are per passenger. {fareRulesTab === 'dateChange' && 'Date change charges are applicable only on selecting the same Airline on a new date. The difference in fares between the old and the new booking will also be payable by the user. Please refer to the Date Change Charges section above for details on the number of allowed free date changes, if applicable'}
+                <strong>*Important:</strong> The Airline fee is indicative. Voyago does not guarantee the accuracy of this information. All fees mentioned are per passenger. {fareRulesTab === 'dateChange' && 'Date change charges are applicable only on selecting the same Airline on a new date. The difference in fares between the old and the new booking will also be payable by the user. Please refer to the Date Change Charges section above for details on the number of allowed free date changes, if applicable'}
               </div>
             </div>
           </div>
