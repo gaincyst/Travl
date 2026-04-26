@@ -14,6 +14,8 @@ export const API_ENDPOINTS = {
   
   // Profile (Protected)
   PROFILE: `${API_BASE_URL}/profile`,
+  PROFILE_PASSWORD: `${API_BASE_URL}/profile/password`,
+  PROFILE_PASSWORD_VERIFY: `${API_BASE_URL}/profile/password/verify`,
   
   // Health check
   HEALTH: `${API_BASE_URL}/health`,

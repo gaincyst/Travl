@@ -53,8 +53,12 @@ function App() {
             {/* Cancel page - Blank page with logo */}
             <Route path="/cancel" element={<CancelPage />} />
             
-            {/* Profile page */}
-            <Route path="/profile" element={<ProfilePage />} />
+            {/* Profile page - Protected */}
+            <Route path="/profile" element={
+              <ProtectedRoute>
+                <ProfilePage />
+              </ProtectedRoute>
+            } />
             
             {/* Dashboard page - Protected */}
             <Route path="/dashboard" element={

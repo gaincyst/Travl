@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import MyTripsNavbar from "../components/MyTripsNavbar";
-import { logout } from "../utils/auth";
+import { logout, setAuthSession } from "../utils/auth";
 import { useAuth } from "../context/AuthContext";
+import { API_ENDPOINTS, getAuthHeaders } from "../utils/api";
 import { FaCamera, FaPhone, FaEnvelope, FaUser, FaUsers, FaSignOutAlt, FaTrash, FaPencilAlt, FaEye, FaEyeSlash } from "react-icons/fa";
 import "../styles/ProfilePage.css";
 
@@ -28,6 +29,23 @@ function ProfilePage() {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [isCoTravellerPassportOpen, setIsCoTravellerPassportOpen] = useState(false);
   const [isCoTravellerContactOpen, setIsCoTravellerContactOpen] = useState(false);
+  const [isSavingProfile, setIsSavingProfile] = useState(false);
+  const [isSavingCoTraveller, setIsSavingCoTraveller] = useState(false);
+  const [profileForm, setProfileForm] = useState({
+    firstMiddleName: '',
+    lastName: '',
+    gender: '',
+    dateOfBirth: '',
+    nationality: '',
+    cityOfResidence: '',
+    state: '',
+    countryCode: '+91',
+    mobile: '',
+    passportNo: '',
+    passportExpiryDate: '',
+    passportIssuingCountry: '',
+    panCardNumber: ''
+  });
   const [coTravellerForm, setCoTravellerForm] = useState({
     firstName: '',
     lastName: '',
@@ -43,6 +61,310 @@ function ProfilePage() {
     mobile: '',
     email: ''
   });
+  const [profileTouched, setProfileTouched] = useState({
+    firstMiddleName: false,
+    lastName: false,
+    state: false,
+    cityOfResidence: false,
+    mobile: false
+  });
+  const [profileErrors, setProfileErrors] = useState({
+    firstMiddleName: '',
+    lastName: '',
+    cityOfResidence: '',
+    mobile: ''
+  });
+  const [coTravellerErrors, setCoTravellerErrors] = useState({
+    firstName: '',
+    mobile: ''
+  });
+  const [resetPasswordErrors, setResetPasswordErrors] = useState({
+    oldPassword: '',
+    newPassword: ''
+  });
+  const [isVerifyingOldPassword, setIsVerifyingOldPassword] = useState(false);
+  const [isOldPasswordMatched, setIsOldPasswordMatched] = useState(false);
+
+  const mapApiCoTravellerToForm = (traveller = {}) => ({
+    id: traveller.id,
+    firstName: traveller.firstName || '',
+    lastName: traveller.lastName || '',
+    gender: traveller.gender || '',
+    dob: traveller.dateOfBirth || '',
+    nationality: traveller.nationality || '',
+    relationship: traveller.relationship || '',
+    mealPreference: traveller.mealPreference || '',
+    trainBerth: traveller.trainBerthPreference || '',
+    passportNo: traveller.passportNo || '',
+    expiryDate: traveller.passportExpiryDate || '',
+    issuingCountry: traveller.issuingCountry || '',
+    mobile: traveller.mobile || '',
+    email: traveller.email || ''
+  });
+
+  const mapFormCoTravellerToApiPayload = (traveller = {}) => ({
+    firstName: traveller.firstName,
+    lastName: traveller.lastName,
+    gender: traveller.gender,
+    dateOfBirth: traveller.dob,
+    nationality: traveller.nationality,
+    relationship: traveller.relationship,
+    mealPreference: traveller.mealPreference,
+    trainBerthPreference: traveller.trainBerth,
+    passportNo: traveller.passportNo,
+    passportExpiryDate: traveller.expiryDate,
+    issuingCountry: traveller.issuingCountry,
+    mobile: traveller.mobile,
+    email: traveller.email
+  });
+
+  const toDateInputValue = (value) => {
+    if (!value) {
+      return '';
+    }
+
+    if (value instanceof Date) {
+      if (Number.isNaN(value.getTime())) {
+        return '';
+      }
+
+      return value.toISOString().slice(0, 10);
+    }
+
+    if (typeof value === 'string') {
+      const trimmed = value.trim();
+      return trimmed ? trimmed.slice(0, 10) : '';
+    }
+
+    return '';
+  };
+
+  const normalizeProfileFromApi = (profile = {}) => ({
+    firstMiddleName: profile.firstMiddleName || '',
+    lastName: profile.lastName || '',
+    gender: profile.gender || '',
+    dateOfBirth: toDateInputValue(profile.dateOfBirth),
+    nationality: profile.nationality || '',
+    cityOfResidence: profile.cityOfResidence || '',
+    state: profile.state || '',
+    countryCode: profile.countryCode || '+91',
+    mobile: profile.mobile || '',
+    passportNo: profile.passportNo || '',
+    passportExpiryDate: toDateInputValue(profile.passportExpiryDate),
+    passportIssuingCountry: profile.passportIssuingCountry || '',
+    panCardNumber: profile.panCardNumber || ''
+  });
+
+  const toNameCase = (value = '') =>
+    value
+      .toLowerCase()
+      .replace(/(^|\s)([a-z])/g, (_, prefix, char) => `${prefix}${char.toUpperCase()}`);
+
+  const validateFirstName = (value = '') => {
+    const trimmedValue = value.trim();
+
+    if (!trimmedValue) {
+      return 'First name is required.';
+    }
+
+    if (!/^[A-Za-z]/.test(trimmedValue) || /[^A-Za-z\s]/.test(trimmedValue)) {
+      return 'It cannot start with any symbol, do not contain any number.';
+    }
+
+    return '';
+  };
+
+  const validateLastName = (value = '') => {
+    const trimmedValue = value.trim();
+
+    if (!trimmedValue) {
+      return '';
+    }
+
+    if (!/^[A-Za-z]/.test(trimmedValue) || /[^A-Za-z.\s]/.test(trimmedValue)) {
+      return 'Only alphabets are allowed and first letter should be capital. It should not start with any symbol; only (.) is allowed.';
+    }
+
+    return '';
+  };
+
+  const validateMobile = (value = '') => {
+    const trimmedValue = value.trim();
+
+    if (!trimmedValue) {
+      return 'Contact details are required.';
+    }
+
+    if (!/^\d+$/.test(trimmedValue)) {
+      return 'There should be no symbol as well as alphabet. It should only be numeric in nature.';
+    }
+
+    return '';
+  };
+
+  const getProfileValidationErrors = ({ firstMiddleName, lastName, state, cityOfResidence, mobile }) => ({
+    firstMiddleName: validateFirstName(firstMiddleName),
+    lastName: validateLastName(lastName),
+    cityOfResidence: !state && cityOfResidence ? 'First fill the State' : '',
+    mobile: validateMobile(mobile)
+  });
+
+  const handleFirstNameChange = (event) => {
+    const formattedValue = toNameCase(event.target.value);
+
+    setProfileForm((prev) => ({ ...prev, firstMiddleName: formattedValue }));
+
+    if (profileTouched.firstMiddleName) {
+      setProfileErrors((prev) => ({
+        ...prev,
+        firstMiddleName: validateFirstName(formattedValue)
+      }));
+    }
+  };
+
+  const handleFirstNameBlur = () => {
+    setProfileTouched((prev) => ({ ...prev, firstMiddleName: true }));
+    setProfileErrors((prev) => ({
+      ...prev,
+      firstMiddleName: validateFirstName(profileForm.firstMiddleName)
+    }));
+  };
+
+  const handleLastNameChange = (event) => {
+    const formattedValue = toNameCase(event.target.value);
+
+    setProfileForm((prev) => ({ ...prev, lastName: formattedValue }));
+
+    if (profileTouched.lastName) {
+      setProfileErrors((prev) => ({
+        ...prev,
+        lastName: validateLastName(formattedValue)
+      }));
+    }
+  };
+
+  const handleLastNameBlur = () => {
+    setProfileTouched((prev) => ({ ...prev, lastName: true }));
+    setProfileErrors((prev) => ({
+      ...prev,
+      lastName: validateLastName(profileForm.lastName)
+    }));
+  };
+
+  const handleStateChange = (event) => {
+    const selectedState = event.target.value;
+
+    setProfileTouched((prev) => ({ ...prev, state: true }));
+    setProfileForm((prev) => ({ ...prev, state: selectedState }));
+    setProfileErrors((prev) => ({
+      ...prev,
+      cityOfResidence: selectedState ? '' : prev.cityOfResidence
+    }));
+  };
+
+  const handleCityFocus = () => {
+    setProfileTouched((prev) => ({ ...prev, cityOfResidence: true }));
+
+    if (!profileForm.state) {
+      setProfileErrors((prev) => ({
+        ...prev,
+        cityOfResidence: 'First fill the State'
+      }));
+    }
+  };
+
+  const handleCityChange = (event) => {
+    if (!profileForm.state) {
+      setProfileErrors((prev) => ({
+        ...prev,
+        cityOfResidence: 'First fill the State'
+      }));
+      return;
+    }
+
+    setProfileForm((prev) => ({ ...prev, cityOfResidence: event.target.value }));
+    setProfileErrors((prev) => ({ ...prev, cityOfResidence: '' }));
+  };
+
+  const handleMobileChange = (event) => {
+    const value = event.target.value;
+    setPhoneNumber(value);
+
+    if (profileTouched.mobile) {
+      setProfileErrors((prev) => ({ ...prev, mobile: validateMobile(value) }));
+    }
+  };
+
+  const handleMobileBlur = () => {
+    setProfileTouched((prev) => ({ ...prev, mobile: true }));
+    setProfileErrors((prev) => ({ ...prev, mobile: validateMobile(phoneNumber) }));
+  };
+
+  const verifyCurrentPassword = async (passwordValue) => {
+    setIsVerifyingOldPassword(true);
+
+    try {
+      const response = await fetch(API_ENDPOINTS.PROFILE_PASSWORD_VERIFY, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ oldPassword: passwordValue })
+      });
+
+      const result = await response.json();
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.message || 'Password is not matched with the Current Password');
+      }
+
+      setIsOldPasswordMatched(true);
+      setResetPasswordErrors((prev) => ({ ...prev, oldPassword: '' }));
+      return true;
+    } catch (error) {
+      setIsOldPasswordMatched(false);
+      setResetPasswordErrors((prev) => ({
+        ...prev,
+        oldPassword: 'Password is not matched with the Current Password'
+      }));
+      return false;
+    } finally {
+      setIsVerifyingOldPassword(false);
+    }
+  };
+
+  const handleOldPasswordChange = (event) => {
+    const enteredPassword = event.target.value;
+
+    setOldPassword(enteredPassword);
+    setIsOldPasswordMatched(false);
+    setNewPassword('');
+    setResetPasswordErrors((prev) => ({
+      ...prev,
+      oldPassword: enteredPassword.trim()
+        ? 'Password is not matched with the Current Password'
+        : '',
+      newPassword: ''
+    }));
+  };
+
+  const handleOldPasswordBlur = async () => {
+    const trimmedOldPassword = oldPassword.trim();
+
+    if (!trimmedOldPassword) {
+      setResetPasswordErrors((prev) => ({ ...prev, oldPassword: '' }));
+      return;
+    }
+
+    await verifyCurrentPassword(trimmedOldPassword);
+  };
+
+  const handleNewPasswordChange = (event) => {
+    const enteredPassword = event.target.value;
+
+    setNewPassword(enteredPassword);
+    if (enteredPassword.trim()) {
+      setResetPasswordErrors((prev) => ({ ...prev, newPassword: '' }));
+    }
+  };
 
   const countryCodes = [
     { code: '+93', flag: '🇦🇫', name: 'Afghanistan' },
@@ -99,7 +421,35 @@ function ProfilePage() {
   ];
 
   useEffect(() => {
-    setPhoneNumber(currentUser?.mobile || '');
+    const loadProfile = async () => {
+      try {
+        const response = await fetch(API_ENDPOINTS.PROFILE, {
+          method: 'GET',
+          headers: getAuthHeaders()
+        });
+
+        if (!response.ok) {
+          setPhoneNumber(currentUser?.mobile || '');
+          return;
+        }
+
+        const result = await response.json();
+        if (!result.success || !result.data) {
+          setPhoneNumber(currentUser?.mobile || '');
+          return;
+        }
+
+        const normalizedProfile = normalizeProfileFromApi(result.data.profile || {});
+        setProfileForm(normalizedProfile);
+        setPhoneNumber(normalizedProfile.mobile || currentUser?.mobile || '');
+        setSavedCoTravellers((result.data.coTravellers || []).map(mapApiCoTravellerToForm));
+      } catch (error) {
+        console.error('Failed to load profile:', error);
+        setPhoneNumber(currentUser?.mobile || '');
+      }
+    };
+
+    loadProfile();
   }, [currentUser]);
 
   const handleLogoutClick = () => {
@@ -115,30 +465,222 @@ function ProfilePage() {
     navigate('/');
   };
 
-  const handleResetPassword = () => {
-    if (oldPassword && newPassword) {
+  const handleResetPassword = async () => {
+    const trimmedOldPassword = oldPassword.trim();
+    const trimmedNewPassword = newPassword.trim();
+
+    if (!trimmedOldPassword) {
+      setResetPasswordErrors((prev) => ({ ...prev, oldPassword: '' }));
+      return;
+    }
+
+    let isPasswordMatched = isOldPasswordMatched;
+    if (!isPasswordMatched) {
+      isPasswordMatched = await verifyCurrentPassword(trimmedOldPassword);
+    }
+
+    if (!isPasswordMatched) {
+      return;
+    }
+
+    if (!trimmedNewPassword) {
+      return;
+    }
+
+    try {
+      const response = await fetch(API_ENDPOINTS.PROFILE_PASSWORD, {
+        method: 'PUT',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ oldPassword: trimmedOldPassword, newPassword: trimmedNewPassword })
+      });
+
+      const result = await response.json();
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.message || 'Failed to reset password');
+      }
+
       alert('Password updated successfully!');
       setOldPassword('');
       setNewPassword('');
       setShowOldPassword(false);
       setShowNewPassword(false);
-    } else {
-      alert('Please fill in both password fields');
+      setResetPasswordErrors({ oldPassword: '', newPassword: '' });
+      setIsOldPasswordMatched(false);
+    } catch (error) {
+      console.error('Failed to reset password:', error);
+
+      if (/not matched|incorrect/i.test(error.message || '')) {
+        setIsOldPasswordMatched(false);
+        setResetPasswordErrors((prev) => ({
+          ...prev,
+          oldPassword: 'Password is not matched with the Current Password'
+        }));
+        return;
+      }
+
+      alert(error.message || 'Failed to reset password');
     }
   };
 
-  const handleSaveCoTraveller = () => {
-    const newCoTraveller = {
-      ...coTravellerForm,
-      relationship: selectedRelationship
+  const handleProfileSave = async () => {
+    const normalizedProfile = {
+      ...profileForm,
+      firstMiddleName: profileForm.firstMiddleName.trim(),
+      lastName: profileForm.lastName.trim(),
+      cityOfResidence: profileForm.cityOfResidence,
+      mobile: phoneNumber.trim()
     };
 
-    if (isEditing) {
-      const updated = [...savedCoTravellers];
-      updated[editingIndex] = newCoTraveller;
-      setSavedCoTravellers(updated);
-    } else {
-      setSavedCoTravellers([...savedCoTravellers, newCoTraveller]);
+    const validationErrors = getProfileValidationErrors({
+      firstMiddleName: normalizedProfile.firstMiddleName,
+      lastName: normalizedProfile.lastName,
+      state: normalizedProfile.state,
+      cityOfResidence: normalizedProfile.cityOfResidence,
+      mobile: normalizedProfile.mobile
+    });
+
+    setProfileTouched({
+      firstMiddleName: true,
+      lastName: true,
+      state: true,
+      cityOfResidence: true,
+      mobile: true
+    });
+    setProfileErrors(validationErrors);
+
+    if (validationErrors.mobile) {
+      setIsContactDetailsOpen(true);
+    }
+
+    if (Object.values(validationErrors).some(Boolean)) {
+      return;
+    }
+
+    setIsSavingProfile(true);
+
+    try {
+      const payload = {
+        firstMiddleName: normalizedProfile.firstMiddleName,
+        lastName: normalizedProfile.lastName,
+        gender: profileForm.gender,
+        dateOfBirth: profileForm.dateOfBirth,
+        nationality: profileForm.nationality,
+        cityOfResidence: profileForm.cityOfResidence,
+        state: profileForm.state,
+        countryCode: profileForm.countryCode,
+        mobile: normalizedProfile.mobile,
+        passportNo: profileForm.passportNo,
+        passportExpiryDate: profileForm.passportExpiryDate,
+        passportIssuingCountry: profileForm.passportIssuingCountry,
+        panCardNumber: profileForm.panCardNumber
+      };
+
+      const response = await fetch(API_ENDPOINTS.PROFILE, {
+        method: 'PUT',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(payload)
+      });
+
+      const result = await response.json();
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.message || 'Failed to save profile');
+      }
+
+      if (result.data?.user) {
+        const updatedUser = result.data.user;
+        setAuthSession({
+          user: {
+            userId: updatedUser.id ?? currentUser?.userId,
+            name: updatedUser.name ?? currentUser?.name ?? '',
+            email: updatedUser.email ?? currentUser?.email ?? ''
+          }
+        });
+      }
+
+      const updatedProfile = normalizeProfileFromApi(result.data?.profile || {});
+      setProfileForm(updatedProfile);
+      setPhoneNumber(updatedProfile.mobile || '');
+      setSavedCoTravellers((result.data?.coTravellers || []).map(mapApiCoTravellerToForm));
+      alert('Profile saved successfully!');
+    } catch (error) {
+      console.error('Failed to save profile:', error);
+      alert(error.message || 'Failed to save profile');
+    } finally {
+      setIsSavingProfile(false);
+    }
+  };
+
+  const handleSaveCoTraveller = async () => {
+    if (!isEditing) {
+      const validationErrors = {
+        firstName: validateFirstName(coTravellerForm.firstName),
+        mobile: validateMobile(coTravellerForm.mobile)
+      };
+
+      setCoTravellerErrors(validationErrors);
+
+      if (validationErrors.firstName || validationErrors.mobile) {
+        if (validationErrors.mobile) {
+          setIsCoTravellerContactOpen(true);
+        }
+        return;
+      }
+    }
+
+    setIsSavingCoTraveller(true);
+
+    const newCoTraveller = {
+      ...coTravellerForm,
+      relationship: selectedRelationship || coTravellerForm.relationship || ''
+    };
+
+    try {
+      const payload = mapFormCoTravellerToApiPayload(newCoTraveller);
+
+      if (isEditing) {
+        const editingTraveller = savedCoTravellers[editingIndex];
+        if (!editingTraveller?.id) {
+          throw new Error('Co-traveller id is missing');
+        }
+
+        const response = await fetch(`${API_ENDPOINTS.PROFILE}/cotravellers/${editingTraveller.id}`, {
+          method: 'PUT',
+          headers: getAuthHeaders(),
+          body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+        if (!response.ok || !result.success) {
+          throw new Error(result.message || 'Failed to update co-traveller');
+        }
+
+        const updated = [...savedCoTravellers];
+        updated[editingIndex] = mapApiCoTravellerToForm(result.data?.coTraveller || {});
+        setSavedCoTravellers(updated);
+      } else {
+        const response = await fetch(`${API_ENDPOINTS.PROFILE}/cotravellers`, {
+          method: 'POST',
+          headers: getAuthHeaders(),
+          body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+        if (!response.ok || !result.success) {
+          throw new Error(result.message || 'Failed to create co-traveller');
+        }
+
+        setSavedCoTravellers([...savedCoTravellers, mapApiCoTravellerToForm(result.data?.coTraveller || {})]);
+      }
+
+      alert(`Co-traveller ${isEditing ? 'updated' : 'saved'} successfully!`);
+    } catch (error) {
+      console.error('Failed to save co-traveller:', error);
+      alert(error.message || 'Failed to save co-traveller');
+      return;
+    } finally {
+      setIsSavingCoTraveller(false);
     }
 
     // Reset form
@@ -160,21 +702,53 @@ function ProfilePage() {
       mobile: '',
       email: ''
     });
+    setCoTravellerErrors({
+      firstName: '',
+      mobile: ''
+    });
     setSelectedRelationship('');
   };
 
   const handleEditCoTraveller = (index) => {
     const traveller = savedCoTravellers[index];
     setCoTravellerForm(traveller);
+    setCoTravellerErrors({
+      firstName: '',
+      mobile: ''
+    });
     setSelectedRelationship(traveller.relationship);
     setIsEditing(true);
     setEditingIndex(index);
     setShowAddCoTraveller(true);
   };
 
-  const handleDeleteCoTraveller = () => {
-    const updated = savedCoTravellers.filter((_, i) => i !== editingIndex);
-    setSavedCoTravellers(updated);
+  const handleDeleteCoTraveller = async () => {
+    const editingTraveller = savedCoTravellers[editingIndex];
+    if (!editingTraveller?.id) {
+      alert('Co-traveller id is missing');
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API_ENDPOINTS.PROFILE}/cotravellers/${editingTraveller.id}`, {
+        method: 'DELETE',
+        headers: getAuthHeaders()
+      });
+
+      const result = await response.json();
+      if (!response.ok || !result.success) {
+        throw new Error(result.message || 'Failed to delete co-traveller');
+      }
+
+      const updated = savedCoTravellers.filter((_, i) => i !== editingIndex);
+      setSavedCoTravellers(updated);
+      alert('Co-traveller deleted successfully!');
+    } catch (error) {
+      console.error('Failed to delete co-traveller:', error);
+      alert(error.message || 'Failed to delete co-traveller');
+      return;
+    }
+
     setShowAddCoTraveller(false);
     setIsEditing(false);
     setEditingIndex(null);
@@ -192,6 +766,10 @@ function ProfilePage() {
       issuingCountry: '',
       mobile: '',
       email: ''
+    });
+    setCoTravellerErrors({
+      firstName: '',
+      mobile: ''
     });
     setSelectedRelationship('');
   };
@@ -214,6 +792,10 @@ function ProfilePage() {
       issuingCountry: '',
       mobile: '',
       email: ''
+    });
+    setCoTravellerErrors({
+      firstName: '',
+      mobile: ''
     });
     setSelectedRelationship('');
   };
@@ -320,7 +902,9 @@ function ProfilePage() {
               <>
                 <div className="profile-content-header">
                   <h2>My Profile</h2>
-                  <button className="profile-save-btn">SAVE</button>
+                  <button className="profile-save-btn" onClick={handleProfileSave} disabled={isSavingProfile}>
+                    {isSavingProfile ? 'SAVING...' : 'SAVE'}
+                  </button>
                 </div>
 
                 {/* Birthday Banner */}
@@ -339,22 +923,39 @@ function ProfilePage() {
               
               <div className="form-grid">
                 <div className="form-group">
-                  <label>FIRST & MIDDLE NAME</label>
-                  <input type="text" defaultValue={currentUser?.name || 'Gaincy'} />
+                  <label>FIRST NAME <span className="required-asterisk">*</span></label>
+                  <input
+                    type="text"
+                    className={profileErrors.firstMiddleName ? 'field-has-error' : ''}
+                    value={profileForm.firstMiddleName}
+                    onChange={handleFirstNameChange}
+                    onBlur={handleFirstNameBlur}
+                  />
+                  {profileErrors.firstMiddleName && <small className="field-error">{profileErrors.firstMiddleName}</small>}
                 </div>
                 
                 <div className="form-group">
                   <label>LAST NAME</label>
-                  <input type="text" placeholder="" />
+                  <input
+                    type="text"
+                    className={profileErrors.lastName ? 'field-has-error' : ''}
+                    value={profileForm.lastName}
+                    onChange={handleLastNameChange}
+                    onBlur={handleLastNameBlur}
+                  />
+                  {profileErrors.lastName && <small className="field-error">{profileErrors.lastName}</small>}
                 </div>
                 
                 <div className="form-group">
                   <label>GENDER</label>
-                  <select>
+                  <select
+                    value={profileForm.gender}
+                    onChange={(e) => setProfileForm({ ...profileForm, gender: e.target.value })}
+                  >
                     <option value="">Select Gender</option>
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                    <option value="other">Other</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
                   </select>
                 </div>
                 
@@ -364,15 +965,20 @@ function ProfilePage() {
                     type="date" 
                     min="1950-01-01" 
                     max={new Date().toISOString().split('T')[0]}
+                    value={profileForm.dateOfBirth}
+                    onChange={(e) => setProfileForm({ ...profileForm, dateOfBirth: e.target.value })}
                     placeholder="Select Date of Birth"
                   />
                 </div>
                 
                 <div className="form-group">
                   <label>NATIONALITY</label>
-                  <select>
+                  <select
+                    value={profileForm.nationality}
+                    onChange={(e) => setProfileForm({ ...profileForm, nationality: e.target.value })}
+                  >
                     <option value="">Select Nationality</option>
-                    <option value="indian">Indian</option>
+                    <option value="Indian">Indian</option>
                   </select>
                 </div>
                 
@@ -382,32 +988,41 @@ function ProfilePage() {
                 
                 <div className="form-group">
                   <label>CITY OF RESIDENCE</label>
-                  <select>
+                  <select
+                    className={profileErrors.cityOfResidence ? 'field-has-error' : ''}
+                    value={profileForm.cityOfResidence}
+                    onFocus={handleCityFocus}
+                    onChange={handleCityChange}
+                  >
                     <option value="">Select City</option>
-                    <option value="kanpur">Kanpur</option>
-                    <option value="lucknow">Lucknow</option>
-                    <option value="unnao">Unnao</option>
-                    <option value="meerut">Meerut</option>
-                    <option value="mathura">Mathura</option>
-                    <option value="gorakhpur">Gorakhpur</option>
+                    <option value="Kanpur">Kanpur</option>
+                    <option value="Lucknow">Lucknow</option>
+                    <option value="Unnao">Unnao</option>
+                    <option value="Meerut">Meerut</option>
+                    <option value="Mathura">Mathura</option>
+                    <option value="Gorakhpur">Gorakhpur</option>
                   </select>
+                  {profileErrors.cityOfResidence && <small className="field-error">{profileErrors.cityOfResidence}</small>}
                 </div>
                 
                 <div className="form-group full-width">
                   <label>STATE</label>
-                  <select>
+                  <select
+                    value={profileForm.state}
+                    onChange={handleStateChange}
+                  >
                     <option value="">Select State</option>
-                    <option value="up">Uttar Pradesh</option>
-                    <option value="maharashtra">Maharashtra</option>
-                    <option value="uttarakhand">Uttarakhand</option>
-                    <option value="delhi">Delhi</option>
-                    <option value="tamil_nadu">Tamil Nadu</option>
-                    <option value="kerala">Kerala</option>
-                    <option value="madhya_pradesh">Madhya Pradesh</option>
-                    <option value="bihar">Bihar</option>
-                    <option value="assam">Assam</option>
-                    <option value="haryana">Haryana</option>
-                    <option value="jammu_kashmir">Jammu & Kashmir</option>
+                    <option value="Uttar Pradesh">Uttar Pradesh</option>
+                    <option value="Maharashtra">Maharashtra</option>
+                    <option value="Uttarakhand">Uttarakhand</option>
+                    <option value="Delhi">Delhi</option>
+                    <option value="Tamil Nadu">Tamil Nadu</option>
+                    <option value="Kerala">Kerala</option>
+                    <option value="Madhya Pradesh">Madhya Pradesh</option>
+                    <option value="Bihar">Bihar</option>
+                    <option value="Assam">Assam</option>
+                    <option value="Haryana">Haryana</option>
+                    <option value="Jammu & Kashmir">Jammu & Kashmir</option>
                   </select>
                   <small className="form-note">Required for GST purpose on your tax invoice</small>
                 </div>
@@ -434,15 +1049,18 @@ function ProfilePage() {
 
                   <div className="form-grid">
                     <div className="form-group verified">
-                      <label>MOBILE NUMBER</label>
+                      <label>MOBILE NUMBER <span className="required-asterisk">*</span></label>
                       <div className="input-with-icon">
                         <input
                           type="text"
+                          className={profileErrors.mobile ? 'field-has-error' : ''}
                           value={phoneNumber}
-                          onChange={(e) => setPhoneNumber(e.target.value)}
+                          onChange={handleMobileChange}
+                          onBlur={handleMobileBlur}
                         />
-                        {phoneNumber && <span className="verified-icon">✓</span>}
+                        {phoneNumber && !profileErrors.mobile && <span className="verified-icon">✓</span>}
                       </div>
+                      {profileErrors.mobile && <small className="field-error">{profileErrors.mobile}</small>}
                     </div>
                   </div>
                 </>
@@ -468,7 +1086,12 @@ function ProfilePage() {
                   <div className="form-grid">
                     <div className="form-group">
                       <label>PASSPORT NO.</label>
-                      <input type="text" placeholder="" />
+                      <input
+                        type="text"
+                        value={profileForm.passportNo}
+                        onChange={(e) => setProfileForm({ ...profileForm, passportNo: e.target.value })}
+                        placeholder=""
+                      />
                     </div>
 
                     <div className="form-group">
@@ -477,25 +1100,35 @@ function ProfilePage() {
                         type="date"
                         min={new Date().toISOString().split('T')[0]}
                         max={new Date(new Date().setFullYear(new Date().getFullYear() + 20)).toISOString().split('T')[0]}
+                        value={profileForm.passportExpiryDate}
+                        onChange={(e) => setProfileForm({ ...profileForm, passportExpiryDate: e.target.value })}
                         placeholder="Select Expiry Date"
                       />
                     </div>
 
                     <div className="form-group">
                       <label>ISSUING COUNTRY</label>
-                      <select>
+                      <select
+                        value={profileForm.passportIssuingCountry}
+                        onChange={(e) => setProfileForm({ ...profileForm, passportIssuingCountry: e.target.value })}
+                      >
                         <option value="">Select Country</option>
-                        <option value="india">India</option>
-                        <option value="usa">USA</option>
-                        <option value="canada">Canada</option>
-                        <option value="north_korea">North Korea</option>
-                        <option value="russia">Russia</option>
+                        <option value="India">India</option>
+                        <option value="USA">USA</option>
+                        <option value="Canada">Canada</option>
+                        <option value="North Korea">North Korea</option>
+                        <option value="Russia">Russia</option>
                       </select>
                     </div>
 
                     <div className="form-group">
                       <label>PAN CARD NUMBER</label>
-                      <input type="text" placeholder="" />
+                      <input
+                        type="text"
+                        value={profileForm.panCardNumber}
+                        onChange={(e) => setProfileForm({ ...profileForm, panCardNumber: e.target.value })}
+                        placeholder=""
+                      />
                     </div>
                   </div>
 
@@ -532,17 +1165,23 @@ function ProfilePage() {
                       <div className="input-with-icon">
                         <input
                           type={showOldPassword ? "text" : "password"}
+                          className={resetPasswordErrors.oldPassword ? 'field-has-error' : ''}
                           placeholder="Enter old password"
                           value={oldPassword}
-                          onChange={(e) => setOldPassword(e.target.value)}
+                          onChange={handleOldPasswordChange}
+                          onBlur={() => {
+                            void handleOldPasswordBlur();
+                          }}
                         />
                         <button
                           className="password-toggle-icon"
+                          type="button"
                           onClick={() => setShowOldPassword(!showOldPassword)}
                         >
                           {showOldPassword ? <FaEyeSlash /> : <FaEye />}
                         </button>
                       </div>
+                      {resetPasswordErrors.oldPassword && <small className="field-error">{resetPasswordErrors.oldPassword}</small>}
                     </div>
 
                     <div className="form-group">
@@ -550,17 +1189,21 @@ function ProfilePage() {
                       <div className="input-with-icon">
                         <input
                           type={showNewPassword ? "text" : "password"}
+                          className={resetPasswordErrors.newPassword ? 'field-has-error' : ''}
                           placeholder="Enter new password"
                           value={newPassword}
-                          onChange={(e) => setNewPassword(e.target.value)}
+                          onChange={handleNewPasswordChange}
+                          disabled={!isOldPasswordMatched || isVerifyingOldPassword}
                         />
                         <button
                           className="password-toggle-icon"
+                          type="button"
                           onClick={() => setShowNewPassword(!showNewPassword)}
                         >
                           {showNewPassword ? <FaEyeSlash /> : <FaEye />}
                         </button>
                       </div>
+                      {resetPasswordErrors.newPassword && <small className="field-error">{resetPasswordErrors.newPassword}</small>}
                     </div>
                   </div>
 
@@ -579,7 +1222,18 @@ function ProfilePage() {
                   <>
                     <div className="cotravellers-header">
                       <h2 className="cotravellers-title">Co-Travellers</h2>
-                      <button className="add-cotraveller-btn" onClick={() => setShowAddCoTraveller(true)}>+ Add New Co-Traveller</button>
+                      <button
+                        className="add-cotraveller-btn"
+                        onClick={() => {
+                          setCoTravellerErrors({
+                            firstName: '',
+                            mobile: ''
+                          });
+                          setShowAddCoTraveller(true);
+                        }}
+                      >
+                        + Add New Co-Traveller
+                      </button>
                     </div>
 
                     {savedCoTravellers.length === 0 ? (
@@ -649,13 +1303,26 @@ function ProfilePage() {
                       
                       <div className="cotraveller-form-grid">
                         <div className="cotraveller-form-group">
-                          <label>FIRST & MIDDLE NAME</label>
+                          <label>FIRST & MIDDLE NAME <span className="required-asterisk">*</span></label>
                           <input 
                             type="text" 
                             placeholder="" 
+                            className={coTravellerErrors.firstName ? 'field-has-error' : ''}
                             value={coTravellerForm.firstName}
-                            onChange={(e) => setCoTravellerForm({...coTravellerForm, firstName: e.target.value})}
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              setCoTravellerForm({...coTravellerForm, firstName: value});
+                              if (coTravellerErrors.firstName) {
+                                setCoTravellerErrors((prev) => ({
+                                  ...prev,
+                                  firstName: validateFirstName(value)
+                                }));
+                              }
+                            }}
                           />
+                          {coTravellerErrors.firstName && (
+                            <span className="field-error">{coTravellerErrors.firstName}</span>
+                          )}
                         </div>
                         
                         <div className="cotraveller-form-group">
@@ -716,38 +1383,6 @@ function ProfilePage() {
                           This helps to give us personalised travel recommendations when travelling
                         </p>
                       </div> */}
-
-                      {/* Preferences */}
-                      <div className="cotraveller-form-grid">
-                        <div className="cotraveller-form-group">
-                          <label>MEAL PREFERENCE</label>
-                          <select 
-                            value={coTravellerForm.mealPreference}
-                            onChange={(e) => setCoTravellerForm({...coTravellerForm, mealPreference: e.target.value})}
-                          >
-                            <option value="">Select Meal Preference</option>
-                            <option value="Vegetarian">Vegetarian</option>
-                            <option value="Non-Vegetarian">Non-Vegetarian</option>
-                            <option value="Vegan">Vegan</option>
-                          </select>
-                        </div>
-                        
-                        <div className="cotraveller-form-group">
-                          <label>TRAIN BERTH PREFERENCE</label>
-                          <select 
-                            value={coTravellerForm.trainBerth}
-                            onChange={(e) => setCoTravellerForm({...coTravellerForm, trainBerth: e.target.value})}
-                          >
-                            <option value="">Select Berth Preference</option>
-                            <option value="Lower">Lower</option>
-                            <option value="Middle">Middle</option>
-                            <option value="Upper">Upper</option>
-                            <option value="Side Lower">Side Lower</option>
-                            <option value="Side Upper">Side Upper</option>
-                          </select>
-                        </div>
-                      </div>
-                    
 
                     {/* Passport Details */}
                    
@@ -821,7 +1456,7 @@ function ProfilePage() {
                       {isCoTravellerContactOpen && (
                         <div className="cotraveller-form-grid">
                           <div className="cotraveller-form-group phone-group">
-                            <label>MOBILE NUMBER</label>
+                              <label>MOBILE NUMBER <span className="required-asterisk">*</span></label>
                             <div className="phone-input-wrapper">
                               <div 
                                 className="country-code-selector"
@@ -853,11 +1488,23 @@ function ProfilePage() {
                               <input 
                                 type="tel" 
                                 placeholder="" 
-                                className="phone-input" 
+                                className={`phone-input ${coTravellerErrors.mobile ? 'field-has-error' : ''}`}
                                 value={coTravellerForm.mobile}
-                                onChange={(e) => setCoTravellerForm({...coTravellerForm, mobile: e.target.value})}
+                                onChange={(e) => {
+                                  const value = e.target.value;
+                                  setCoTravellerForm({...coTravellerForm, mobile: value});
+                                  if (coTravellerErrors.mobile) {
+                                    setCoTravellerErrors((prev) => ({
+                                      ...prev,
+                                      mobile: validateMobile(value)
+                                    }));
+                                  }
+                                }}
                               />
                             </div>
+                            {coTravellerErrors.mobile && (
+                              <span className="field-error">{coTravellerErrors.mobile}</span>
+                            )}
                           </div>
                         </div>
                       )}

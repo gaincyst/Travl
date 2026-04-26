@@ -1,16 +1,30 @@
 import express from 'express';
 import { authenticate } from '../../middleware/auth.js';
-import { successResponse } from '../../utils/response.js';
+import {
+  createCoTraveller,
+  deleteCoTraveller,
+  getCoTravellers,
+  getProfile,
+  resetPassword,
+  verifyCurrentPassword,
+  updateCoTraveller,
+  updateProfile
+} from './profile.controller.js';
 
 const router = express.Router();
 
-// Example protected route - GET /api/profile
-router.get('/', authenticate, (req, res) => {
-  // This is a placeholder for future profile implementation
-  return successResponse(res, 200, 'Profile endpoint (coming soon)', {
-    userId: req.user.userId,
-    email: req.user.email
-  });
-});
+router.use(authenticate);
+
+// Profile
+router.get('/', getProfile);
+router.put('/', updateProfile);
+router.put('/password', resetPassword);
+router.post('/password/verify', verifyCurrentPassword);
+
+// Co-travellers
+router.get('/cotravellers', getCoTravellers);
+router.post('/cotravellers', createCoTraveller);
+router.put('/cotravellers/:id', updateCoTraveller);
+router.delete('/cotravellers/:id', deleteCoTraveller);
 
 export default router;

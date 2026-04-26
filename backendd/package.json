@@ -5,8 +5,9 @@
   "main": "server.js",
   "type": "module",
   "scripts": {
-    "start": "node server.js",
-    "dev": "node --watch server.js"
+    "migrate": "node src/scripts/migrate.js",
+    "start": "npm run migrate && node server.js",
+    "dev": "npm run migrate && node --watch server.js"
   },
   "keywords": ["travel", "api", "backend"],
   "author": "",
