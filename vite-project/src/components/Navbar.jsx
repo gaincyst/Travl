@@ -18,6 +18,7 @@ import {
   FaTachometerAlt
 } from "react-icons/fa";
 import AuthModal from "../components/AuthModal";
+import Avatar from "../components/Avatar";
 import { useAuth } from "../context/AuthContext";
 
 
@@ -233,13 +234,11 @@ function Navbar() {
             className="profile-avatar-container"
             ref={profileDropdownRef}
           >
-            <div 
-              className="profile-avatar"
-              style={getGradientStyle(currentUser.name)}
+            <Avatar
+              user={currentUser}
+              size="medium"
               onClick={() => setShowProfileDropdown(!showProfileDropdown)}
-            >
-              {getInitial(currentUser.name)}
-            </div>
+            />
             
             {showProfileDropdown && (
               <div className="profile-dropdown-menu">

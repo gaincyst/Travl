@@ -14,6 +14,8 @@ export const API_ENDPOINTS = {
   
   // Profile (Protected)
   PROFILE: `${API_BASE_URL}/profile`,
+  PROFILE_AVATAR: `${API_BASE_URL}/profile/avatar`,
+  PROFILE_AVATAR_DELETE: `${API_BASE_URL}/profile/avatar/delete`,
   PROFILE_PASSWORD: `${API_BASE_URL}/profile/password`,
   PROFILE_PASSWORD_VERIFY: `${API_BASE_URL}/profile/password/verify`,
   
@@ -21,13 +23,18 @@ export const API_ENDPOINTS = {
   HEALTH: `${API_BASE_URL}/health`,
 };
 
-// Helper function to get auth headers
-export const getAuthHeaders = () => {
+// Helper function to get auth headers (without Content-Type for multipart/form-data)
+export const getAuthHeaders = (includeContentType = true) => {
   const token = localStorage.getItem("token");
-  return {
-    "Content-Type": "application/json",
+  const headers = {
     ...(token && { Authorization: `Bearer ${token}` }),
   };
+  
+  if (includeContentType) {
+    headers["Content-Type"] = "application/json";
+  }
+  
+  return headers;
 };
 
 // API call wrapper with error handling
@@ -36,7 +43,7 @@ export const apiCall = async (url, options = {}) => {
     const response = await fetch(url, {
       ...options,
       headers: {
-        ...getAuthHeaders(),
+        ...getAuthHeaders(true),
         ...options.headers,
       },
     });

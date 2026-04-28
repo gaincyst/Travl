@@ -3,6 +3,10 @@ import { errorResponse } from '../utils/response.js';
 
 export const authenticate = (req, res, next) => {
   try {
+    if (req.method === 'OPTIONS') {
+      return next();
+    }
+
     // Get token from Authorization header
     const authHeader = req.headers.authorization;
     

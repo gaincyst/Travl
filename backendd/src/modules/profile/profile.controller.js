@@ -7,7 +7,9 @@ import {
   resetPasswordByUserId,
   verifyCurrentPasswordByUserId,
   updateCoTravellerByUserId,
-  upsertProfileByUserId
+  upsertProfileByUserId,
+  updateAvatarByUserId,
+  deleteAvatarByUserId
 } from './profile.service.js';
 
 const getValidatedCoTravellerId = (req, res) => {
@@ -146,5 +148,40 @@ export const deleteCoTraveller = async (req, res) => {
     return successResponse(res, 200, 'Co-traveller deleted successfully', result);
   } catch (error) {
     return handleControllerError(res, error, 'Failed to delete co-traveller');
+  }
+};
+
+export const uploadAvatar = async (req, res) => {
+  const userId = req.user.userId;
+  console.log(`[Profile][POST /api/profile/avatar] userId=${userId}`);
+
+  try {
+    if (!req.file) {
+      return errorResponse(res, 400, 'No file uploaded. Please provide an image file.');
+    }
+
+    const avatarUrl = await updateAvatarByUserId(userId, req.file);
+
+    return successResponse(res, 200, 'Avatar uploaded successfully', {
+      success: true,
+      avatarUrl: avatarUrl
+    });
+  } catch (error) {
+    return handleControllerError(res, error, 'Failed to upload avatar');
+  }
+};
+
+export const deleteAvatar = async (req, res) => {
+  const userId = req.user.userId;
+  console.log(`[Profile][DELETE /api/profile/avatar] userId=${userId}`);
+
+  try {
+    await deleteAvatarByUserId(userId);
+    return successResponse(res, 200, 'Avatar deleted successfully', {
+      success: true,
+      avatarUrl: null
+    });
+  } catch (error) {
+    return handleControllerError(res, error, 'Failed to delete avatar');
   }
 };

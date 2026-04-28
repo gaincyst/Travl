@@ -14,6 +14,7 @@ import {
 import SearchBox from "./SearchBox";
 import HotelFiltersPanel from "./HotelFiltersPanel";
 import AuthModal from "./AuthModal";
+import Avatar from "./Avatar";
 import { useAuth } from "../context/AuthContext";
 import "../styles/HotelResults.css";
 
@@ -318,13 +319,11 @@ function HotelResults() {
 
             {isLoggedIn && currentUser ? (
               <div className="profile-avatar-container" ref={profileDropdownRef}>
-                <div
-                  className="profile-avatar"
-                  style={getGradientStyle(currentUser.name)}
+                <Avatar
+                  user={currentUser}
+                  size="medium"
                   onClick={() => setShowProfileDropdown(!showProfileDropdown)}
-                >
-                  {getInitial(currentUser.name)}
-                </div>
+                />
 
                 {showProfileDropdown && (
                   <div className="profile-dropdown-menu">

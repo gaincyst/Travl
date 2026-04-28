@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import MyTripsNavbar from "../components/MyTripsNavbar";
-import { logout, setAuthSession } from "../utils/auth";
+import ProfileAvatar from "../components/ProfileAvatar";
+import { logout } from "../utils/auth";
 import { useAuth } from "../context/AuthContext";
 import { API_ENDPOINTS, getAuthHeaders } from "../utils/api";
-import { FaCamera, FaPhone, FaEnvelope, FaUser, FaUsers, FaSignOutAlt, FaTrash, FaPencilAlt, FaEye, FaEyeSlash } from "react-icons/fa";
+import { FaPhone, FaEnvelope, FaUser, FaUsers, FaSignOutAlt, FaTrash, FaPencilAlt, FaEye, FaEyeSlash } from "react-icons/fa";
 import "../styles/ProfilePage.css";
 
 function ProfilePage() {
   const navigate = useNavigate();
-  const { currentUser } = useAuth();
+  const { currentUser, updateUser } = useAuth();
   const [activeTab, setActiveTab] = useState("profile");
   const [phoneNumber, setPhoneNumber] = useState('');
   const [isContactDetailsOpen, setIsContactDetailsOpen] = useState(false);
@@ -84,6 +85,7 @@ function ProfilePage() {
   });
   const [isVerifyingOldPassword, setIsVerifyingOldPassword] = useState(false);
   const [isOldPasswordMatched, setIsOldPasswordMatched] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState(null);
 
   const mapApiCoTravellerToForm = (traveller = {}) => ({
     id: traveller.id,
@@ -443,6 +445,12 @@ function ProfilePage() {
         setProfileForm(normalizedProfile);
         setPhoneNumber(normalizedProfile.mobile || currentUser?.mobile || '');
         setSavedCoTravellers((result.data.coTravellers || []).map(mapApiCoTravellerToForm));
+        
+        // Load avatar URL from profile
+        if (result.data.profile?.avatarUrl) {
+          setAvatarUrl(result.data.profile.avatarUrl);
+          updateUser?.({ avatarUrl: result.data.profile.avatarUrl, avatar_url: result.data.profile.avatarUrl });
+        }
       } catch (error) {
         console.error('Failed to load profile:', error);
         setPhoneNumber(currentUser?.mobile || '');
@@ -590,12 +598,12 @@ function ProfilePage() {
 
       if (result.data?.user) {
         const updatedUser = result.data.user;
-        setAuthSession({
-          user: {
-            userId: updatedUser.id ?? currentUser?.userId,
-            name: updatedUser.name ?? currentUser?.name ?? '',
-            email: updatedUser.email ?? currentUser?.email ?? ''
-          }
+        updateUser?.({
+          userId: updatedUser.id ?? currentUser?.userId,
+          name: updatedUser.name ?? currentUser?.name ?? '',
+          email: updatedUser.email ?? currentUser?.email ?? '',
+          avatarUrl: result.data?.profile?.avatarUrl ?? currentUser?.avatarUrl ?? avatarUrl ?? null,
+          avatar_url: result.data?.profile?.avatarUrl ?? currentUser?.avatar_url ?? avatarUrl ?? null
         });
       }
 
@@ -833,11 +841,14 @@ function ProfilePage() {
          
           
           <div className="profile-hero-info">
-            <div className="profile-avatar-large">
-              <FaCamera className="camera-icon" />
-              <span className="add-photo-text">Add Photo</span>
-            </div>
-            
+            <ProfileAvatar
+              user={currentUser}
+              avatarUrl={avatarUrl}
+              displayName={currentUser?.name || 'Guest'}
+              onAvatarChange={setAvatarUrl}
+              size={120}
+            />
+
             <div className="profile-user-info">
               <h1 className="profile-username">{currentUser?.name || 'Guest'}</h1>
               <div className="profile-contact-quick">

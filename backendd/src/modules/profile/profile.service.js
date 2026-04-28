@@ -1,5 +1,7 @@
 import { pool } from '../../config/database.js';
+import { cloudinary } from '../../config/cloudinary.js';
 import bcrypt from 'bcryptjs';
+import { Readable } from 'node:stream';
 
 const ALLOWED_GENDERS = new Set(['Male', 'Female', 'Other']);
 
@@ -562,4 +564,87 @@ export const deleteCoTravellerByUserId = async (userId, coTravellerId) => {
   }
 
   return { id: coTravellerId };
+};
+
+export const updateAvatarByUserId = async (userId, file) => {
+  await ensureUserExists(userId);
+
+  if (!file) {
+    throw makeServiceError('No file provided', 400);
+  }
+
+  // const [existingProfiles] = await pool.query(
+  //   'SELECT id FROM user_profiles WHERE user_id = ? LIMIT 1',
+  //   [userId]
+  // );
+
+  // if (existingProfiles.length === 0) {
+  //   throw makeServiceError('Profile not found', 404);
+  // }
+
+  return new Promise((resolve, reject) => {
+    // Create upload stream for Cloudinary
+    const uploadStream = cloudinary.uploader.upload_stream(
+      {
+        folder: 'voyago_profiles', // Store images in voyago_profiles folder
+        resource_type: 'image',
+        public_id: `user_${userId}_avatar`
+      },
+      async (error, result) => {
+        if (error) {
+          console.error('[Profile] Cloudinary upload error:', error);
+          reject(makeServiceError('Failed to upload image to Cloudinary', 500));
+          return;
+        }
+
+        try {
+          // Get the secure URL from Cloudinary response
+          
+
+          // Update avatar_url in user_profiles table
+          const avatarUrl = result.secure_url;
+
+await pool.query(`
+  INSERT INTO user_profiles (user_id, avatar_url)
+  VALUES (?, ?)
+  ON DUPLICATE KEY UPDATE
+    avatar_url = VALUES(avatar_url),
+    updated_at = NOW()
+`, [userId, avatarUrl]);
+
+console.log(`[Profile] Avatar uploaded successfully for userId=${userId}`);
+resolve(avatarUrl);
+
+          console.log(`[Profile] Avatar uploaded successfully for userId=${userId}`);
+          resolve(avatarUrl);
+        } catch (dbError) {
+          console.error('[Profile] Database update error:', dbError);
+          reject(makeServiceError('Failed to save avatar URL to database', 500));
+        }
+      }
+    );
+
+    // Pipe the file buffer to the upload stream
+    Readable.from(file.buffer).pipe(uploadStream);
+  });
+};
+
+export const deleteAvatarByUserId = async (userId) => {
+  await ensureUserExists(userId);
+
+  const [existingProfiles] = await pool.query(
+    'SELECT id FROM user_profiles WHERE user_id = ? LIMIT 1',
+    [userId]
+  );
+
+  if (existingProfiles.length === 0) {
+    throw makeServiceError('Profile not found', 404);
+  }
+
+  await pool.query(
+    'UPDATE user_profiles SET avatar_url = NULL, updated_at = NOW() WHERE user_id = ?',
+    [userId]
+  );
+
+  return { avatarUrl: null };
 };

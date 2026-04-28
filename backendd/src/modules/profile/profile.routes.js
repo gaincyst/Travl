@@ -1,5 +1,6 @@
 import express from 'express';
 import { authenticate } from '../../middleware/auth.js';
+import { uploadAvatar as multerUpload } from '../../config/multer.js';
 import {
   createCoTraveller,
   deleteCoTraveller,
@@ -8,7 +9,9 @@ import {
   resetPassword,
   verifyCurrentPassword,
   updateCoTraveller,
-  updateProfile
+  updateProfile,
+  uploadAvatar,
+  deleteAvatar
 } from './profile.controller.js';
 
 const router = express.Router();
@@ -20,6 +23,11 @@ router.get('/', getProfile);
 router.put('/', updateProfile);
 router.put('/password', resetPassword);
 router.post('/password/verify', verifyCurrentPassword);
+
+// Avatar upload
+router.post('/avatar', multerUpload.single('avatar'), uploadAvatar);
+router.delete('/avatar', deleteAvatar);
+router.post('/avatar/delete', deleteAvatar);
 
 // Co-travellers
 router.get('/cotravellers', getCoTravellers);

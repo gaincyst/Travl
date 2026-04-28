@@ -18,6 +18,7 @@ import SearchBox from "./SearchBox";
 import AuthModal from "./AuthModal";
 import FlightBookingPanel from "./FlightBookingPanel";
 import RoundTripSummaryBar from "./RoundTripSummaryBar";
+import Avatar from "./Avatar";
 import { useAuth } from "../context/AuthContext";
 import "../styles/FlightResults.css";
 
@@ -587,13 +588,11 @@ function FlightResults() {
 
             {isLoggedIn && currentUser ? (
               <div className="profile-avatar-container" ref={profileDropdownRef}>
-                <div
-                  className="profile-avatar"
-                  style={getGradientStyle(currentUser.name)}
+                <Avatar
+                  user={currentUser}
+                  size="medium"
                   onClick={() => setShowProfileDropdown(!showProfileDropdown)}
-                >
-                  {getInitial(currentUser.name)}
-                </div>
+                />
 
                 {showProfileDropdown && (
                   <div className="profile-dropdown-menu">

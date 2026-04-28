@@ -21,6 +21,7 @@ import {
 import HotelSearchHeader from "../components/HotelSearchHeader";
 import AuthModal from "../components/AuthModal";
 import Footer from "../components/Footer";
+import Avatar from "../components/Avatar";
 import { useAuth } from "../context/AuthContext";
 import "../styles/HotelBooking.css";
 
@@ -295,13 +296,11 @@ const getGradientStyle = (name) => {
 
             {isLoggedIn && currentUser ? (
               <div className="profile-avatar-container" ref={profileDropdownRef}>
-                <div
-                  className="profile-avatar"
-                  style={getGradientStyle(currentUser.name)}
+                <Avatar
+                  user={currentUser}
+                  size="medium"
                   onClick={() => setShowProfileDropdown(!showProfileDropdown)}
-                >
-                  {getInitial(currentUser.name)}
-                </div>
+                />
 
                 {showProfileDropdown && (
                   <div className="profile-dropdown-menu">
