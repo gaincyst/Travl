@@ -11,7 +11,6 @@
   border: 2px solid rgba(255, 255, 255, 0.88);
   box-shadow: 0 6px 18px rgba(15, 23, 42, 0.18);
   transition: transform 180ms ease, box-shadow 180ms ease, opacity 180ms ease;
-  position: relative;
 }
 
 .avatar:hover {

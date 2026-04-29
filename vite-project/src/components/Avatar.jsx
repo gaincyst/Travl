@@ -14,7 +14,7 @@ function Avatar({ user, size = 'medium', className = '', onClick }) {
   const sizeClass = typeof size === 'string' ? `avatar--${size}` : '';
   const resolvedSize = typeof size === 'number' ? `${size}px` : undefined;
   const shouldShowImage = Boolean(imageSrc);
-
+  
   return (
     <div
       className={`avatar ${sizeClass} ${className}`.trim()}
