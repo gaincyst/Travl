@@ -1,5 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { Country, State, City } from "country-state-city";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
 import MyTripsNavbar from "../components/MyTripsNavbar";
 import ProfileAvatar from "../components/ProfileAvatar";
 import { logout } from "../utils/auth";
@@ -8,18 +11,75 @@ import { API_ENDPOINTS, getAuthHeaders } from "../utils/api";
 import { FaPhone, FaEnvelope, FaUser, FaUsers, FaSignOutAlt, FaTrash, FaPencilAlt, FaEye, FaEyeSlash } from "react-icons/fa";
 import "../styles/ProfilePage.css";
 
+const allCountries = Country.getAllCountries();
+const countryOptions = allCountries.map((country) => ({
+  isoCode: country.isoCode,
+  name: country.name,
+  phonecode: country.phonecode
+}));
+
+const normalizePhoneValue = (value = "") => String(value).replace(/\D/g, "");
+
+const normalizeCountryCodeForForm = (value = "") => {
+  const trimmedValue = String(value).trim();
+
+  if (!trimmedValue) {
+    return "";
+  }
+
+  const upperValue = trimmedValue.toUpperCase();
+  if (allCountries.some((country) => country.isoCode === upperValue)) {
+    return upperValue;
+  }
+
+  const dialCode = trimmedValue.replace(/^\+/, "");
+  const byPhoneCode = allCountries.find((country) => country.phonecode === dialCode);
+  if (byPhoneCode) {
+    return byPhoneCode.isoCode;
+  }
+
+  const byName = allCountries.find((country) => country.name.toLowerCase() === trimmedValue.toLowerCase());
+  return byName?.isoCode || "";
+};
+
+const normalizeStateCodeForForm = (value = "", countryCode = "") => {
+  const trimmedValue = String(value).trim();
+
+  if (!trimmedValue || !countryCode) {
+    return "";
+  }
+
+  const states = State.getStatesOfCountry(countryCode);
+  const upperValue = trimmedValue.toUpperCase();
+
+  if (states.some((state) => state.isoCode === upperValue)) {
+    return upperValue;
+  }
+
+  const byName = states.find((state) => state.name.toLowerCase() === trimmedValue.toLowerCase());
+  return byName?.isoCode || "";
+};
+
+const getFilteredCityOptions = (cities = [], searchText = "") => {
+  if (!searchText.trim()) {
+    return cities.slice(0, 10);
+  }
+
+  const lowerSearch = searchText.toLowerCase();
+  return cities.filter((city) => city.name.toLowerCase().includes(lowerSearch)).slice(0, 10);
+};
+
 function ProfilePage() {
   const navigate = useNavigate();
   const { currentUser, updateUser } = useAuth();
   const [activeTab, setActiveTab] = useState("profile");
+  const cityAutocompleteWrapperRef = useRef(null);
   const [phoneNumber, setPhoneNumber] = useState('');
   const [isContactDetailsOpen, setIsContactDetailsOpen] = useState(false);
   const [isDocumentsDetailsOpen, setIsDocumentsDetailsOpen] = useState(false);
   const [isResetPasswordOpen, setIsResetPasswordOpen] = useState(false);
   const [showAddCoTraveller, setShowAddCoTraveller] = useState(false);
   const [selectedRelationship, setSelectedRelationship] = useState('');
-  const [selectedCountryCode, setSelectedCountryCode] = useState({ code: '+91', flag: '🇮🇳', name: 'India' });
-  const [showCountryDropdown, setShowCountryDropdown] = useState(false);
   const [savedCoTravellers, setSavedCoTravellers] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [editingIndex, setEditingIndex] = useState(null);
@@ -32,6 +92,12 @@ function ProfilePage() {
   const [isCoTravellerContactOpen, setIsCoTravellerContactOpen] = useState(false);
   const [isSavingProfile, setIsSavingProfile] = useState(false);
   const [isSavingCoTraveller, setIsSavingCoTraveller] = useState(false);
+  const [isCitySelected, setIsCitySelected] = useState(false);
+  const [cities, setCities] = useState([]);
+  const [filteredCities, setFilteredCities] = useState([]);
+  const [cityInput, setCityInput] = useState('');
+  const [selectedCity, setSelectedCity] = useState('');
+  const [showCityDropdown, setShowCityDropdown] = useState(false);
   const [profileForm, setProfileForm] = useState({
     firstMiddleName: '',
     lastName: '',
@@ -40,7 +106,7 @@ function ProfilePage() {
     nationality: '',
     cityOfResidence: '',
     state: '',
-    countryCode: '+91',
+    countryCode: '',
     mobile: '',
     passportNo: '',
     passportExpiryDate: '',
@@ -65,6 +131,7 @@ function ProfilePage() {
   const [profileTouched, setProfileTouched] = useState({
     firstMiddleName: false,
     lastName: false,
+    countryCode: false,
     state: false,
     cityOfResidence: false,
     mobile: false
@@ -72,6 +139,8 @@ function ProfilePage() {
   const [profileErrors, setProfileErrors] = useState({
     firstMiddleName: '',
     lastName: '',
+    countryCode: '',
+    state: '',
     cityOfResidence: '',
     mobile: ''
   });
@@ -100,7 +169,7 @@ function ProfilePage() {
     passportNo: traveller.passportNo || '',
     expiryDate: traveller.passportExpiryDate || '',
     issuingCountry: traveller.issuingCountry || '',
-    mobile: traveller.mobile || '',
+    mobile: normalizePhoneValue(traveller.mobile || ''),
     email: traveller.email || ''
   });
 
@@ -116,7 +185,7 @@ function ProfilePage() {
     passportNo: traveller.passportNo,
     passportExpiryDate: traveller.expiryDate,
     issuingCountry: traveller.issuingCountry,
-    mobile: traveller.mobile,
+    mobile: traveller.mobile ? `+${normalizePhoneValue(traveller.mobile)}` : '',
     email: traveller.email
   });
 
@@ -141,21 +210,25 @@ function ProfilePage() {
     return '';
   };
 
-  const normalizeProfileFromApi = (profile = {}) => ({
-    firstMiddleName: profile.firstMiddleName || '',
-    lastName: profile.lastName || '',
-    gender: profile.gender || '',
-    dateOfBirth: toDateInputValue(profile.dateOfBirth),
-    nationality: profile.nationality || '',
-    cityOfResidence: profile.cityOfResidence || '',
-    state: profile.state || '',
-    countryCode: profile.countryCode || '+91',
-    mobile: profile.mobile || '',
-    passportNo: profile.passportNo || '',
-    passportExpiryDate: toDateInputValue(profile.passportExpiryDate),
-    passportIssuingCountry: profile.passportIssuingCountry || '',
-    panCardNumber: profile.panCardNumber || ''
-  });
+  const normalizeProfileFromApi = (profile = {}) => {
+    const countryCode = normalizeCountryCodeForForm(profile.countryCode || profile.country || '');
+
+    return {
+      firstMiddleName: profile.firstMiddleName || '',
+      lastName: profile.lastName || '',
+      gender: profile.gender || '',
+      dateOfBirth: toDateInputValue(profile.dateOfBirth),
+      nationality: profile.nationality || '',
+      cityOfResidence: profile.cityOfResidence || '',
+      state: normalizeStateCodeForForm(profile.state || profile.stateName || '', countryCode),
+      countryCode,
+      mobile: normalizePhoneValue(profile.mobile || ''),
+      passportNo: profile.passportNo || '',
+      passportExpiryDate: toDateInputValue(profile.passportExpiryDate),
+      passportIssuingCountry: profile.passportIssuingCountry || '',
+      panCardNumber: profile.panCardNumber || ''
+    };
+  };
 
   const toNameCase = (value = '') =>
     value
@@ -204,10 +277,12 @@ function ProfilePage() {
     return '';
   };
 
-  const getProfileValidationErrors = ({ firstMiddleName, lastName, state, cityOfResidence, mobile }) => ({
+  const getProfileValidationErrors = ({ firstMiddleName, lastName, countryCode, state, cityOfResidence, isCitySelected, mobile }) => ({
     firstMiddleName: validateFirstName(firstMiddleName),
     lastName: validateLastName(lastName),
-    cityOfResidence: !state && cityOfResidence ? 'First fill the State' : '',
+    countryCode: countryCode ? '' : 'Select Country',
+    state: countryCode && !state ? 'Select State' : '',
+    cityOfResidence: countryCode && state && (!cityOfResidence || !isCitySelected) ? 'Select a city from the list' : '',
     mobile: validateMobile(mobile)
   });
 
@@ -253,47 +328,147 @@ function ProfilePage() {
     }));
   };
 
+  const handleCountryChange = (event) => {
+    const selectedCountry = event.target.value;
+
+    setProfileTouched((prev) => ({
+      ...prev,
+      countryCode: true,
+      state: false,
+      cityOfResidence: false
+    }));
+    setProfileForm((prev) => ({
+      ...prev,
+      countryCode: selectedCountry,
+      state: '',
+      cityOfResidence: ''
+    }));
+    setCities([]);
+    setFilteredCities([]);
+    setCityInput('');
+    setSelectedCity('');
+    setShowCityDropdown(false);
+    setIsCitySelected(false);
+    setProfileErrors((prev) => ({
+      ...prev,
+      countryCode: selectedCountry ? '' : prev.countryCode,
+      state: '',
+      cityOfResidence: ''
+    }));
+  };
+
   const handleStateChange = (event) => {
     const selectedState = event.target.value;
 
-    setProfileTouched((prev) => ({ ...prev, state: true }));
-    setProfileForm((prev) => ({ ...prev, state: selectedState }));
+    setProfileTouched((prev) => ({ ...prev, state: true, cityOfResidence: false }));
+    setProfileForm((prev) => ({ ...prev, state: selectedState, cityOfResidence: '' }));
+    setCityInput('');
+    setSelectedCity('');
+    setShowCityDropdown(false);
+    setIsCitySelected(false);
     setProfileErrors((prev) => ({
       ...prev,
-      cityOfResidence: selectedState ? '' : prev.cityOfResidence
+      state: selectedState ? '' : prev.state,
+      cityOfResidence: ''
     }));
   };
 
   const handleCityFocus = () => {
     setProfileTouched((prev) => ({ ...prev, cityOfResidence: true }));
 
-    if (!profileForm.state) {
+    if (!profileForm.countryCode) {
       setProfileErrors((prev) => ({
         ...prev,
-        cityOfResidence: 'First fill the State'
-      }));
-    }
-  };
-
-  const handleCityChange = (event) => {
-    if (!profileForm.state) {
-      setProfileErrors((prev) => ({
-        ...prev,
-        cityOfResidence: 'First fill the State'
+        cityOfResidence: 'Select Country first'
       }));
       return;
     }
 
-    setProfileForm((prev) => ({ ...prev, cityOfResidence: event.target.value }));
-    setProfileErrors((prev) => ({ ...prev, cityOfResidence: '' }));
+    if (!profileForm.state) {
+      setProfileErrors((prev) => ({
+        ...prev,
+        cityOfResidence: 'Select State first'
+      }));
+      return;
+    }
+
+    if (filteredCities.length > 0) {
+      setShowCityDropdown(true);
+    }
   };
 
-  const handleMobileChange = (event) => {
-    const value = event.target.value;
-    setPhoneNumber(value);
+  const handleCityChange = (event) => {
+    if (!profileForm.countryCode) {
+      setProfileErrors((prev) => ({
+        ...prev,
+        cityOfResidence: 'Select Country first'
+      }));
+      return;
+    }
+
+    const typedValue = event.target.value;
+
+    setCityInput(typedValue);
+    setProfileForm((prev) => ({ ...prev, cityOfResidence: typedValue }));
+    setSelectedCity('');
+    setIsCitySelected(false);
+    setFilteredCities(getFilteredCityOptions(cities, typedValue));
+    setShowCityDropdown(Boolean(typedValue.trim()));
+
+    if (profileTouched.cityOfResidence) {
+      setProfileErrors((prev) => ({
+        ...prev,
+        cityOfResidence: profileForm.state ? 'Select a city from the list' : 'Select State first'
+      }));
+    }
+  };
+
+  const handleCitySelect = (cityName) => {
+    setCityInput(cityName);
+    setSelectedCity(cityName);
+    setProfileForm((prev) => ({ ...prev, cityOfResidence: cityName }));
+    setIsCitySelected(true);
+    setShowCityDropdown(false);
+    setProfileErrors((prev) => ({
+      ...prev,
+      cityOfResidence: ''
+    }));
+  };
+
+  const handleCityBlur = () => {
+    window.setTimeout(() => {
+      setShowCityDropdown(false);
+      setProfileTouched((prev) => ({ ...prev, cityOfResidence: true }));
+
+      if (!profileForm.countryCode) {
+        setProfileErrors((prev) => ({
+          ...prev,
+          cityOfResidence: 'Select Country first'
+        }));
+        return;
+      }
+
+      if (!profileForm.state) {
+        setProfileErrors((prev) => ({
+          ...prev,
+          cityOfResidence: 'Select State first'
+        }));
+        return;
+      }
+
+      setProfileErrors((prev) => ({
+        ...prev,
+        cityOfResidence: selectedCity && cityInput === selectedCity ? '' : 'Select a city from the list'
+      }));
+    }, 120);
+  };
+
+  const handleMobileChange = (value) => {
+    const normalizedValue = normalizePhoneValue(value);
+    setPhoneNumber(normalizedValue);
 
     if (profileTouched.mobile) {
-      setProfileErrors((prev) => ({ ...prev, mobile: validateMobile(value) }));
+      setProfileErrors((prev) => ({ ...prev, mobile: validateMobile(normalizedValue) }));
     }
   };
 
@@ -368,60 +543,6 @@ function ProfilePage() {
     }
   };
 
-  const countryCodes = [
-    { code: '+93', flag: '🇦🇫', name: 'Afghanistan' },
-    { code: '+355', flag: '🇦🇱', name: 'Albania' },
-    { code: '+213', flag: '🇩🇿', name: 'Algeria' },
-    { code: '+1', flag: '🇺🇸', name: 'United States' },
-    { code: '+44', flag: '🇯🇪', name: 'Jersey' },
-    { code: '+962', flag: '🇯🇴', name: 'Jordan' },
-    { code: '+7', flag: '🇰🇿', name: 'Kazakhstan' },
-    { code: '+254', flag: '🇰🇪', name: 'Kenya' },
-    { code: '+686', flag: '🇰🇮', name: 'Kiribati' },
-    { code: '+82', flag: '🇰🇷', name: 'Korea, Republic of South Korea' },
-    { code: '+383', flag: '🇽🇰', name: 'Kosovo' },
-    { code: '+965', flag: '🇰🇼', name: 'Kuwait' },
-    { code: '+996', flag: '🇰🇬', name: 'Kyrgyzstan' },
-    { code: '+856', flag: '🇱🇦', name: 'Laos' },
-    { code: '+371', flag: '🇱🇻', name: 'Latvia' },
-    { code: '+961', flag: '🇱🇧', name: 'Lebanon' },
-    { code: '+356', flag: '🇲🇹', name: 'Malta' },
-    { code: '+692', flag: '🇲🇭', name: 'Marshall Islands' },
-    { code: '+596', flag: '🇲🇶', name: 'Martinique' },
-    { code: '+222', flag: '🇲🇷', name: 'Mauritania' },
-    { code: '+230', flag: '🇲🇺', name: 'Mauritius' },
-    { code: '+262', flag: '🇾🇹', name: 'Mayotte' },
-    { code: '+52', flag: '🇲🇽', name: 'Mexico' },
-    { code: '+691', flag: '🇫🇲', name: 'Micronesia' },
-    { code: '+91', flag: '🇮🇳', name: 'India' },
-    { code: '+92', flag: '🇵🇰', name: 'Pakistan' },
-    { code: '+86', flag: '🇨🇳', name: 'China' },
-    { code: '+81', flag: '🇯🇵', name: 'Japan' },
-    { code: '+61', flag: '🇦🇺', name: 'Australia' },
-    { code: '+55', flag: '🇧🇷', name: 'Brazil' },
-    { code: '+33', flag: '🇫🇷', name: 'France' },
-    { code: '+49', flag: '🇩🇪', name: 'Germany' },
-    { code: '+39', flag: '🇮🇹', name: 'Italy' },
-    { code: '+34', flag: '🇪🇸', name: 'Spain' },
-    { code: '+7', flag: '🇷🇺', name: 'Russia' },
-    { code: '+1', flag: '🇨🇦', name: 'Canada' },
-    { code: '+64', flag: '🇳🇿', name: 'New Zealand' },
-    { code: '+27', flag: '🇿🇦', name: 'South Africa' },
-    { code: '+234', flag: '🇳🇬', name: 'Nigeria' },
-    { code: '+20', flag: '🇪🇬', name: 'Egypt' },
-    { code: '+971', flag: '🇦🇪', name: 'UAE' },
-    { code: '+966', flag: '🇸🇦', name: 'Saudi Arabia' },
-    { code: '+90', flag: '🇹🇷', name: 'Turkey' },
-    { code: '+66', flag: '🇹🇭', name: 'Thailand' },
-    { code: '+65', flag: '🇸🇬', name: 'Singapore' },
-    { code: '+60', flag: '🇲🇾', name: 'Malaysia' },
-    { code: '+63', flag: '🇵🇭', name: 'Philippines' },
-    { code: '+84', flag: '🇻🇳', name: 'Vietnam' },
-    { code: '+880', flag: '🇧🇩', name: 'Bangladesh' },
-    { code: '+94', flag: '🇱🇰', name: 'Sri Lanka' },
-    { code: '+977', flag: '🇳🇵', name: 'Nepal' },
-  ];
-
   useEffect(() => {
     const loadProfile = async () => {
       try {
@@ -431,19 +552,22 @@ function ProfilePage() {
         });
 
         if (!response.ok) {
-          setPhoneNumber(currentUser?.mobile || '');
+          setPhoneNumber(normalizePhoneValue(currentUser?.mobile || ''));
           return;
         }
 
         const result = await response.json();
         if (!result.success || !result.data) {
-          setPhoneNumber(currentUser?.mobile || '');
+          setPhoneNumber(normalizePhoneValue(currentUser?.mobile || ''));
           return;
         }
 
         const normalizedProfile = normalizeProfileFromApi(result.data.profile || {});
         setProfileForm(normalizedProfile);
-        setPhoneNumber(normalizedProfile.mobile || currentUser?.mobile || '');
+        setPhoneNumber(normalizePhoneValue(normalizedProfile.mobile || currentUser?.mobile || ''));
+        setCityInput(normalizedProfile.cityOfResidence || '');
+        setSelectedCity(normalizedProfile.cityOfResidence || '');
+        setIsCitySelected(Boolean(normalizedProfile.cityOfResidence));
         setSavedCoTravellers((result.data.coTravellers || []).map(mapApiCoTravellerToForm));
         
         // Load avatar URL from profile
@@ -453,12 +577,38 @@ function ProfilePage() {
         }
       } catch (error) {
         console.error('Failed to load profile:', error);
-        setPhoneNumber(currentUser?.mobile || '');
+        setPhoneNumber(normalizePhoneValue(currentUser?.mobile || ''));
       }
     };
 
     loadProfile();
   }, [currentUser]);
+
+  useEffect(() => {
+    if (!profileForm.countryCode || !profileForm.state) {
+      setCities([]);
+      setFilteredCities([]);
+      setShowCityDropdown(false);
+      return;
+    }
+
+    const stateCities = City.getCitiesOfState(profileForm.countryCode, profileForm.state) || [];
+    setCities(stateCities);
+    setFilteredCities(getFilteredCityOptions(stateCities, cityInput));
+  }, [profileForm.countryCode, profileForm.state, cityInput]);
+
+  useEffect(() => {
+    const handleOutsideClick = (event) => {
+      if (!cityAutocompleteWrapperRef.current?.contains(event.target)) {
+        setShowCityDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleOutsideClick);
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick);
+    };
+  }, []);
 
   const handleLogoutClick = () => {
     setShowLogoutModal(true);
@@ -532,25 +682,29 @@ function ProfilePage() {
   };
 
   const handleProfileSave = async () => {
+    const normalizedMobile = normalizePhoneValue(phoneNumber);
     const normalizedProfile = {
       ...profileForm,
       firstMiddleName: profileForm.firstMiddleName.trim(),
       lastName: profileForm.lastName.trim(),
-      cityOfResidence: profileForm.cityOfResidence,
-      mobile: phoneNumber.trim()
+      cityOfResidence: selectedCity,
+      mobile: normalizedMobile
     };
 
     const validationErrors = getProfileValidationErrors({
       firstMiddleName: normalizedProfile.firstMiddleName,
       lastName: normalizedProfile.lastName,
+      countryCode: normalizedProfile.countryCode,
       state: normalizedProfile.state,
       cityOfResidence: normalizedProfile.cityOfResidence,
+      isCitySelected,
       mobile: normalizedProfile.mobile
     });
 
     setProfileTouched({
       firstMiddleName: true,
       lastName: true,
+      countryCode: true,
       state: true,
       cityOfResidence: true,
       mobile: true
@@ -574,10 +728,12 @@ function ProfilePage() {
         gender: profileForm.gender,
         dateOfBirth: profileForm.dateOfBirth,
         nationality: profileForm.nationality,
-        cityOfResidence: profileForm.cityOfResidence,
+        cityOfResidence: normalizedProfile.cityOfResidence,
         state: profileForm.state,
+        country: normalizedProfile.countryCode,
         countryCode: profileForm.countryCode,
-        mobile: normalizedProfile.mobile,
+        phone: normalizedMobile ? `+${normalizedMobile}` : '',
+        mobile: normalizedMobile ? `+${normalizedMobile}` : '',
         passportNo: profileForm.passportNo,
         passportExpiryDate: profileForm.passportExpiryDate,
         passportIssuingCountry: profileForm.passportIssuingCountry,
@@ -609,7 +765,10 @@ function ProfilePage() {
 
       const updatedProfile = normalizeProfileFromApi(result.data?.profile || {});
       setProfileForm(updatedProfile);
-      setPhoneNumber(updatedProfile.mobile || '');
+      setPhoneNumber(normalizePhoneValue(updatedProfile.mobile || ''));
+      setCityInput(updatedProfile.cityOfResidence || '');
+      setSelectedCity(updatedProfile.cityOfResidence || '');
+      setIsCitySelected(Boolean(updatedProfile.cityOfResidence));
       setSavedCoTravellers((result.data?.coTravellers || []).map(mapApiCoTravellerToForm));
       alert('Profile saved successfully!');
     } catch (error) {
@@ -989,7 +1148,11 @@ function ProfilePage() {
                     onChange={(e) => setProfileForm({ ...profileForm, nationality: e.target.value })}
                   >
                     <option value="">Select Nationality</option>
-                    <option value="Indian">Indian</option>
+                    {countryOptions.map((country) => (
+                      <option key={country.isoCode} value={country.name}>
+                        {country.name}
+                      </option>
+                    ))}
                   </select>
                 </div>
                 
@@ -997,44 +1160,75 @@ function ProfilePage() {
                 
                 
                 
-                <div className="form-group">
-                  <label>CITY OF RESIDENCE</label>
-                  <select
+                <div className="form-group" ref={cityAutocompleteWrapperRef}>
+                  <label>CITY OF RESIDENCE <span className="required-asterisk">*</span></label>
+                  <input
                     className={profileErrors.cityOfResidence ? 'field-has-error' : ''}
-                    value={profileForm.cityOfResidence}
+                    value={cityInput}
                     onFocus={handleCityFocus}
                     onChange={handleCityChange}
-                  >
-                    <option value="">Select City</option>
-                    <option value="Kanpur">Kanpur</option>
-                    <option value="Lucknow">Lucknow</option>
-                    <option value="Unnao">Unnao</option>
-                    <option value="Meerut">Meerut</option>
-                    <option value="Mathura">Mathura</option>
-                    <option value="Gorakhpur">Gorakhpur</option>
-                  </select>
+                    onBlur={handleCityBlur}
+                    placeholder="Enter City"
+                    disabled={!profileForm.countryCode || !profileForm.state}
+                    autoComplete="off"
+                  />
+                  {showCityDropdown && profileForm.countryCode && profileForm.state && (
+                    <div className="city-suggestions-dropdown">
+                      {filteredCities.length > 0 ? (
+                        filteredCities.map((city) => (
+                          <button
+                            key={`${city.countryCode}-${city.stateCode}-${city.name}`}
+                            type="button"
+                            className="city-suggestion-item"
+                            onMouseDown={(event) => {
+                              event.preventDefault();
+                              handleCitySelect(city.name);
+                            }}
+                          >
+                            {city.name}
+                          </button>
+                        ))
+                      ) : (
+                        <div className="city-no-results">No results found</div>
+                      )}
+                    </div>
+                  )}
                   {profileErrors.cityOfResidence && <small className="field-error">{profileErrors.cityOfResidence}</small>}
                 </div>
                 
                 <div className="form-group full-width">
-                  <label>STATE</label>
+                  <label>COUNTRY <span className="required-asterisk">*</span></label>
                   <select
+                    className={profileErrors.countryCode ? 'field-has-error profile-country-select' : 'profile-country-select'}
+                    value={profileForm.countryCode}
+                    onChange={handleCountryChange}
+                  >
+                    <option value="">Select Country</option>
+                    {countryOptions.map((country) => (
+                      <option key={country.isoCode} value={country.isoCode}>
+                        {country.name}
+                      </option>
+                    ))}
+                  </select>
+                  {profileErrors.countryCode && <small className="field-error">{profileErrors.countryCode}</small>}
+                </div>
+
+                <div className="form-group full-width">
+                  <label>STATE <span className="required-asterisk">*</span></label>
+                  <select
+                    className={profileErrors.state ? 'field-has-error profile-state-select' : 'profile-state-select'}
                     value={profileForm.state}
                     onChange={handleStateChange}
+                    disabled={!profileForm.countryCode}
                   >
                     <option value="">Select State</option>
-                    <option value="Uttar Pradesh">Uttar Pradesh</option>
-                    <option value="Maharashtra">Maharashtra</option>
-                    <option value="Uttarakhand">Uttarakhand</option>
-                    <option value="Delhi">Delhi</option>
-                    <option value="Tamil Nadu">Tamil Nadu</option>
-                    <option value="Kerala">Kerala</option>
-                    <option value="Madhya Pradesh">Madhya Pradesh</option>
-                    <option value="Bihar">Bihar</option>
-                    <option value="Assam">Assam</option>
-                    <option value="Haryana">Haryana</option>
-                    <option value="Jammu & Kashmir">Jammu & Kashmir</option>
+                    {State.getStatesOfCountry(profileForm.countryCode).map((state) => (
+                      <option key={state.isoCode} value={state.isoCode}>
+                        {state.name}
+                      </option>
+                    ))}
                   </select>
+                  {profileErrors.state && <small className="field-error">{profileErrors.state}</small>}
                   <small className="form-note">Required for GST purpose on your tax invoice</small>
                 </div>
               </div>
@@ -1061,13 +1255,23 @@ function ProfilePage() {
                   <div className="form-grid">
                     <div className="form-group verified">
                       <label>MOBILE NUMBER <span className="required-asterisk">*</span></label>
-                      <div className="input-with-icon">
-                        <input
-                          type="text"
-                          className={profileErrors.mobile ? 'field-has-error' : ''}
+                      <div className={`phone-input-shell ${profileErrors.mobile ? 'field-has-error' : ''}`}>
+                        <PhoneInput
+                          country="in"
                           value={phoneNumber}
                           onChange={handleMobileChange}
                           onBlur={handleMobileBlur}
+                          enableSearch
+                          inputProps={{
+                            name: 'mobile',
+                            required: true,
+                            placeholder: 'Enter phone number',
+                            autoComplete: 'tel'
+                          }}
+                          inputClass="profile-phone-input"
+                          containerClass="profile-phone-container"
+                          buttonClass="profile-phone-country-button"
+                          dropdownClass="profile-phone-dropdown"
                         />
                         {phoneNumber && !profileErrors.mobile && <span className="verified-icon">✓</span>}
                       </div>
@@ -1124,11 +1328,11 @@ function ProfilePage() {
                         onChange={(e) => setProfileForm({ ...profileForm, passportIssuingCountry: e.target.value })}
                       >
                         <option value="">Select Country</option>
-                        <option value="India">India</option>
-                        <option value="USA">USA</option>
-                        <option value="Canada">Canada</option>
-                        <option value="North Korea">North Korea</option>
-                        <option value="Russia">Russia</option>
+                        {countryOptions.map((country) => (
+                          <option key={country.isoCode} value={country.name}>
+                            {country.name}
+                          </option>
+                        ))}
                       </select>
                     </div>
 
@@ -1368,10 +1572,11 @@ function ProfilePage() {
                             onChange={(e) => setCoTravellerForm({...coTravellerForm, nationality: e.target.value})}
                           >
                             <option value="">Select Nationality</option>
-                            <option value="India">Indian</option>
-                            <option value="American">American</option>
-                            <option value="Canadian">Canadian</option>
-                            <option value="British">British</option>
+                            {countryOptions.map((country) => (
+                              <option key={country.isoCode} value={country.name}>
+                                {country.name}
+                              </option>
+                            ))}
                           </select>
                         </div>
                       </div>
@@ -1439,11 +1644,11 @@ function ProfilePage() {
                               onChange={(e) => setCoTravellerForm({...coTravellerForm, issuingCountry: e.target.value})}
                             >
                               <option value="">Select Country</option>
-                              <option value="India">India</option>
-                              <option value="USA">USA</option>
-                              <option value="Canada">Canada</option>
-                              <option value="North Korea">North Korea</option>
-                              <option value="Russia">Russia</option>
+                              {countryOptions.map((country) => (
+                                <option key={country.isoCode} value={country.name}>
+                                  {country.name}
+                                </option>
+                              ))}
                             </select>
                           </div>
                         </div>
@@ -1468,51 +1673,29 @@ function ProfilePage() {
                         <div className="cotraveller-form-grid">
                           <div className="cotraveller-form-group phone-group">
                               <label>MOBILE NUMBER <span className="required-asterisk">*</span></label>
-                            <div className="phone-input-wrapper">
-                              <div 
-                                className="country-code-selector"
-                                onClick={() => setShowCountryDropdown(!showCountryDropdown)}
-                              >
-                                <span className="flag-icon">{selectedCountryCode.flag}</span>
-                                <span>{selectedCountryCode.code}</span>
-                                <span className="dropdown-arrow">▼</span>
-
-                                {showCountryDropdown && (
-                                  <div className="country-dropdown">
-                                    {countryCodes.map((country, index) => (
-                                      <div
-                                        key={index}
-                                        className="country-option"
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          setSelectedCountryCode(country);
-                                          setShowCountryDropdown(false);
-                                        }}
-                                      >
-                                        <span className="flag-icon">{country.flag}</span>
-                                        <span className="country-name">{country.name} ({country.code})</span>
-                                      </div>
-                                    ))}
-                                  </div>
-                                )}
-                              </div>
-                              <input 
-                                type="tel" 
-                                placeholder="" 
-                                className={`phone-input ${coTravellerErrors.mobile ? 'field-has-error' : ''}`}
-                                value={coTravellerForm.mobile}
-                                onChange={(e) => {
-                                  const value = e.target.value;
-                                  setCoTravellerForm({...coTravellerForm, mobile: value});
-                                  if (coTravellerErrors.mobile) {
-                                    setCoTravellerErrors((prev) => ({
-                                      ...prev,
-                                      mobile: validateMobile(value)
-                                    }));
-                                  }
-                                }}
-                              />
-                            </div>
+                            <PhoneInput
+                              country="in"
+                              value={coTravellerForm.mobile}
+                              onChange={(value) => {
+                                setCoTravellerForm({ ...coTravellerForm, mobile: normalizePhoneValue(value) });
+                                if (coTravellerErrors.mobile) {
+                                  setCoTravellerErrors((prev) => ({
+                                    ...prev,
+                                    mobile: validateMobile(normalizePhoneValue(value))
+                                  }));
+                                }
+                              }}
+                              inputProps={{
+                                name: 'cotraveller-mobile',
+                                required: true,
+                                placeholder: 'Enter phone number',
+                                autoComplete: 'tel'
+                              }}
+                              inputClass="cotraveller-phone-input"
+                              containerClass="cotraveller-phone-container"
+                              buttonClass="cotraveller-phone-country-button"
+                              dropdownClass="cotraveller-phone-dropdown"
+                            />
                             {coTravellerErrors.mobile && (
                               <span className="field-error">{coTravellerErrors.mobile}</span>
                             )}
