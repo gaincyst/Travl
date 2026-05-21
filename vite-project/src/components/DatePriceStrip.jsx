@@ -2,13 +2,13 @@ import React, { useRef, useState, useEffect } from "react";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import "../styles/DatePriceStrip.css";
 
-const DatePriceStrip = ({ showPrice = true }) => {
+const DatePriceStrip = ({ showPrice = true, dates: providedDates, activeDateKey = null, onDateSelect }) => {
   const scrollRef = useRef(null);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(true);
 
   // Generate dates for one month from current date (Jan 21, 2026 to Feb 21, 2026)
-  const [dates] = useState(() => {
+  const [fallbackDates] = useState(() => {
     const datesList = [];
     const startDate = new Date(2026, 0, 21); // January 21, 2026
     const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -35,7 +35,9 @@ const DatePriceStrip = ({ showPrice = true }) => {
     return datesList;
   });
 
-  const [activeDate, setActiveDate] = useState(dates[0]?.day || null);
+  const dates = Array.isArray(providedDates) ? providedDates : fallbackDates;
+  const initialActive = activeDateKey || dates[0]?.key || dates[0]?.day || null;
+  const [activeDate, setActiveDate] = useState(initialActive);
 
   const checkArrows = () => {
     if (scrollRef.current) {
@@ -59,6 +61,18 @@ const DatePriceStrip = ({ showPrice = true }) => {
     checkArrows();
   }, []);
 
+  useEffect(() => {
+    if (activeDateKey) {
+      setActiveDate(activeDateKey);
+      return;
+    }
+
+    const defaultKey = dates[0]?.key || dates[0]?.day || null;
+    if (defaultKey && defaultKey !== activeDate) {
+      setActiveDate(defaultKey);
+    }
+  }, [activeDateKey, dates, activeDate]);
+
   return (
     <div className="date-strip-container">
       {showLeftArrow && (
@@ -68,16 +82,26 @@ const DatePriceStrip = ({ showPrice = true }) => {
       )}
 
       <div className="date-scroll-wrapper" ref={scrollRef} onScroll={checkArrows}>
-        {dates.map((item, index) => (
+        {dates.map((item, index) => {
+          const itemKey = item.key || item.day || index;
+          const label = item.label || item.day;
+          const priceValue = typeof item.price === 'number' ? `₹ ${item.price.toLocaleString('en-IN')}` : item.price;
+          const isActive = activeDate === itemKey;
+
+          return (
           <div
-            key={index}
-            className={`date-card ${activeDate === item.day ? "active" : ""} ${!showPrice ? "date-only" : ""}`}
-            onClick={() => setActiveDate(item.day)}
+            key={itemKey}
+            className={`date-card ${isActive ? "active" : ""} ${!showPrice ? "date-only" : ""}`}
+            onClick={() => {
+              setActiveDate(itemKey);
+              onDateSelect?.(itemKey, item);
+            }}
           >
-            <span className="date-text">{item.day}</span>
-            {showPrice && <span className="price-text">{item.price}</span>}
+            <span className="date-text">{label}</span>
+            {showPrice && priceValue && <span className="price-text">{priceValue}</span>}
           </div>
-        ))}
+        );
+        })}
       </div>
 
       {showRightArrow && (

@@ -1,5 +1,5 @@
 // API Configuration
-const rawApiBaseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api";
+const rawApiBaseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:5001/api";
 const trimmedApiBaseUrl = rawApiBaseUrl.replace(/\/+$/, "");
 const API_BASE_URL = trimmedApiBaseUrl.endsWith("/api")
   ? trimmedApiBaseUrl
@@ -21,6 +21,14 @@ export const API_ENDPOINTS = {
   
   // Health check
   HEALTH: `${API_BASE_URL}/health`,
+
+  // Flights
+  FLIGHTS_SEARCH: `${API_BASE_URL}/flights/search`,
+  AIRPORTS_SEARCH: `${API_BASE_URL}/flights/airports/search`,
+  AIRPORTS_POPULAR: `${API_BASE_URL}/flights/airports/popular`,
+  AIRPORTS_RECENT: `${API_BASE_URL}/flights/airports/recent`,
+  RECENT_SEARCH_SAVE: `${API_BASE_URL}/flights/airports/recent`,
+  BOOKINGS: `${API_BASE_URL}/flights/bookings`,
 };
 
 // Helper function to get auth headers (without Content-Type for multipart/form-data)

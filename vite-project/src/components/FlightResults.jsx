@@ -20,6 +20,7 @@ import FlightBookingPanel from "./FlightBookingPanel";
 import RoundTripSummaryBar from "./RoundTripSummaryBar";
 import Avatar from "./Avatar";
 import { useAuth } from "../context/AuthContext";
+import { API_ENDPOINTS } from "../utils/api";
 import "../styles/FlightResults.css";
 
 function FlightResults() {
@@ -29,6 +30,16 @@ function FlightResults() {
   
   // Check if trip is round trip
   const isRoundTrip = searchData.tripType === "roundTrip";
+
+  const [flightData, setFlightData] = useState([]);
+  const [returnFlights, setReturnFlights] = useState([]);
+  const [flightLoading, setFlightLoading] = useState(false);
+  const [flightError, setFlightError] = useState(null);
+  const [filtersState, setFiltersState] = useState(null);
+  const [dateStripOutbound, setDateStripOutbound] = useState([]);
+  const [dateStripReturn, setDateStripReturn] = useState([]);
+  const [selectedDepartureDateKey, setSelectedDepartureDateKey] = useState(null);
+  const [selectedReturnDateKey, setSelectedReturnDateKey] = useState(null);
 
   // ✅ FIX 1: dark mode state added
   const [darkMode, setDarkMode] = useState(false);
@@ -48,7 +59,7 @@ function FlightResults() {
 
   // Round Trip Fare Modal State
   const [isRoundTripFareModalOpen, setIsRoundTripFareModalOpen] = useState(false);
-  const [roundTripFareTab, setRoundTripFareTab] = useState('departure'); // 'departure' or 'return'
+  const [roundTripFareTab, setRoundTripFareTab] = useState('departure');
   const [selectedDepartureFare, setSelectedDepartureFare] = useState(null);
   const [selectedReturnFare, setSelectedReturnFare] = useState(null);
 
@@ -81,7 +92,6 @@ function FlightResults() {
 
   const toggleSort = (sortKey) => {
     setSortStates(prev => {
-      // If Smart is clicked, just toggle it to active
       if (sortKey === 'smart') {
         return {
           price: null,
@@ -90,23 +100,23 @@ function FlightResults() {
           smart: 'active'
         };
       }
-      
+
       const currentState = prev[sortKey];
       let newState;
-      
+
       if (currentState === null) {
-        newState = 'asc'; // First click: ascending/primary
+        newState = 'asc';
       } else if (currentState === 'asc') {
-        newState = 'desc'; // Second click: descending/reverse
+        newState = 'desc';
       } else {
-        newState = null; // Third click: reset
+        newState = null;
       }
-      
+
       return {
         price: null,
         fastest: null,
         departure: null,
-        smart: null, // Deselect smart when any other sort is clicked
+        smart: null,
         [sortKey]: newState
       };
     });
@@ -114,7 +124,6 @@ function FlightResults() {
 
   const toggleOutboundSort = (sortKey) => {
     setOutboundSortStates(prev => {
-      // If Smart is clicked, just toggle it to active
       if (sortKey === 'smart') {
         return {
           price: null,
@@ -123,23 +132,23 @@ function FlightResults() {
           smart: 'active'
         };
       }
-      
+
       const currentState = prev[sortKey];
       let newState;
-      
+
       if (currentState === null) {
-        newState = 'asc'; // First click: ascending/primary
+        newState = 'asc';
       } else if (currentState === 'asc') {
-        newState = 'desc'; // Second click: descending/reverse
+        newState = 'desc';
       } else {
-        newState = null; // Third click: reset
+        newState = null;
       }
-      
+
       return {
         price: null,
         fastest: null,
         departure: null,
-        smart: null, // Deselect smart when any other sort is clicked
+        smart: null,
         [sortKey]: newState
       };
     });
@@ -147,7 +156,6 @@ function FlightResults() {
 
   const toggleReturnSort = (sortKey) => {
     setReturnSortStates(prev => {
-      // If Smart is clicked, just toggle it to active
       if (sortKey === 'smart') {
         return {
           price: null,
@@ -156,23 +164,23 @@ function FlightResults() {
           smart: 'active'
         };
       }
-      
+
       const currentState = prev[sortKey];
       let newState;
-      
+
       if (currentState === null) {
-        newState = 'asc'; // First click: ascending/primary
+        newState = 'asc';
       } else if (currentState === 'asc') {
-        newState = 'desc'; // Second click: descending/reverse
+        newState = 'desc';
       } else {
-        newState = null; // Third click: reset
+        newState = null;
       }
-      
+
       return {
         price: null,
         fastest: null,
         departure: null,
-        smart: null, // Deselect smart when any other sort is clicked
+        smart: null,
         [sortKey]: newState
       };
     });
@@ -185,19 +193,29 @@ function FlightResults() {
         fastest: 'Shortest First',
         departure: 'Earliest First'
       }[sortKey];
-    } else if (state === 'asc') {
+    }
+    if (state === 'asc') {
       return {
         price: 'High to Low',
         fastest: 'Shortest First',
         departure: 'Earliest First'
       }[sortKey];
-    } else {
-      return {
-        price: 'Low to High',
-        fastest: 'Longest First',
-        departure: 'Latest First'
-      }[sortKey];
     }
+    return {
+      price: 'Low to High',
+      fastest: 'Longest First',
+      departure: 'Latest First'
+    }[sortKey];
+  };
+
+  const handleDateStripSelect = (dateKey) => {
+    if (!dateKey || dateKey === selectedDepartureDateKey) return;
+    setSelectedDepartureDateKey(dateKey);
+  };
+
+  const handleReturnDateStripSelect = (dateKey) => {
+    if (!dateKey || dateKey === selectedReturnDateKey) return;
+    setSelectedReturnDateKey(dateKey);
   };
 
   const toggleTheme = () => {
@@ -205,9 +223,286 @@ function FlightResults() {
     document.body.classList.toggle("dark-theme");
   };
 
+  const formatCurrency = (value) => `₹${Number(value).toLocaleString('en-IN')}`;
+
+  const formatDateKey = (value) => {
+    if (!value) return null;
+    const date = value instanceof Date ? value : new Date(value);
+    if (Number.isNaN(date.getTime())) return null;
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  useEffect(() => {
+    setSelectedDepartureDateKey(formatDateKey(searchData.startDate));
+  }, [searchData.startDate]);
+
+  useEffect(() => {
+    setSelectedReturnDateKey(formatDateKey(searchData.returnDate));
+  }, [searchData.returnDate]);
+
+  const formatStripLabel = (dateValue) => {
+    const date = dateValue instanceof Date ? dateValue : new Date(dateValue);
+    if (Number.isNaN(date.getTime())) return '';
+    return date.toLocaleDateString('en-GB', {
+      weekday: 'short',
+      day: '2-digit',
+      month: 'short'
+    });
+  };
+
+  const buildDateRange = (baseDate, days) => {
+    const list = [];
+    for (let i = 0; i < days; i += 1) {
+      const date = new Date(baseDate);
+      date.setDate(baseDate.getDate() + i);
+      list.push(date);
+    }
+    return list;
+  };
+
+  const buildStripPlaceholders = (baseDate, days) =>
+    buildDateRange(baseDate, days).map((dateValue) => ({
+      key: formatDateKey(dateValue) || formatStripLabel(dateValue),
+      label: formatStripLabel(dateValue),
+      price: null
+    }));
+
+  const fetchDateStripPrices = async ({ fromCode, toCode, baseDate, days, setState }) => {
+    const dateRange = buildDateRange(baseDate, days);
+
+    const items = await Promise.all(dateRange.map(async (dateValue) => {
+      const dateKey = formatDateKey(dateValue);
+      const label = formatStripLabel(dateValue);
+
+      if (!dateKey) {
+        return { key: label, label, price: null };
+      }
+
+      try {
+        const response = await fetch(
+          `${API_ENDPOINTS.FLIGHTS_SEARCH}?from=${encodeURIComponent(fromCode)}&to=${encodeURIComponent(toCode)}&tripType=oneWay&date=${dateKey}`
+        );
+        const payload = await response.json();
+        const flights = payload?.data?.flights || payload?.data?.outbound || [];
+        const minPrice = flights.reduce((min, flight) => {
+          const value = Number(flight.price);
+          if (!value || Number.isNaN(value)) return min;
+          return min === null || value < min ? value : min;
+        }, null);
+
+        return { key: dateKey, label, price: minPrice };
+      } catch (error) {
+        console.error('Date strip price error:', error);
+        return { key: dateKey, label, price: null };
+      }
+    }));
+
+    setState(items);
+  };
+
+  const parsePriceValue = (priceString) => {
+    if (!priceString) return 0;
+    return parseInt(String(priceString).replace(/[^0-9]/g, ""), 10) || 0;
+  };
+
+  const formatDuration = (minutes) => {
+    const total = Number(minutes) || 0;
+    const hours = Math.floor(total / 60);
+    const mins = total % 60;
+    return `${hours}h ${mins}m`;
+  };
+
+  const formatTime = (timeValue) => {
+    if (!timeValue) return "";
+    const parts = String(timeValue).split(":");
+    return `${parts[0].padStart(2, '0')}:${parts[1].padStart(2, '0')}`;
+  };
+
+  const buildDateTime = (baseDate, timeValue) => {
+    const date = baseDate ? new Date(baseDate) : new Date();
+    const [hours, minutes] = formatTime(timeValue).split(":").map(Number);
+    date.setHours(hours || 0, minutes || 0, 0, 0);
+    return date;
+  };
+
+  const formatDateLabel = (date) => date.toLocaleDateString('en-GB', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric'
+  });
+
+  const formatDateTimeLabel = (date) => `${formatDateLabel(date)} at ${date.toLocaleTimeString('en-GB', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false
+  })}`;
+
+  const parseTimeToMinutes = (timeValue) => {
+    if (!timeValue) return 0;
+    const [hours, minutes] = formatTime(timeValue).split(":").map(Number);
+    return (hours || 0) * 60 + (minutes || 0);
+  };
+
+  const mapFareOptions = (options) =>
+    (options || []).map((option) => ({
+      fareName: option.fare_name,
+      price: Number(option.price),
+      refundable: option.refundable === 1,
+      freeMeals: option.free_meals === 1,
+      freeSeats: option.free_seats === 1,
+      cancellationFee: option.cancellation_fee,
+      dateChangeFee: option.date_change_fee,
+      refundType: option.refund_type,
+      refundAmount: option.refund_amount
+    }));
+
+  const mapSegments = (segments) =>
+    (segments || []).map((segment) => ({
+      fromAirport: segment.from_airport,
+      toAirport: segment.to_airport,
+      fromCity: segment.from_city,
+      toCity: segment.to_city,
+      fromAirportName: segment.from_airport_name,
+      toAirportName: segment.to_airport_name,
+      departureTime: formatTime(segment.departure_time),
+      arrivalTime: formatTime(segment.arrival_time),
+      durationMinutes: segment.duration,
+      layoverMinutes: segment.layover_time,
+      aircraft: segment.aircraft,
+      terminal: segment.terminal
+    }));
+
+  const mapFlightCard = (flight, baseDate) => {
+    const departureDateTime = buildDateTime(baseDate, flight.departure_time);
+    const arrivalDateTime = new Date(departureDateTime.getTime() + (Number(flight.duration) || 0) * 60000);
+    const segments = mapSegments(flight.segments);
+    const fareOptions = mapFareOptions(flight.fare_options).sort((a, b) => a.price - b.price);
+    const baseFare = Math.max(0, Math.round(Number(flight.price) * 0.84));
+    const taxes = Math.max(0, Number(flight.price) - baseFare);
+    const lockPrice = Math.max(199, Math.round(Number(flight.price) * 0.12));
+    const departureTerminal = segments[0]?.terminal ? `Terminal: ${segments[0].terminal}` : 'Terminal: 1';
+    const arrivalTerminal = segments.length
+      ? `Terminal: ${segments[segments.length - 1].terminal || '1'}`
+      : 'Terminal: 1';
+
+    const stopsCount = Number(flight.stops) || 0;
+    const stopsLabel = stopsCount === 0 ? 'Non Stop' : `${stopsCount} Stop${stopsCount > 1 ? 's' : ''}`;
+
+    return {
+      id: flight.id,
+      airline: flight.airline_name,
+      airlineLogo: flight.logo,
+      flightCode: flight.flight_number,
+      flightNumber: flight.flight_number,
+      departureTime: formatTime(flight.departure_time),
+      arrivalTime: formatTime(flight.arrival_time),
+      departureLocation: flight.from_airport,
+      arrivalLocation: flight.to_airport,
+      departureCity: flight.from_city,
+      arrivalCity: flight.to_city,
+      departureTerminal,
+      arrivalTerminal,
+      departureDate: formatDateTimeLabel(departureDateTime),
+      arrivalDate: formatDateTimeLabel(arrivalDateTime),
+      duration: formatDuration(flight.duration),
+      durationMinutes: Number(flight.duration) || 0,
+      departureMinutes: parseTimeToMinutes(flight.departure_time),
+      stops: stopsLabel,
+      stopsCount,
+      price: formatCurrency(flight.price),
+      lockPrice: formatCurrency(lockPrice),
+      offers: Number(flight.price) > 15000 ? '700 Off' : '+ 150 💳',
+      refundable: flight.refundable === 1,
+      layout: segments[0]?.aircraft || '3-3 Layout',
+      beverage: flight.refundable === 1 ? 'Complimentary Beverage' : 'Beverage Available',
+      baseFare,
+      taxes,
+      seatsLeft: flight.seats_left,
+      segments,
+      fareOptions
+    };
+  };
+
+  const applyFilters = (flights, journeyType = 'onward') => {
+    if (!filtersState) return flights;
+
+    const popularFilters = filtersState.popularFilters || {};
+    const journeyStops = journeyType === 'return'
+      ? filtersState.returnJourney?.stops
+      : filtersState.onwardJourney?.stops;
+
+    const allowNonStop = journeyStops?.nonStop ?? popularFilters.nonStop;
+    const allowOneStop = journeyStops?.oneStop ?? popularFilters.oneStop;
+
+    return flights.filter((flight) => {
+      if (popularFilters.refundableFares && !flight.refundable) {
+        return false;
+      }
+
+      if (filtersState.priceTouched && parsePriceValue(flight.price) > filtersState.priceRange) {
+        return false;
+      }
+
+      if (allowNonStop || allowOneStop) {
+        if (allowNonStop && !allowOneStop && flight.stopsCount !== 0) return false;
+        if (allowOneStop && !allowNonStop && flight.stopsCount !== 1) return false;
+      }
+
+      return true;
+    });
+  };
+
+  const applySort = (flights, sortState) => {
+    const list = [...flights];
+
+    if (sortState.smart === 'active') {
+      return list.sort((a, b) => {
+        const scoreA = parsePriceValue(a.price) * 0.6 + a.durationMinutes * 1.5 + a.stopsCount * 2000;
+        const scoreB = parsePriceValue(b.price) * 0.6 + b.durationMinutes * 1.5 + b.stopsCount * 2000;
+        return scoreA - scoreB;
+      });
+    }
+
+    if (sortState.price) {
+      return list.sort((a, b) => sortState.price === 'asc'
+        ? parsePriceValue(a.price) - parsePriceValue(b.price)
+        : parsePriceValue(b.price) - parsePriceValue(a.price)
+      );
+    }
+
+    if (sortState.fastest) {
+      return list.sort((a, b) => sortState.fastest === 'asc'
+        ? a.durationMinutes - b.durationMinutes
+        : b.durationMinutes - a.durationMinutes
+      );
+    }
+
+    if (sortState.departure) {
+      return list.sort((a, b) => sortState.departure === 'asc'
+        ? a.departureMinutes - b.departureMinutes
+        : b.departureMinutes - a.departureMinutes
+      );
+    }
+
+    return list;
+  };
+
+  const buildRoundTripPairs = (outbound, returns) => {
+    if (!outbound.length || !returns.length) return [];
+    const maxLen = Math.max(outbound.length, returns.length);
+    return Array.from({ length: maxLen }, (_, index) => ({
+      ...outbound[index % outbound.length],
+      returnFlight: returns[index % returns.length]
+    }));
+  };
+
   // Open Fare Modal
   const openFareModal = (flight) => {
     setSelectedFlightData(flight);
+    setSelectedOnewayFare(flight?.fareOptions?.[0] || null);
     setIsFareModalOpen(true);
     document.body.style.overflow = 'hidden';
   };
@@ -221,24 +516,16 @@ function FlightResults() {
   };
 
   // Open Booking Panel
-  const openBookingPanel = (flight, fareType = null, farePrice = null) => {
-    // Parse price helper
-    const parsePrice = (priceString) => {
-      if (!priceString) return 0;
-      return parseInt(priceString.replace(/[₹,\s]/g, '')) || 0;
-    };
-    
-    // If fareType and farePrice are provided (from one-way modal), use them
-    let finalPrice = flight.price;
-    if (fareType && farePrice) {
-      finalPrice = `₹${farePrice.toLocaleString('en-IN')}`;
-    }
-    
+  const openBookingPanel = (flight, fareOption = null) => {
+    const finalPrice = fareOption ? formatCurrency(fareOption.price) : flight.price;
+    const selectedFareName = fareOption?.fareName || flight.selectedFareType || 'Saver';
+
     // Add passenger counts from searchData to flight data
     const flightWithTravellers = {
       ...flight,
       price: finalPrice,
-      selectedFareType: fareType || 'saver',
+      selectedFareType: selectedFareName,
+      selectedFareDetails: fareOption || null,
       adults: searchData.adults || 1, // Default to 1 if not specified
       children: searchData.children || 0,
       infants: searchData.infants || 0
@@ -282,6 +569,132 @@ function FlightResults() {
     window.addEventListener("resize", checkArrows);
     return () => window.removeEventListener("resize", checkArrows);
   }, []);
+
+  useEffect(() => {
+    const fetchFlights = async () => {
+      const fromCode = searchData.fromCode || searchData.fromAirport?.code || searchData.fromCity;
+      const toCode = searchData.toCode || searchData.toAirport?.code || searchData.toCity;
+      const formatSearchDate = (value) => {
+        if (!value) return null;
+        const dateObj = value instanceof Date ? value : new Date(value);
+        if (Number.isNaN(dateObj.getTime())) return null;
+        const year = dateObj.getFullYear();
+        const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+        const day = String(dateObj.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      };
+
+      if (!fromCode || !toCode) {
+        setFlightData([]);
+        setReturnFlights([]);
+        return;
+      }
+
+      setFlightLoading(true);
+      setFlightError(null);
+
+      try {
+        const tripTypeParam = isRoundTrip ? 'roundTrip' : 'oneWay';
+        const travelDate = selectedDepartureDateKey || formatSearchDate(searchData.startDate);
+        const returnDate = selectedReturnDateKey || formatSearchDate(searchData.returnDate);
+        const queryParams = new URLSearchParams({
+          from: fromCode,
+          to: toCode,
+          tripType: tripTypeParam
+        });
+
+        if (travelDate) {
+          queryParams.set('date', travelDate);
+        }
+
+        if (isRoundTrip && returnDate) {
+          queryParams.set('returnDate', returnDate);
+        }
+
+        const response = await fetch(
+          `${API_ENDPOINTS.FLIGHTS_SEARCH}?${queryParams.toString()}`
+        );
+        const payload = await response.json();
+
+        if (!response.ok) {
+          throw new Error(payload?.message || 'Failed to load flights');
+        }
+
+        const outboundRaw = payload?.data?.flights || payload?.data?.outbound || [];
+        const returnRaw = payload?.data?.return || [];
+        const departureDate = travelDate ? new Date(travelDate)
+          : (searchData.startDate ? new Date(searchData.startDate) : new Date());
+        const returnDateValue = returnDate ? new Date(returnDate)
+          : (searchData.returnDate ? new Date(searchData.returnDate) : departureDate);
+
+        const mappedOutbound = outboundRaw.map((flight) => mapFlightCard(flight, departureDate));
+        const mappedReturn = returnRaw.map((flight) => mapFlightCard(flight, returnDateValue));
+
+        const cheapestPrice = mappedOutbound.reduce((min, flight) => {
+          const price = parsePriceValue(flight.price);
+          return min === null || price < min ? price : min;
+        }, null);
+
+        const outboundWithBadges = mappedOutbound.map((flight) => ({
+          ...flight,
+          badge: cheapestPrice !== null && parsePriceValue(flight.price) === cheapestPrice ? 'Cheapest' : ''
+        }));
+
+        setFlightData(outboundWithBadges);
+        setReturnFlights(mappedReturn);
+        setSelectedOutbound(null);
+        setSelectedReturn(null);
+      } catch (error) {
+        console.error('Flight fetch error:', error);
+        setFlightError(error.message || 'Failed to load flights');
+        setFlightData([]);
+        setReturnFlights([]);
+      } finally {
+        setFlightLoading(false);
+      }
+    };
+
+    fetchFlights();
+  }, [searchData, isRoundTrip, selectedDepartureDateKey, selectedReturnDateKey]);
+
+  useEffect(() => {
+    const fromCode = searchData.fromCode || searchData.fromAirport?.code || searchData.fromCity;
+    const toCode = searchData.toCode || searchData.toAirport?.code || searchData.toCity;
+
+    if (!fromCode || !toCode) {
+      setDateStripOutbound([]);
+      setDateStripReturn([]);
+      return;
+    }
+
+    const baseDepartureDate = searchData.startDate ? new Date(searchData.startDate) : new Date();
+    const baseReturnDate = searchData.returnDate
+      ? new Date(searchData.returnDate)
+      : baseDepartureDate;
+    const dayCount = 7;
+
+    setDateStripOutbound(buildStripPlaceholders(baseDepartureDate, dayCount));
+    fetchDateStripPrices({
+      fromCode,
+      toCode,
+      baseDate: baseDepartureDate,
+      days: dayCount,
+      setState: setDateStripOutbound
+    });
+
+    if (isRoundTrip) {
+      setDateStripReturn(buildStripPlaceholders(baseReturnDate, dayCount));
+      fetchDateStripPrices({
+        fromCode: toCode,
+        toCode: fromCode,
+        baseDate: baseReturnDate,
+        days: dayCount,
+        setState: setDateStripReturn
+      });
+    } else {
+      setDateStripReturn([]);
+    }
+  }, [searchData.fromCode, searchData.toCode, searchData.fromAirport, searchData.toAirport, searchData.fromCity, searchData.toCity, searchData.startDate, searchData.returnDate, isRoundTrip]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -354,6 +767,17 @@ function FlightResults() {
 
   const fareOptions = ["Student", "Senior Citizen", "Armed Forces"];
 
+  const filteredOutboundFlights = applyFilters(flightData, 'onward');
+  const filteredReturnFlights = applyFilters(returnFlights, 'return');
+  const sortedOutboundFlights = applySort(
+    filteredOutboundFlights,
+    isRoundTrip ? outboundSortStates : sortStates
+  );
+  const sortedReturnFlights = applySort(filteredReturnFlights, returnSortStates);
+  const displayFlights = isRoundTrip
+    ? buildRoundTripPairs(sortedOutboundFlights, sortedReturnFlights)
+    : sortedOutboundFlights;
+
   // Handlers for round trip selection
   const handleOutboundSelect = (flight) => {
     setSelectedOutbound(flight);
@@ -366,6 +790,8 @@ function FlightResults() {
   const handleSummaryBookNow = () => {
     if (selectedOutbound && selectedReturn) {
       // Open round trip fare modal instead of directly opening booking panel
+      setSelectedDepartureFare(selectedOutbound?.fareOptions?.[0] || null);
+      setSelectedReturnFare(selectedReturn?.returnFlight?.fareOptions?.[0] || null);
       setIsRoundTripFareModalOpen(true);
       setRoundTripFareTab('departure'); // Default to departure tab
       document.body.style.overflow = 'hidden';
@@ -375,47 +801,31 @@ function FlightResults() {
   // Close Round Trip Fare Modal
   const closeRoundTripFareModal = () => {
     setIsRoundTripFareModalOpen(false);
+    setSelectedDepartureFare(null);
+    setSelectedReturnFare(null);
     document.body.style.overflow = 'auto';
   };
 
   // Open Booking Panel from Round Trip Fare Modal
   const openBookingPanelFromRoundTrip = () => {
-    // Parse price helper
-    const parsePrice = (priceString) => {
-      if (!priceString) return 0;
-      return parseInt(priceString.replace(/[₹,\s]/g, '')) || 0;
-    };
-    
-    // Define fare prices for each type
-    const departureFarePrices = {
-      'saver': parsePrice(selectedOutbound?.price),
-      'flexi-plus': 10957,
-      'premium': 12850
-    };
-    
-    const returnFarePrices = {
-      'saver': parsePrice(selectedReturn?.returnFlight?.price),
-      'flexi': 10275,
-      'super-saver': 11890
-    };
-    
-    // Get selected fare prices
-    const selectedDeparturePrice = selectedDepartureFare 
-      ? departureFarePrices[selectedDepartureFare] 
-      : departureFarePrices['saver'];
-      
-    const selectedReturnPrice = selectedReturnFare 
-      ? returnFarePrices[selectedReturnFare] 
-      : returnFarePrices['saver'];
+    const defaultDepartureFare = selectedOutbound?.fareOptions?.[0] || null;
+    const defaultReturnFare = selectedReturn?.returnFlight?.fareOptions?.[0] || null;
+    const chosenDeparture = selectedDepartureFare || defaultDepartureFare;
+    const chosenReturn = selectedReturnFare || defaultReturnFare;
+
+    const selectedDeparturePrice = chosenDeparture?.price || parsePriceValue(selectedOutbound?.price);
+    const selectedReturnPrice = chosenReturn?.price || parsePriceValue(selectedReturn?.returnFlight?.price);
     
     const combinedFlightData = {
       ...selectedOutbound,
       price: `₹${selectedDeparturePrice.toLocaleString('en-IN')}`,
-      selectedFareType: selectedDepartureFare || 'saver',
+      selectedFareType: chosenDeparture?.fareName || 'Saver',
+      selectedFareDetails: chosenDeparture || null,
       returnFlight: {
         ...selectedReturn.returnFlight,
         price: `₹${selectedReturnPrice.toLocaleString('en-IN')}`,
-        selectedFareType: selectedReturnFare || 'saver'
+        selectedFareType: chosenReturn?.fareName || 'Saver',
+        selectedFareDetails: chosenReturn || null
       },
       adults: searchData.adults || 1,
       children: searchData.children || 0,
@@ -426,127 +836,6 @@ function FlightResults() {
     openBookingPanel(combinedFlightData);
   };
 
-  // Flight data
-  const flightData = [
-    {
-      id: 1,
-      badge: "Cheapest",
-      airline: "IndiGo",
-      airlineLogo: "/airlines/a4.png",
-      flightCode: "6E - 677",
-      departureTime: "16:05",
-      departureLocation: "DEL",
-      departureCity: "DELHI",
-      departureTerminal: "Terminal: 2",
-      arrivalTime: "02:50",
-      arrivalLocation: "LKO",
-      arrivalCity: "LUCKNOW",
-      arrivalTerminal: "Terminal: 3",
-      arrivalDate: "15 Oct 2025 at 01:25",
-      departureDate: "14 Oct 2025 at 23:15",
-      duration: "2h 10m",
-      stops: "1 Stop",
-      price: "₹5,796",
-      lockPrice: "₹929",
-      offers: "+ 150 💳",
-      refundable: false,
-      layout: "3-3 Layout",
-      beverage: "Beverage Available",
-      baseFare: 4950,
-      taxes: 846,
-      // Return flight data (for round trip)
-      returnFlight: {
-        airline: "IndiGo",
-        airlineLogo: "/airlines/a4.png",
-        flightCode: "6E - 678",
-        departureTime: "06:55",
-        departureLocation: "LKO",
-        arrivalTime: "13:00",
-        arrivalLocation: "DEL",
-        duration: "06h 05m",
-        stops: "1 Stop",
-        price: "₹3,251"
-      }
-    },
-    {
-      id: 2,
-      airline: "Akasa Air",
-      airlineLogo: "/airlines/a3.png",
-      flightCode: "QP1401",
-      departureTime: "18:30",
-      departureLocation: "DEL",
-      departureCity: "DELHI",
-      departureTerminal: "Terminal: 2",
-      arrivalTime: "21:15",
-      arrivalLocation: "LKO",
-      arrivalCity: "LUCKNOW",
-      arrivalTerminal: "Terminal: 1",
-      arrivalDate: "15 Oct 2025 at 21:15",
-      departureDate: "14 Oct 2025 at 18:30",
-      duration: "2h 45m",
-      stops: "Non Stop",
-      price: "₹6,150",
-      lockPrice: "₹999",
-      offers: "400 Off",
-      refundable: true,
-      layout: "3-3 Layout",
-      beverage: "Beverage Available",
-      baseFare: 5250,
-      taxes: 900,
-      // Return flight data (for round trip)
-      returnFlight: {
-        airline: "IndiGo",
-        airlineLogo: "/airlines/a4.png",
-        flightCode: "6E - 680",
-        departureTime: "04:45",
-        departureLocation: "LKO",
-        arrivalTime: "13:00",
-        arrivalLocation: "DEL",
-        duration: "08h 15m",
-        stops: "1 Stop",
-        price: "₹4,599"
-      }
-    },
-    {
-      id: 3,
-      airline: "Air India",
-      airlineLogo: "/airlines/a1.png",
-      flightCode: "AI803",
-      departureTime: "09:00",
-      departureLocation: "DEL",
-      departureCity: "DELHI",
-      departureTerminal: "Terminal: 3",
-      arrivalTime: "11:30",
-      arrivalLocation: "LKO",
-      arrivalCity: "LUCKNOW",
-      arrivalTerminal: "Terminal: 2",
-      arrivalDate: "15 Oct 2025 at 11:30",
-      departureDate: "14 Oct 2025 at 09:00",
-      duration: "2h 30m",
-      stops: "Non Stop",
-      price: "₹7,250",
-      lockPrice: "₹1,050",
-      offers: "500 Off",
-      refundable: true,
-      layout: "3-3 Layout",
-      beverage: "Beverage Available",
-      baseFare: 6200,
-      taxes: 1050,
-      // Return flight data (for round trip)
-      returnFlight: {
-        airline: "Air India",
-        airlineLogo: "/airlines/a1.png",
-        flightCode: "AI804",
-        departureTime: "14:00",
-        departureLocation: "LKO",
-        arrivalTime: "16:30",
-        arrivalLocation: "DEL",
-        duration: "2h 30m",
-        stops: "Non Stop",
-        price: "₹7,250"
-      }
-    }
-  ];
 
   return (
     <div className="flight-results-page">
@@ -703,7 +992,7 @@ function FlightResults() {
     <div className="results-layout">
       {/* LEFT SIDEBAR */}
       <aside className="sidebar-filters">
-        <FiltersPanel />
+        <FiltersPanel onFiltersChange={setFiltersState} />
       </aside>
 
       {/* RIGHT SIDE CONTENT */}
@@ -713,11 +1002,19 @@ function FlightResults() {
           <DualDatePriceStrip 
             departureCity={searchData.fromCity || "DEL"} 
             arrivalCity={searchData.toCity || "BOM"}
-            selectedDepartureDate={searchData.startDate}
-            selectedReturnDate={searchData.returnDate}
+            selectedDepartureDate={selectedDepartureDateKey || searchData.startDate}
+            selectedReturnDate={selectedReturnDateKey || searchData.returnDate}
+            departureDates={dateStripOutbound}
+            returnDates={dateStripReturn}
+            onDepartureSelect={handleDateStripSelect}
+            onReturnSelect={handleReturnDateStripSelect}
           />
         ) : (
-          <DatePriceStrip />
+          <DatePriceStrip
+            dates={dateStripOutbound}
+            activeDateKey={selectedDepartureDateKey || formatDateKey(searchData.startDate)}
+            onDateSelect={handleDateStripSelect}
+          />
         )}
         
         {/* SORT BY BAR - Conditional for Round Trip */}
@@ -805,7 +1102,7 @@ function FlightResults() {
           </div>
         ) : (
           <div className="sort-by-bar">
-            <span className="results-count">186 Flights Available</span>
+            <span className="results-count">{sortedOutboundFlights.length} Flights Available</span>
             <div className="sort-options">
               <button 
                 className={`sort-btn ${sortStates.price !== null ? 'active' : ''}`}
@@ -853,7 +1150,16 @@ function FlightResults() {
 
         {/* FLIGHT CARDS */}
         <div className="flight-cards-container">
-          {flightData.map((flight) => (
+          {flightLoading && (
+            <div className="flight-loading">Loading flights...</div>
+          )}
+          {!flightLoading && flightError && (
+            <div className="flight-loading">{flightError}</div>
+          )}
+          {!flightLoading && !flightError && displayFlights.length === 0 && (
+            <div className="flight-empty">No flights found for this route.</div>
+          )}
+          {displayFlights.map((flight) => (
             <div key={flight.id} className="flight-card-wrapper">
                 {/* Conditional rendering based on trip type */}
                 {isRoundTrip ? (
@@ -907,8 +1213,8 @@ function FlightResults() {
                       </div>
                       
                       <div className="mini-card-bottom-row">
-                        <div className="mini-seats-info">{flight.stops === "Non Stop" ? "32 Seats Available" : "5 Seats Available"}</div>
-                        <div className="mini-stop-details">{flight.stops === "Non Stop" ? "Non-stop" : `1 Stop at ${flight.arrivalCity || flight.arrivalLocation}`}</div>
+                        <div className="mini-seats-info">{flight.seatsLeft || 0} Seats Available</div>
+                        <div className="mini-stop-details">{flight.stopsCount === 0 ? "Non-stop" : `${flight.stopsCount} Stop${flight.stopsCount > 1 ? 's' : ''}`}</div>
                       </div>
                       
                       <div className="mini-card-footer-btn">
@@ -1002,6 +1308,45 @@ function FlightResults() {
                                 <span>{flight.beverage}</span>
                               </div>
                             </div>
+
+                            {flight.segments?.length > 1 && (
+                              <div className="segment-details">
+                                {flight.segments.map((segment, index) => {
+                                  const nextSegment = flight.segments[index + 1];
+                                  const showLayover = segment.layoverMinutes && nextSegment;
+                                  const terminalChange = showLayover && segment.terminal && nextSegment.terminal
+                                    ? segment.terminal !== nextSegment.terminal
+                                    : false;
+
+                                  return (
+                                    <div key={`${flight.id}-outbound-seg-${index}`} className="segment-row">
+                                      <div className="segment-airport">
+                                        <div className="segment-time">{segment.departureTime}</div>
+                                        <div className="segment-code">{segment.fromAirport}</div>
+                                        <div className="segment-city">{segment.fromCity}</div>
+                                      </div>
+                                      <div className="segment-path">
+                                        <div className="segment-duration">{formatDuration(segment.durationMinutes)}</div>
+                                        <div className="segment-line"></div>
+                                        <div className="segment-aircraft">{segment.aircraft}</div>
+                                      </div>
+                                      <div className="segment-airport">
+                                        <div className="segment-time">{segment.arrivalTime}</div>
+                                        <div className="segment-code">{segment.toAirport}</div>
+                                        <div className="segment-city">{segment.toCity}</div>
+                                      </div>
+
+                                      {showLayover && (
+                                        <div className="layover-row">
+                                          <span>{formatDuration(segment.layoverMinutes)} Layover in {segment.toCity}</span>
+                                          {terminalChange && <span className="terminal-change">Change of Terminal</span>}
+                                        </div>
+                                      )}
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            )}
                           </div>
                         )}
 
@@ -1104,7 +1449,7 @@ function FlightResults() {
                       <div className="mini-card-main-row">
                         <div className="mini-departure-section">
                           <div className="mini-time">{flight.returnFlight.departureTime}</div>
-                          <div className="mini-date">Wed, 15-10-2025</div>
+                          <div className="mini-date">{flight.returnFlight.departureDate?.split(' at ')[0] || 'Wed, 15-10-2025'}</div>
                           <div className="mini-city">{flight.arrivalCity || flight.returnFlight.departureLocation}</div>
                         </div>
                         
@@ -1118,14 +1463,14 @@ function FlightResults() {
                         
                         <div className="mini-arrival-section">
                           <div className="mini-time">{flight.returnFlight.arrivalTime}</div>
-                          <div className="mini-date">Wed, 15-10-2025</div>
+                          <div className="mini-date">{flight.returnFlight.arrivalDate?.split(' at ')[0] || 'Wed, 15-10-2025'}</div>
                           <div className="mini-city">{flight.departureCity || flight.returnFlight.arrivalLocation}</div>
                         </div>
                       </div>
                       
                       <div className="mini-card-bottom-row">
-                        <div className="mini-seats-info">{flight.returnFlight.stops === "Non Stop" ? "32 Seats Available" : "670 Seats Available"}</div>
-                        <div className="mini-stop-details">{flight.returnFlight.stops === "Non Stop" ? "Non-stop" : `1 Stop`}</div>
+                        <div className="mini-seats-info">{flight.returnFlight.seatsLeft || 0} Seats Available</div>
+                        <div className="mini-stop-details">{flight.returnFlight.stopsCount === 0 ? "Non-stop" : `${flight.returnFlight.stopsCount} Stop${flight.returnFlight.stopsCount > 1 ? 's' : ''}`}</div>
                       </div>
                       
                       <div className="mini-card-footer-btn">
@@ -1182,7 +1527,7 @@ function FlightResults() {
                                 <div className="route-segment">
                                   <div className="route-location">
                                     <span className="route-code">{flight.returnFlight.departureLocation}</span>
-                                    <span className="route-time">Wed, 15-10-2025</span>
+                                    <span className="route-time">{flight.returnFlight.departureDate || 'Wed, 15-10-2025'}</span>
                                   </div>
                                   <div className="route-city">
                                     <span>{flight.arrivalCity || flight.returnFlight.departureLocation}</span>
@@ -1197,7 +1542,7 @@ function FlightResults() {
                                 <div className="route-segment">
                                   <div className="route-location">
                                     <span className="route-code">{flight.returnFlight.arrivalLocation}</span>
-                                    <span className="route-time">Wed, 15-10-2025</span>
+                                    <span className="route-time">{flight.returnFlight.arrivalDate || 'Wed, 15-10-2025'}</span>
                                   </div>
                                   <div className="route-city">
                                     <span>{flight.departureCity || flight.returnFlight.arrivalLocation}</span>
@@ -1217,6 +1562,45 @@ function FlightResults() {
                                 <span>Beverage Available</span>
                               </div>
                             </div>
+
+                            {flight.returnFlight?.segments?.length > 1 && (
+                              <div className="segment-details">
+                                {flight.returnFlight.segments.map((segment, index) => {
+                                  const nextSegment = flight.returnFlight.segments[index + 1];
+                                  const showLayover = segment.layoverMinutes && nextSegment;
+                                  const terminalChange = showLayover && segment.terminal && nextSegment.terminal
+                                    ? segment.terminal !== nextSegment.terminal
+                                    : false;
+
+                                  return (
+                                    <div key={`${flight.id}-return-seg-${index}`} className="segment-row">
+                                      <div className="segment-airport">
+                                        <div className="segment-time">{segment.departureTime}</div>
+                                        <div className="segment-code">{segment.fromAirport}</div>
+                                        <div className="segment-city">{segment.fromCity}</div>
+                                      </div>
+                                      <div className="segment-path">
+                                        <div className="segment-duration">{formatDuration(segment.durationMinutes)}</div>
+                                        <div className="segment-line"></div>
+                                        <div className="segment-aircraft">{segment.aircraft}</div>
+                                      </div>
+                                      <div className="segment-airport">
+                                        <div className="segment-time">{segment.arrivalTime}</div>
+                                        <div className="segment-code">{segment.toAirport}</div>
+                                        <div className="segment-city">{segment.toCity}</div>
+                                      </div>
+
+                                      {showLayover && (
+                                        <div className="layover-row">
+                                          <span>{formatDuration(segment.layoverMinutes)} Layover in {segment.toCity}</span>
+                                          {terminalChange && <span className="terminal-change">Change of Terminal</span>}
+                                        </div>
+                                      )}
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            )}
                           </div>
                         )}
 
@@ -1338,6 +1722,7 @@ function FlightResults() {
                     <div className="flight-card-footer">
                       <div className="price-offers">
                         <span className="offer-badge">{flight.offers}</span>
+                        <span className="seats-left">{flight.seatsLeft || 0} Seats left</span>
                       </div>
                       <button 
                         className="flight-details-btn"
@@ -1438,6 +1823,45 @@ function FlightResults() {
                             <span>{flight.beverage}</span>
                           </div>
                         </div>
+
+                        {flight.segments?.length > 1 && (
+                          <div className="segment-details">
+                            {flight.segments.map((segment, index) => {
+                              const nextSegment = flight.segments[index + 1];
+                              const showLayover = segment.layoverMinutes && nextSegment;
+                              const terminalChange = showLayover && segment.terminal && nextSegment.terminal
+                                ? segment.terminal !== nextSegment.terminal
+                                : false;
+
+                              return (
+                                <div key={`${flight.id}-seg-${index}`} className="segment-row">
+                                  <div className="segment-airport">
+                                    <div className="segment-time">{segment.departureTime}</div>
+                                    <div className="segment-code">{segment.fromAirport}</div>
+                                    <div className="segment-city">{segment.fromCity}</div>
+                                  </div>
+                                  <div className="segment-path">
+                                    <div className="segment-duration">{formatDuration(segment.durationMinutes)}</div>
+                                    <div className="segment-line"></div>
+                                    <div className="segment-aircraft">{segment.aircraft}</div>
+                                  </div>
+                                  <div className="segment-airport">
+                                    <div className="segment-time">{segment.arrivalTime}</div>
+                                    <div className="segment-code">{segment.toAirport}</div>
+                                    <div className="segment-city">{segment.toCity}</div>
+                                  </div>
+
+                                  {showLayover && (
+                                    <div className="layover-row">
+                                      <span>{formatDuration(segment.layoverMinutes)} Layover in {segment.toCity}</span>
+                                      {terminalChange && <span className="terminal-change">Change of Terminal</span>}
+                                    </div>
+                                  )}
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
                       </div>
                     )}
 
@@ -1567,185 +1991,82 @@ function FlightResults() {
 
             <div className="fare-modal-content">
               <div className="fare-cards-wrapper">
-                {/* Saver Fare */}
-                <div className="fare-card" onClick={() => setSelectedOnewayFare('saver')}>
-                  <div className="fare-card-price">
-                    <input 
-                      type="radio" 
-                      name="oneway-fare" 
-                      value="saver"
-                      checked={selectedOnewayFare === 'saver'}
-                      onChange={() => setSelectedOnewayFare('saver')}
-                      className="fare-radio-btn"
-                    />
-                    <span className="fare-price-amount">₹ 5,315</span>
-                    <span className="fare-price-label">per adult</span>
-                    <span className="fare-type">SAVER</span>
-                  </div>
+                {selectedFlightData.fareOptions?.length ? (
+                  selectedFlightData.fareOptions.map((fareOption) => (
+                    <div
+                      key={fareOption.fareName}
+                      className="fare-card"
+                      onClick={() => setSelectedOnewayFare(fareOption)}
+                    >
+                      <div className="fare-card-price">
+                        <input
+                          type="radio"
+                          name="oneway-fare"
+                          value={fareOption.fareName}
+                          checked={selectedOnewayFare?.fareName === fareOption.fareName}
+                          onChange={() => setSelectedOnewayFare(fareOption)}
+                          className="fare-radio-btn"
+                        />
+                        <span className="fare-price-amount">{formatCurrency(fareOption.price)}</span>
+                        <span className="fare-price-label">per adult</span>
+                        <span className="fare-type">{fareOption.fareName.toUpperCase()}</span>
+                      </div>
 
-                  <div className="fare-card-section">
-                    <div className="fare-section-title">Baggage</div>
-                    <div className="fare-item">
-                      <span className="fare-check">✔</span>
-                      <span>7 Kgs Cabin Baggage</span>
-                    </div>
-                    <div className="fare-item">
-                      <span className="fare-check">✔</span>
-                      <span>15 Kgs Check-in Baggage</span>
-                    </div>
-                  </div>
+                      <div className="fare-card-section">
+                        <div className="fare-section-title">Baggage</div>
+                        <div className="fare-item">
+                          <span className="fare-check">✔</span>
+                          <span>7 Kgs Cabin Baggage</span>
+                        </div>
+                        <div className="fare-item">
+                          <span className="fare-check">✔</span>
+                          <span>15 Kgs Check-in Baggage</span>
+                        </div>
+                      </div>
 
-                  <div className="fare-card-section">
-                    <div className="fare-section-title">Flexibility</div>
-                    <div className="fare-item">
-                      <span className="fare-cross">✖</span>
-                      <span>Cancellation fee starts at ₹ 3,999 (up to 24 hours before departure)</span>
-                    </div>
-                    <div className="fare-item">
-                      <span className="fare-cross">✖</span>
-                      <span>Date Change fee starts at ₹ 2,999 up to 3 hrs before departure</span>
-                    </div>
-                  </div>
+                      <div className="fare-card-section">
+                        <div className="fare-section-title">Flexibility</div>
+                        <div className="fare-item">
+                          <span className={fareOption.refundable ? "fare-check" : "fare-cross"}>
+                            {fareOption.refundable ? "✔" : "✖"}
+                          </span>
+                          <span>Cancellation fee starts at ₹ {fareOption.cancellationFee}</span>
+                        </div>
+                        <div className="fare-item">
+                          <span className={fareOption.refundable ? "fare-check" : "fare-cross"}>
+                            {fareOption.refundable ? "✔" : "✖"}
+                          </span>
+                          <span>Date change fee starts at ₹ {fareOption.dateChangeFee}</span>
+                        </div>
+                      </div>
 
-                  <div className="fare-card-section">
-                    <div className="fare-section-title">Seats, Meals & More</div>
-                    <div className="fare-item">
-                      <span className="fare-cross">✖</span>
-                      <span>Chargeable Seats</span>
-                    </div>
-                    <div className="fare-item">
-                      <span className="fare-cross">✖</span>
-                      <span>Chargeable Meals</span>
-                    </div>
-                  </div>
+                      <div className="fare-card-section">
+                        <div className="fare-section-title">Seats, Meals & More</div>
+                        <div className="fare-item">
+                          <span className={fareOption.freeSeats ? "fare-check" : "fare-cross"}>
+                            {fareOption.freeSeats ? "✔" : "✖"}
+                          </span>
+                          <span>{fareOption.freeSeats ? "Free Seats" : "Chargeable Seats"}</span>
+                        </div>
+                        <div className="fare-item">
+                          <span className={fareOption.freeMeals ? "fare-check" : "fare-cross"}>
+                            {fareOption.freeMeals ? "✔" : "✖"}
+                          </span>
+                          <span>{fareOption.freeMeals ? "Complimentary Meals" : "Chargeable Meals"}</span>
+                        </div>
+                      </div>
 
-                  <div className="fare-offer-box">
-                    <span className="fare-offer-icon">🎯</span>
-                    <span>FLAT ₹ 292 OFF using MMTSUPER | FLAT 10% OFF on KOTAK Credit cards using KOTAKEMI.</span>
-                  </div>
-
-                  <button className="fare-btn-book-single" onClick={() => openBookingPanel(selectedFlightData, 'saver', 5315)}>BOOK NOW</button>
-                </div>
-
-                {/* Indigo Upfront */}
-                <div className="fare-card" onClick={() => setSelectedOnewayFare('upfront')}>
-                  <div className="fare-card-price">
-                    <input 
-                      type="radio" 
-                      name="oneway-fare" 
-                      value="upfront"
-                      checked={selectedOnewayFare === 'upfront'}
-                      onChange={() => setSelectedOnewayFare('upfront')}
-                      className="fare-radio-btn"
-                    />
-                    <span className="fare-price-amount">₹ 8,465</span>
-                    <span className="fare-price-label">per adult</span>
-                    <span className="fare-type">INDIGO UPFRONT</span>
-                  </div>
-
-                  <div className="fare-card-section">
-                    <div className="fare-section-title">Baggage</div>
-                    <div className="fare-item">
-                      <span className="fare-check">✔</span>
-                      <span>7 Kgs Cabin Baggage</span>
+                      <button
+                        className="fare-btn-book-single"
+                        onClick={() => openBookingPanel(selectedFlightData, fareOption)}
+                      >
+                        BOOK NOW
+                      </button>
                     </div>
-                    <div className="fare-item">
-                      <span className="fare-check">✔</span>
-                      <span>20 Kgs Check-in Baggage</span>
-                    </div>
-                  </div>
-
-                  <div className="fare-card-section">
-                    <div className="fare-section-title">Flexibility</div>
-                    <div className="fare-item">
-                      <span className="fare-minus">➖</span>
-                      <span>Lower Cancellation fee of ₹ 1,199 (up to 24 hours before departure)</span>
-                    </div>
-                    <div className="fare-item">
-                      <span className="fare-minus">➖</span>
-                      <span>Lower Date Change fee ₹ 299 up to 4 hrs before departure</span>
-                    </div>
-                  </div>
-
-                  <div className="fare-card-section">
-                    <div className="fare-section-title">Seats, Meals & More</div>
-                    <div className="fare-item">
-                      <span className="fare-check">✔</span>
-                      <span><span className="fare-highlight-text">Free</span> Seats</span>
-                    </div>
-                    <div className="fare-item">
-                      <span className="fare-check">✔</span>
-                      <span><span className="fare-highlight-text">Complimentary</span> Meals</span>
-                    </div>
-                  </div>
-
-                  <div className="fare-offer-box">
-                    <span className="fare-offer-icon">🪙</span>
-                    <span>₹ 423 OFF using RUNWAYDEAL | 600 OFF on ICICI Credit Cards using MMTICIFEST</span>
-                  </div>
-
-                  <button className="fare-btn-book-single" onClick={() => openBookingPanel(selectedFlightData, 'upfront', 8465)}>BOOK NOW</button>
-                </div>
-
-                {/* Indigo Upfront - Third Card */}
-                <div className="fare-card" onClick={() => setSelectedOnewayFare('upfront-plus')}>
-                  <div className="fare-card-price">
-                    <input 
-                      type="radio" 
-                      name="oneway-fare" 
-                      value="upfront-plus"
-                      checked={selectedOnewayFare === 'upfront-plus'}
-                      onChange={() => setSelectedOnewayFare('upfront-plus')}
-                      className="fare-radio-btn"
-                    />
-                    <span className="fare-price-amount">₹ 8,465</span>
-                    <span className="fare-price-label">per adult</span>
-                    <span className="fare-type">INDIGO UPFRONT</span>
-                  </div>
-
-                  <div className="fare-card-section">
-                    <div className="fare-section-title">Baggage</div>
-                    <div className="fare-item">
-                      <span className="fare-check">✔</span>
-                      <span>7 Kgs Cabin Baggage</span>
-                    </div>
-                    <div className="fare-item">
-                      <span className="fare-check">✔</span>
-                      <span>20 Kgs Check-in Baggage</span>
-                    </div>
-                  </div>
-
-                  <div className="fare-card-section">
-                    <div className="fare-section-title">Flexibility</div>
-                    <div className="fare-item">
-                      <span className="fare-minus">➖</span>
-                      <span>Lower Cancellation fee of ₹ 1,199 (up to 24 hours before departure)</span>
-                    </div>
-                    <div className="fare-item">
-                      <span className="fare-minus">➖</span>
-                      <span>Lower Date Change fee ₹ 299 up to 4 hrs before departure</span>
-                    </div>
-                  </div>
-
-                  <div className="fare-card-section">
-                    <div className="fare-section-title">Seats, Meals & More</div>
-                    <div className="fare-item">
-                      <span className="fare-check">✔</span>
-                      <span><span className="fare-highlight-text">Free</span> Seats</span>
-                    </div>
-                    <div className="fare-item">
-                      <span className="fare-check">✔</span>
-                      <span><span className="fare-highlight-text">Complimentary</span> Meals</span>
-                    </div>
-                  </div>
-
-                  <div className="fare-offer-box">
-                    <span className="fare-offer-icon">🪙</span>
-                    <span>₹ 423 OFF using RUNWAYDEAL | 600 OFF on ICICI Credit Cards using MMTICIFEST</span>
-                  </div>
-
-                  <button className="fare-btn-book-single" onClick={() => openBookingPanel(selectedFlightData, 'upfront-plus', 8465)}>BOOK NOW</button>
-                </div>
+                  ))
+                ) : (
+                  <div className="fare-empty">No fare options available.</div>
+                )}
               </div>
             </div>
           </div>
@@ -1792,355 +2113,147 @@ function FlightResults() {
             <div className="fare-modal-content">
               {roundTripFareTab === 'departure' ? (
                 <div className="fare-cards-wrapper">
-                  {/* Departure Fare Options - Content will be provided later */}
-                  <div className="fare-card" onClick={() => setSelectedDepartureFare('saver')}>
-                    <div className="fare-card-price">
-                      <input 
-                        type="radio" 
-                        name="departure-fare" 
-                        value="saver"
-                        checked={selectedDepartureFare === 'saver'}
-                        onChange={() => setSelectedDepartureFare('saver')}
-                        className="fare-radio-btn"
-                      />
-                      <span className="fare-price-amount">{selectedOutbound.price}</span>
-                      <span className="fare-price-label">per adult</span>
-                      <span className="fare-type">SAVER</span>
-                    </div>
+                  {selectedOutbound?.fareOptions?.length ? (
+                    selectedOutbound.fareOptions.map((fareOption) => (
+                      <div
+                        key={`dep-${fareOption.fareName}`}
+                        className="fare-card"
+                        onClick={() => setSelectedDepartureFare(fareOption)}
+                      >
+                        <div className="fare-card-price">
+                          <input
+                            type="radio"
+                            name="departure-fare"
+                            value={fareOption.fareName}
+                            checked={selectedDepartureFare?.fareName === fareOption.fareName}
+                            onChange={() => setSelectedDepartureFare(fareOption)}
+                            className="fare-radio-btn"
+                          />
+                          <span className="fare-price-amount">{formatCurrency(fareOption.price)}</span>
+                          <span className="fare-price-label">per adult</span>
+                          <span className="fare-type">{fareOption.fareName.toUpperCase()}</span>
+                        </div>
 
-                    <div className="fare-card-section">
-                      <div className="fare-section-title">Baggage</div>
-                      <div className="fare-item">
-                        <span className="fare-check">✔</span>
-                        <span>7 Kgs Cabin Baggage</span>
-                      </div>
-                      <div className="fare-item">
-                        <span className="fare-check">✔</span>
-                        <span>15 Kgs Check-in Baggage</span>
-                      </div>
-                    </div>
+                        <div className="fare-card-section">
+                          <div className="fare-section-title">Baggage</div>
+                          <div className="fare-item">
+                            <span className="fare-check">✔</span>
+                            <span>7 Kgs Cabin Baggage</span>
+                          </div>
+                          <div className="fare-item">
+                            <span className="fare-check">✔</span>
+                            <span>15 Kgs Check-in Baggage</span>
+                          </div>
+                        </div>
 
-                    <div className="fare-card-section">
-                      <div className="fare-section-title">Flexibility</div>
-                      <div className="fare-item">
-                        <span className="fare-cross">✖</span>
-                        <span>Cancellation fee starts at ₹ 3,999 (up to 24 hours before departure)</span>
-                      </div>
-                      <div className="fare-item">
-                        <span className="fare-cross">✖</span>
-                        <span>Date Change fee starts at ₹ 2,999 up to 3 hrs before departure</span>
-                      </div>
-                    </div>
+                        <div className="fare-card-section">
+                          <div className="fare-section-title">Flexibility</div>
+                          <div className="fare-item">
+                            <span className={fareOption.refundable ? "fare-check" : "fare-cross"}>
+                              {fareOption.refundable ? "✔" : "✖"}
+                            </span>
+                            <span>Cancellation fee starts at ₹ {fareOption.cancellationFee}</span>
+                          </div>
+                          <div className="fare-item">
+                            <span className={fareOption.refundable ? "fare-check" : "fare-cross"}>
+                              {fareOption.refundable ? "✔" : "✖"}
+                            </span>
+                            <span>Date change fee starts at ₹ {fareOption.dateChangeFee}</span>
+                          </div>
+                        </div>
 
-                    <div className="fare-card-section">
-                      <div className="fare-section-title">Seats, Meals & More</div>
-                      <div className="fare-item">
-                        <span className="fare-cross">✖</span>
-                        <span>Chargeable Seats</span>
+                        <div className="fare-card-section">
+                          <div className="fare-section-title">Seats, Meals & More</div>
+                          <div className="fare-item">
+                            <span className={fareOption.freeSeats ? "fare-check" : "fare-cross"}>
+                              {fareOption.freeSeats ? "✔" : "✖"}
+                            </span>
+                            <span>{fareOption.freeSeats ? "Free Seats" : "Chargeable Seats"}</span>
+                          </div>
+                          <div className="fare-item">
+                            <span className={fareOption.freeMeals ? "fare-check" : "fare-cross"}>
+                              {fareOption.freeMeals ? "✔" : "✖"}
+                            </span>
+                            <span>{fareOption.freeMeals ? "Complimentary Meals" : "Chargeable Meals"}</span>
+                          </div>
+                        </div>
                       </div>
-                      <div className="fare-item">
-                        <span className="fare-cross">✖</span>
-                        <span>Chargeable Meals</span>
-                      </div>
-                    </div>
-
-                    <div className="fare-offer-box">
-                      <span className="fare-offer-icon">🎯</span>
-                      <span>FLAT ₹ 292 OFF using MMTSUPER | FLAT 10% OFF on KOTAK Credit cards using KOTAKEMI.</span>
-                    </div>
-                  </div>
-
-                  {/* Second Card - FLEXI PLUS */}
-                  <div className="fare-card" onClick={() => setSelectedDepartureFare('flexi-plus')}>
-                    <div className="fare-card-price">
-                      <input 
-                        type="radio" 
-                        name="departure-fare" 
-                        value="flexi-plus"
-                        checked={selectedDepartureFare === 'flexi-plus'}
-                        onChange={() => setSelectedDepartureFare('flexi-plus')}
-                        className="fare-radio-btn"
-                      />
-                      <span className="fare-price-amount">₹ 10,957</span>
-                      <span className="fare-price-label">per adult</span>
-                      <span className="fare-type">FLEXI PLUS</span>
-                    </div>
-
-                    <div className="fare-card-section">
-                      <div className="fare-section-title">Baggage</div>
-                      <div className="fare-item">
-                        <span className="fare-check">✔</span>
-                        <span>7 Kgs Cabin Baggage</span>
-                      </div>
-                      <div className="fare-item">
-                        <span className="fare-check">✔</span>
-                        <span>15 Kgs Check-in Baggage</span>
-                      </div>
-                    </div>
-
-                    <div className="fare-card-section">
-                      <div className="fare-section-title">Flexibility</div>
-                      <div className="fare-item">
-                        <span className="fare-minus">➖</span>
-                        <span>Lower Cancellation fee of ₹ 2,499 (up to 3 days before departure)</span>
-                      </div>
-                      <div className="fare-item">
-                        <span className="fare-minus">➖</span>
-                        <span>Lower Date Change fee ₹ 299 (up to 3 days before departure)</span>
-                      </div>
-                    </div>
-
-                    <div className="fare-card-section">
-                      <div className="fare-section-title">Seats, Meals & More</div>
-                      <div className="fare-item">
-                        <span className="fare-check">✔</span>
-                        <span><span className="fare-highlight-text">Free</span> Seats</span>
-                      </div>
-                      <div className="fare-item">
-                        <span className="fare-check">✔</span>
-                        <span><span className="fare-highlight-text">Complimentary</span> Meals</span>
-                      </div>
-                    </div>
-
-                    <div className="fare-offer-box">
-                      <span className="fare-offer-icon">🪙</span>
-                      <span>₹ 550 OFF using FLEXI50 | 800 OFF on HDFC Credit Cards using HDFCFLY</span>
-                    </div>
-                  </div>
-
-                  {/* Third Card - PREMIUM */}
-                  <div className="fare-card" onClick={() => setSelectedDepartureFare('premium')}>
-                    <div className="fare-card-price">
-                      <input 
-                        type="radio" 
-                        name="departure-fare" 
-                        value="premium"
-                        checked={selectedDepartureFare === 'premium'}
-                        onChange={() => setSelectedDepartureFare('premium')}
-                        className="fare-radio-btn"
-                      />
-                      <span className="fare-price-amount">₹ 12,850</span>
-                      <span className="fare-price-label">per adult</span>
-                      <span className="fare-type">PREMIUM</span>
-                    </div>
-
-                    <div className="fare-card-section">
-                      <div className="fare-section-title">Baggage</div>
-                      <div className="fare-item">
-                        <span className="fare-check">✔</span>
-                        <span>10 Kgs Cabin Baggage</span>
-                      </div>
-                      <div className="fare-item">
-                        <span className="fare-check">✔</span>
-                        <span>25 Kgs Check-in Baggage</span>
-                      </div>
-                    </div>
-
-                    <div className="fare-card-section">
-                      <div className="fare-section-title">Flexibility</div>
-                      <div className="fare-item">
-                        <span className="fare-minus">➖</span>
-                        <span>Lower Cancellation fee of ₹ 1,599 (up to 5 days before departure)</span>
-                      </div>
-                      <div className="fare-item">
-                        <span className="fare-minus">➖</span>
-                        <span>Lower Date Change fee ₹ 199 (up to 6 hrs before departure)</span>
-                      </div>
-                    </div>
-
-                    <div className="fare-card-section">
-                      <div className="fare-section-title">Seats, Meals & More</div>
-                      <div className="fare-item">
-                        <span className="fare-check">✔</span>
-                        <span><span className="fare-highlight-text">Free</span> Seats</span>
-                      </div>
-                      <div className="fare-item">
-                        <span className="fare-check">✔</span>
-                        <span><span className="fare-highlight-text">Complimentary</span> Meals</span>
-                      </div>
-                    </div>
-
-                    <div className="fare-offer-box">
-                      <span className="fare-offer-icon">🎁</span>
-                      <span>₹ 750 OFF using PREMIUM100 | 1000 OFF on AXIS Bank Cards using AXISPREMIUM</span>
-                    </div>
-                  </div>
+                    ))
+                  ) : (
+                    <div className="fare-empty">No departure fares available.</div>
+                  )}
                 </div>
               ) : (
                 <div className="fare-cards-wrapper">
-                  {/* Return Fare Options - Content will be provided later */}
-                  <div className="fare-card" onClick={() => setSelectedReturnFare('saver')}>
-                    <div className="fare-card-price">
-                      <input 
-                        type="radio" 
-                        name="return-fare" 
-                        value="saver"
-                        checked={selectedReturnFare === 'saver'}
-                        onChange={() => setSelectedReturnFare('saver')}
-                        className="fare-radio-btn"
-                      />
-                      <span className="fare-price-amount">{selectedReturn.returnFlight.price}</span>
-                      <span className="fare-price-label">per adult</span>
-                      <span className="fare-type">SAVER</span>
-                    </div>
+                  {selectedReturn?.returnFlight?.fareOptions?.length ? (
+                    selectedReturn.returnFlight.fareOptions.map((fareOption) => (
+                      <div
+                        key={`ret-${fareOption.fareName}`}
+                        className="fare-card"
+                        onClick={() => setSelectedReturnFare(fareOption)}
+                      >
+                        <div className="fare-card-price">
+                          <input
+                            type="radio"
+                            name="return-fare"
+                            value={fareOption.fareName}
+                            checked={selectedReturnFare?.fareName === fareOption.fareName}
+                            onChange={() => setSelectedReturnFare(fareOption)}
+                            className="fare-radio-btn"
+                          />
+                          <span className="fare-price-amount">{formatCurrency(fareOption.price)}</span>
+                          <span className="fare-price-label">per adult</span>
+                          <span className="fare-type">{fareOption.fareName.toUpperCase()}</span>
+                        </div>
 
-                    <div className="fare-card-section">
-                      <div className="fare-section-title">Baggage</div>
-                      <div className="fare-item">
-                        <span className="fare-check">✔</span>
-                        <span>7 Kgs Cabin Baggage</span>
-                      </div>
-                      <div className="fare-item">
-                        <span className="fare-check">✔</span>
-                        <span>15 Kgs Check-in Baggage</span>
-                      </div>
-                    </div>
+                        <div className="fare-card-section">
+                          <div className="fare-section-title">Baggage</div>
+                          <div className="fare-item">
+                            <span className="fare-check">✔</span>
+                            <span>7 Kgs Cabin Baggage</span>
+                          </div>
+                          <div className="fare-item">
+                            <span className="fare-check">✔</span>
+                            <span>15 Kgs Check-in Baggage</span>
+                          </div>
+                        </div>
 
-                    <div className="fare-card-section">
-                      <div className="fare-section-title">Flexibility</div>
-                      <div className="fare-item">
-                        <span className="fare-cross">✖</span>
-                        <span>Cancellation fee starts at ₹ 3,999 (up to 24 hours before departure)</span>
-                      </div>
-                      <div className="fare-item">
-                        <span className="fare-cross">✖</span>
-                        <span>Date Change fee starts at ₹ 2,999 up to 3 hrs before departure</span>
-                      </div>
-                    </div>
+                        <div className="fare-card-section">
+                          <div className="fare-section-title">Flexibility</div>
+                          <div className="fare-item">
+                            <span className={fareOption.refundable ? "fare-check" : "fare-cross"}>
+                              {fareOption.refundable ? "✔" : "✖"}
+                            </span>
+                            <span>Cancellation fee starts at ₹ {fareOption.cancellationFee}</span>
+                          </div>
+                          <div className="fare-item">
+                            <span className={fareOption.refundable ? "fare-check" : "fare-cross"}>
+                              {fareOption.refundable ? "✔" : "✖"}
+                            </span>
+                            <span>Date change fee starts at ₹ {fareOption.dateChangeFee}</span>
+                          </div>
+                        </div>
 
-                    <div className="fare-card-section">
-                      <div className="fare-section-title">Seats, Meals & More</div>
-                      <div className="fare-item">
-                        <span className="fare-cross">✖</span>
-                        <span>Chargeable Seats</span>
+                        <div className="fare-card-section">
+                          <div className="fare-section-title">Seats, Meals & More</div>
+                          <div className="fare-item">
+                            <span className={fareOption.freeSeats ? "fare-check" : "fare-cross"}>
+                              {fareOption.freeSeats ? "✔" : "✖"}
+                            </span>
+                            <span>{fareOption.freeSeats ? "Free Seats" : "Chargeable Seats"}</span>
+                          </div>
+                          <div className="fare-item">
+                            <span className={fareOption.freeMeals ? "fare-check" : "fare-cross"}>
+                              {fareOption.freeMeals ? "✔" : "✖"}
+                            </span>
+                            <span>{fareOption.freeMeals ? "Complimentary Meals" : "Chargeable Meals"}</span>
+                          </div>
+                        </div>
                       </div>
-                      <div className="fare-item">
-                        <span className="fare-cross">✖</span>
-                        <span>Chargeable Meals</span>
-                      </div>
-                    </div>
-
-                    <div className="fare-offer-box">
-                      <span className="fare-offer-icon">🎯</span>
-                      <span>FLAT ₹ 292 OFF using MMTSUPER | FLAT 10% OFF on KOTAK Credit cards using KOTAKEMI.</span>
-                    </div>
-                  </div>
-
-                  {/* Second Card - FLEXI */}
-                  <div className="fare-card" onClick={() => setSelectedReturnFare('flexi')}>
-                    <div className="fare-card-price">
-                      <input 
-                        type="radio" 
-                        name="return-fare" 
-                        value="flexi"
-                        checked={selectedReturnFare === 'flexi'}
-                        onChange={() => setSelectedReturnFare('flexi')}
-                        className="fare-radio-btn"
-                      />
-                      <span className="fare-price-amount">₹ 10,275</span>
-                      <span className="fare-price-label">per adult</span>
-                      <span className="fare-type">FLEXI</span>
-                    </div>
-
-                    <div className="fare-card-section">
-                      <div className="fare-section-title">Baggage</div>
-                      <div className="fare-item">
-                        <span className="fare-check">✔</span>
-                        <span>7 Kgs Cabin Baggage</span>
-                      </div>
-                      <div className="fare-item">
-                        <span className="fare-check">✔</span>
-                        <span>15 Kgs Check-in Baggage</span>
-                      </div>
-                    </div>
-
-                    <div className="fare-card-section">
-                      <div className="fare-section-title">Flexibility</div>
-                      <div className="fare-item">
-                        <span className="fare-minus">➖</span>
-                        <span>Cancellation fee starts at ₹ 3,999 (up to 24 hours before departure)</span>
-                      </div>
-                      <div className="fare-item">
-                        <span className="fare-minus">➖</span>
-                        <span>Date Change fee starts at ₹ 2,999 up to 3 hrs before departure</span>
-                      </div>
-                    </div>
-
-                    <div className="fare-card-section">
-                      <div className="fare-section-title">Seats, Meals & More</div>
-                      <div className="fare-item">
-                        <span className="fare-cross">✖</span>
-                        <span>Chargeable Seats</span>
-                      </div>
-                      <div className="fare-item">
-                        <span className="fare-cross">✖</span>
-                        <span>Chargeable Meals</span>
-                      </div>
-                    </div>
-
-                    <div className="fare-offer-box">
-                      <span className="fare-offer-icon">🎁</span>
-                      <span>₹ 380 OFF using RETURNFARE | FLAT 12% OFF on SBI cards using SBIEMI</span>
-                    </div>
-                  </div>
-
-                  {/* Third Card - SUPER SAVER */}
-                  <div className="fare-card" onClick={() => setSelectedReturnFare('super-saver')}>
-                    <div className="fare-card-price">
-                      <input 
-                        type="radio" 
-                        name="return-fare" 
-                        value="super-saver"
-                        checked={selectedReturnFare === 'super-saver'}
-                        onChange={() => setSelectedReturnFare('super-saver')}
-                        className="fare-radio-btn"
-                      />
-                      <span className="fare-price-amount">₹ 11,890</span>
-                      <span className="fare-price-label">per adult</span>
-                      <span className="fare-type">SUPER SAVER</span>
-                    </div>
-
-                    <div className="fare-card-section">
-                      <div className="fare-section-title">Baggage</div>
-                      <div className="fare-item">
-                        <span className="fare-check">✔</span>
-                        <span>8 Kgs Cabin Baggage</span>
-                      </div>
-                      <div className="fare-item">
-                        <span className="fare-check">✔</span>
-                        <span>20 Kgs Check-in Baggage</span>
-                      </div>
-                    </div>
-
-                    <div className="fare-card-section">
-                      <div className="fare-section-title">Flexibility</div>
-                      <div className="fare-item">
-                        <span className="fare-minus">➖</span>
-                        <span>Lower Cancellation fee of ₹ 2,199 (up to 48 hours before departure)</span>
-                      </div>
-                      <div className="fare-item">
-                        <span className="fare-minus">➖</span>
-                        <span>Lower Date Change fee ₹ 499 (up to 5 hrs before departure)</span>
-                      </div>
-                    </div>
-
-                    <div className="fare-card-section">
-                      <div className="fare-section-title">Seats, Meals & More</div>
-                      <div className="fare-item">
-                        <span className="fare-check">✔</span>
-                        <span><span className="fare-highlight-text">Free</span> Seats</span>
-                      </div>
-                      <div className="fare-item">
-                        <span className="fare-cross">✖</span>
-                        <span>Chargeable Meals</span>
-                      </div>
-                    </div>
-
-                    <div className="fare-offer-box">
-                      <span className="fare-offer-icon">🪙</span>
-                      <span>₹ 625 OFF using SUPERSAVE | 900 OFF on YES Bank Cards using YESFLY</span>
-                    </div>
-                  </div>
+                    ))
+                  ) : (
+                    <div className="fare-empty">No return fares available.</div>
+                  )}
                 </div>
               )}
             </div>

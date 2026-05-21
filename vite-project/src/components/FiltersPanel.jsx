@@ -4,20 +4,21 @@ import { PiSunHorizon } from "react-icons/pi";
 import { PiSunLight } from "react-icons/pi";
 import { IoPartlySunnyOutline } from "react-icons/io5";
 
-const FiltersPanel = () => {
+const FiltersPanel = ({ onFiltersChange }) => {
   // State for all filters
   const [filters, setFilters] = useState({
     popularFilters: {
       nonStop: true,
       hideNearbyAirports: false,
       refundableFares: false,
-      oneStop: false,
+      oneStop: true,
     },
     priceRange: 18800,
+    priceTouched: false,
     onwardJourney: {
       stops: {
         nonStop: true,
-        oneStop: false,
+        oneStop: true,
       },
       departureTime: [],
       arrivalTime: [],
@@ -29,7 +30,7 @@ const FiltersPanel = () => {
     returnJourney: {
       stops: {
         nonStop: true,
-        oneStop: false,
+        oneStop: true,
       },
       departureTime: [],
       arrivalTime: [],
@@ -111,6 +112,9 @@ const FiltersPanel = () => {
     if (filters.aircraftSize.large) filters_list.push({ id: 'aircraft-large', label: 'Large Aircraft' });
 
     setAppliedFilters(filters_list);
+    if (onFiltersChange) {
+      onFiltersChange(filters);
+    }
   }, [filters]);
 
   // Remove individual filter
@@ -189,6 +193,7 @@ const FiltersPanel = () => {
         oneStop: false,
       },
       priceRange: 18800,
+      priceTouched: false,
       onwardJourney: {
         stops: {
           nonStop: false,
@@ -244,7 +249,8 @@ const FiltersPanel = () => {
   const handlePriceChange = (e) => {
     setFilters(prev => ({
       ...prev,
-      priceRange: Number(e.target.value)
+      priceRange: Number(e.target.value),
+      priceTouched: true
     }));
   };
 

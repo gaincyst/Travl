@@ -28,13 +28,13 @@ function App() {
             <Route path="/" element={<HomePage />} />
             
             {/* Results page with minimal navbar and pre-filled data */}
-            <Route path="/flight-results" element={<FlightResults />} />
+            <Route path="/flights" element={<FlightResults />} />
             
             {/* Bus Results page */}
-            <Route path="/bus-results" element={<BusResults />} />
+            <Route path="/buses" element={<BusResults />} />
             
             {/* Hotel Results page */}
-            <Route path="/hotel-results" element={<HotelResults />} />
+            <Route path="/hotels" element={<HotelResults />} />
             
             {/* Hotel Booking page - Protected */}
             <Route path="/hotel-booking" element={

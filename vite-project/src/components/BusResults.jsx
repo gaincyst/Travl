@@ -33,6 +33,74 @@ function BusResults() {
   const profileDropdownRef = useRef(null);
   const { isLoggedIn, currentUser, refreshAuth, logoutUser } = useAuth();
 
+  const [busResults, setBusResults] = useState([]);
+  const [busLoading, setBusLoading] = useState(false);
+  const [busError, setBusError] = useState(null);
+
+  const buildBusApiUrl = () => {
+    if (location.search && location.search.length > 1) {
+      return `/api/buses${location.search}`;
+    }
+
+    const params = new URLSearchParams();
+    if (searchData.from) params.set("from", searchData.from);
+    if (searchData.to) params.set("to", searchData.to);
+    if (searchData.departureDate) params.set("departureDate", searchData.departureDate);
+    if (searchData.passengers) params.set("passengers", searchData.passengers);
+    if (searchData.travelClass) params.set("class", searchData.travelClass);
+    return `/api/buses?${params.toString()}`;
+  };
+
+  const formatBusDate = (value) => {
+    if (!value) return "--";
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "--";
+    return date.toLocaleDateString("en-GB", { day: "2-digit", month: "short" }).toUpperCase();
+  };
+
+  const formatLongDate = (value) => {
+    if (!value) return "--";
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "--";
+    return date.toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "short",
+      year: "2-digit",
+      weekday: "short"
+    });
+  };
+
+  const formatPrice = (value) => {
+    const amount = Number(value);
+    if (!Number.isFinite(amount)) return "--";
+    return amount.toLocaleString("en-IN");
+  };
+
+  const normalizeBus = (bus) => {
+    const raw = bus || {};
+    const baseDate = raw.date || raw.departure_date || raw.departureDate;
+    return {
+      id: raw.id || raw.bus_id || "",
+      operatorName: raw.operator_name || raw.operator || raw.name || "--",
+      busType: raw.bus_type || raw.type || "--",
+      departureTime: raw.departure_time || raw.departureTime || "--:--",
+      departureDate: formatBusDate(baseDate),
+      departureDateLong: formatLongDate(baseDate),
+      arrivalTime: raw.arrival_time || raw.arrivalTime || "--:--",
+      arrivalDate: formatBusDate(raw.arrival_date || raw.arrivalDate || baseDate),
+      arrivalDateLong: formatLongDate(raw.arrival_date || raw.arrivalDate || baseDate),
+      arrivalDayOffset: raw.arrival_day_offset || raw.arrivalDayOffset || "",
+      duration: raw.duration || "--",
+      seatsLeft: raw.available_seats ?? raw.seats_left ?? raw.seatsLeft ?? "--",
+      singleSeats: raw.single_seats ?? raw.singleSeats ?? "--",
+      price: formatPrice(raw.price ?? raw.fare ?? raw.amount),
+      rating: raw.rating ?? raw.user_rating ?? raw.userRating ?? "--",
+      reviewCount: raw.review_count ?? raw.reviewCount ?? "--",
+      fromCity: raw.from_city || raw.from || raw.source || "--",
+      toCity: raw.to_city || raw.to || raw.destination || "--"
+    };
+  };
+
   // Dropdown state for each bus card
   const [openDropdowns, setOpenDropdowns] = useState({});
   const [selectedSeats, setSelectedSeats] = useState({});
@@ -399,6 +467,59 @@ function BusResults() {
     };
   };
 
+  useEffect(() => {
+    let isActive = true;
+    const fetchBuses = async () => {
+      setBusLoading(true);
+      setBusError(null);
+      try {
+        const baseUrl = buildBusApiUrl();
+        const url = new URL(baseUrl, window.location.origin);
+        const response = await fetch(url.toString());
+        if (!response.ok) {
+          throw new Error("Failed to fetch buses");
+        }
+        const payload = await response.json();
+        if (isActive) {
+          setBusResults(Array.isArray(payload.data) ? payload.data : []);
+        }
+      } catch (err) {
+        if (isActive) {
+          setBusError(err?.message || "Failed to load buses");
+          setBusResults([]);
+        }
+      } finally {
+        if (isActive) {
+          setBusLoading(false);
+        }
+      }
+    };
+
+    fetchBuses();
+    return () => {
+      isActive = false;
+    };
+  }, [
+    location.search,
+    searchData.from,
+    searchData.to,
+    searchData.departureDate,
+    searchData.passengers,
+    searchData.travelClass
+  ]);
+
+  useEffect(() => {
+    if (busError) {
+      console.error(busError);
+    }
+  }, [busError]);
+
+  const buses = Array.isArray(busResults) ? busResults : [];
+  const bus1 = normalizeBus(buses[0]);
+  const bus2 = normalizeBus(buses[1]);
+  const bus3 = normalizeBus(buses[2]);
+  const bus4 = normalizeBus(buses[3]);
+
   // Bus-specific offers (separate from flight offers)
   const busOffers = [
     { id: 1, logo: "/banks/b1.png", title: "Up to 8,000 Off", sub: "with ICICI Bank Credit Card EMI", bgColor: "#fff3e6" },
@@ -408,7 +529,7 @@ function BusResults() {
   ];
 
   return (
-    <div className="bus-results-page">
+    <div className="bus-results-page" aria-busy={busLoading}>
       {/* NAVBAR */}
       <nav className="minimal-navbar">
         <div className="nav-container">
@@ -545,7 +666,7 @@ function BusResults() {
               
               {/* SORT BY BAR */}
               <div className="sort-by-bar">
-                <span className="results-count">120 Buses Available</span>
+                <span className="results-count">{busResults.length} Buses Available</span>
                 <div className="sort-options">
                   <button 
                     className={`sort-btn ${sortStates.ratings !== null ? 'active' : ''}`}
@@ -620,39 +741,39 @@ function BusResults() {
                   <div className="bus-ticket-content">
                     <div className="bus-operator-info">
                       <div className="bus-name-section">
-                        <span className="bus-name">Yolo Bus</span>
-                        <span className="bus-type">Bharat Benz A/C Seater / Sleeper...</span>
+                        <span className="bus-name">{bus1.operatorName}</span>
+                        <span className="bus-type">{bus1.busType}</span>
                       </div>
                     </div>
                     
                     <div className="bus-timing">
                       <div className="bus-time-section">
-                        <span className="bus-time">19:30</span>
-                        <span className="bus-date">26 JAN</span>
+                        <span className="bus-time">{bus1.departureTime}</span>
+                        <span className="bus-date">{bus1.departureDate}</span>
                       </div>
                       <div className="bus-duration-section">
-                        <span className="bus-duration">08h 49m</span>
+                        <span className="bus-duration">{bus1.duration}</span>
                         <div className="bus-line">
                           <div className="line"></div>
                         </div>
                       </div>
                       <div className="bus-time-section">
-                        <span className="bus-time">04:19</span>
-                        <span className="bus-date">27 JAN<sup>+1 day</sup></span>
+                        <span className="bus-time">{bus1.arrivalTime}</span>
+                        <span className="bus-date">{bus1.arrivalDate}<sup>{bus1.arrivalDayOffset}</sup></span>
                       </div>
                     </div>
 
                     <div className="bus-price-section">
                       <div className="bus-seat-info">
-                        <span>20 Seats Left | 7 Single Seats</span>
+                        <span>{bus1.seatsLeft} Seats Left | {bus1.singleSeats} Single Seats</span>
                       </div>
-                      <div className="bus-price-main">₹279</div>
+                      <div className="bus-price-main">₹{bus1.price}</div>
                       
                       <button 
                         className="bus-details-link"
                         onClick={() => toggleBusDetails('bus1')}
                       >
-                        {openBusDetails['bus1'] ? 'Hide Details' : 'Bus Details'} →
+                        {openBusDetails['bus1'] ? 'Hide Details' : 'Bus Details'} ΓåÆ
                       </button>
                     </div>
                   </div>
@@ -660,10 +781,10 @@ function BusResults() {
                     
                     <div className="bus-rating-badge">
                       
-                      <FaStar className="star-icon" /> 4.4
+                      <FaStar className="star-icon" /> {bus1.rating}
                       
                     </div>
-                    <span className="review-count">13 Reviews</span>
+                    <span className="review-count">{bus1.reviewCount} Reviews</span>
                     <button className="bus-select-seat-btn" onClick={() => toggleDropdown('bus1')}>SELECT SEATS</button>
                   </div>
                 </div>
@@ -851,39 +972,39 @@ function BusResults() {
                                     <tr>
                                       <th>CANCELLATION TIME</th>
                                       <th>PENALTY (%)</th>
-                                      <th>PENALTY (₹)</th>
+                                      <th>PENALTY (Γé╣)</th>
                                     </tr>
                                   </thead>
                                   <tbody>
                                     <tr>
                                       <td>more than 168 hrs before travel</td>
                                       <td>15.0%</td>
-                                      <td>₹ 119</td>
+                                      <td>Γé╣ 119</td>
                                     </tr>
                                     <tr>
                                       <td>72 to 168 hr(s) before travel</td>
                                       <td>15.0%</td>
-                                      <td>₹ 119</td>
+                                      <td>Γé╣ 119</td>
                                     </tr>
                                     <tr>
                                       <td>24 to 72 hr(s) before travel</td>
                                       <td>15.0%</td>
-                                      <td>₹ 119</td>
+                                      <td>Γé╣ 119</td>
                                     </tr>
                                     <tr>
                                       <td>12 to 24 hr(s) before travel</td>
                                       <td>25.0%</td>
-                                      <td>₹ 199</td>
+                                      <td>Γé╣ 199</td>
                                     </tr>
                                     <tr>
                                       <td>4 to 12 hr(s) before travel</td>
                                       <td>50.0%</td>
-                                      <td>₹ 397</td>
+                                      <td>Γé╣ 397</td>
                                     </tr>
                                     <tr>
                                       <td>0 to 4 hr(s) before travel</td>
                                       <td>100.0%</td>
-                                      <td>₹ 793</td>
+                                      <td>Γé╣ 793</td>
                                     </tr>
                                   </tbody>
                                 </table>
@@ -1039,64 +1160,64 @@ function BusResults() {
                               <div className="berth-header">LOWER BERTH(22)</div>
                               <div className="seats-grid">
                                 <div className="seat-row">
-                                  <div className="seat-item booked"><img src="/seat1.png" alt="seat" className="seat-icon" /><span>₹1190</span></div>
+                                  <div className="seat-item booked"><img src="/seat1.png" alt="seat" className="seat-icon" /><span>Γé╣1190</span></div>
                                   <div className="seat-item-spacer"></div>
-                                  <div className={`seat-item ${isSeatSelected('bus1', 'L1') ? 'selected' : 'available'}`} onClick={() => toggleSeatSelection('bus1', 'L1', false)}><img src="/seat1.png" alt="seat" className="seat-icon" /><span>₹651</span></div>
-                                  <div className={`seat-item ${isSeatSelected('bus1', 'L2') ? 'selected' : 'available'}`} onClick={() => toggleSeatSelection('bus1', 'L2', false)}><img src="/seat1.png" alt="seat" className="seat-icon" /><span>₹604</span></div>
+                                  <div className={`seat-item ${isSeatSelected('bus1', 'L1') ? 'selected' : 'available'}`} onClick={() => toggleSeatSelection('bus1', 'L1', false)}><img src="/seat1.png" alt="seat" className="seat-icon" /><span>Γé╣651</span></div>
+                                  <div className={`seat-item ${isSeatSelected('bus1', 'L2') ? 'selected' : 'available'}`} onClick={() => toggleSeatSelection('bus1', 'L2', false)}><img src="/seat1.png" alt="seat" className="seat-icon" /><span>Γé╣604</span></div>
                                 </div>
                                 <div className="seat-row">
-                                  <div className={`seat-item ${isSeatSelected('bus1', 'L3') ? 'selected' : 'available'}`} onClick={() => toggleSeatSelection('bus1', 'L3', false)}><img src="/seat1.png" alt="seat" className="seat-icon" /><span>₹604</span></div>
+                                  <div className={`seat-item ${isSeatSelected('bus1', 'L3') ? 'selected' : 'available'}`} onClick={() => toggleSeatSelection('bus1', 'L3', false)}><img src="/seat1.png" alt="seat" className="seat-icon" /><span>Γé╣604</span></div>
                                   <div className="seat-item-spacer"></div>
-                                  <div className={`seat-item ${isSeatSelected('bus1', 'L4') ? 'selected' : 'available'}`} onClick={() => toggleSeatSelection('bus1', 'L4', false)}><img src="/seat1.png" alt="seat" className="seat-icon" /><span>₹604</span></div>
-                                  <div className={`seat-item ${isSeatSelected('bus1', 'L5') ? 'selected' : 'available'}`} onClick={() => toggleSeatSelection('bus1', 'L5', false)}><img src="/seat1.png" alt="seat" className="seat-icon" /><span>₹604</span></div>
+                                  <div className={`seat-item ${isSeatSelected('bus1', 'L4') ? 'selected' : 'available'}`} onClick={() => toggleSeatSelection('bus1', 'L4', false)}><img src="/seat1.png" alt="seat" className="seat-icon" /><span>Γé╣604</span></div>
+                                  <div className={`seat-item ${isSeatSelected('bus1', 'L5') ? 'selected' : 'available'}`} onClick={() => toggleSeatSelection('bus1', 'L5', false)}><img src="/seat1.png" alt="seat" className="seat-icon" /><span>Γé╣604</span></div>
                                 </div>
                                 <div className="seat-row">
-                                  <div className={`seat-item ${isSeatSelected('bus1', 'L6') ? 'selected' : 'available'}`} onClick={() => toggleSeatSelection('bus1', 'L6', false)}><img src="/seat1.png" alt="seat" className="seat-icon" /><span>₹604</span></div>
+                                  <div className={`seat-item ${isSeatSelected('bus1', 'L6') ? 'selected' : 'available'}`} onClick={() => toggleSeatSelection('bus1', 'L6', false)}><img src="/seat1.png" alt="seat" className="seat-icon" /><span>Γé╣604</span></div>
                                   <div className="seat-item-spacer"></div>
-                                  <div className={`seat-item ${isSeatSelected('bus1', 'L7') ? 'selected' : 'available'}`} onClick={() => toggleSeatSelection('bus1', 'L7', false)}><img src="/seat1.png" alt="seat" className="seat-icon" /><span>₹604</span></div>
-                                  <div className={`seat-item ${isSeatSelected('bus1', 'L8') ? 'selected' : 'available'}`} onClick={() => toggleSeatSelection('bus1', 'L8', false)}><img src="/seat1.png" alt="seat" className="seat-icon" /><span>₹604</span></div>
+                                  <div className={`seat-item ${isSeatSelected('bus1', 'L7') ? 'selected' : 'available'}`} onClick={() => toggleSeatSelection('bus1', 'L7', false)}><img src="/seat1.png" alt="seat" className="seat-icon" /><span>Γé╣604</span></div>
+                                  <div className={`seat-item ${isSeatSelected('bus1', 'L8') ? 'selected' : 'available'}`} onClick={() => toggleSeatSelection('bus1', 'L8', false)}><img src="/seat1.png" alt="seat" className="seat-icon" /><span>Γé╣604</span></div>
                                 </div>
                                 <div className="seat-row">
-                                  <div className="seat-item booked"><img src="/seat1.png" alt="seat" className="seat-icon" /><span>₹1190</span></div>
+                                  <div className="seat-item booked"><img src="/seat1.png" alt="seat" className="seat-icon" /><span>Γé╣1190</span></div>
                                   <div className="seat-item-spacer"></div>
-                                  <div className={`seat-item ${isSeatSelected('bus1', 'L9') ? 'selected' : 'available'}`} onClick={() => toggleSeatSelection('bus1', 'L9', false)}><img src="/seat1.png" alt="seat" className="seat-icon" /><span>₹581</span></div>
-                                  <div className="seat-item booked"><img src="/seat1.png" alt="seat" className="seat-icon" /><span>₹490</span></div>
+                                  <div className={`seat-item ${isSeatSelected('bus1', 'L9') ? 'selected' : 'available'}`} onClick={() => toggleSeatSelection('bus1', 'L9', false)}><img src="/seat1.png" alt="seat" className="seat-icon" /><span>Γé╣581</span></div>
+                                  <div className="seat-item booked"><img src="/seat1.png" alt="seat" className="seat-icon" /><span>Γé╣490</span></div>
                                 </div>
                                 <div className="seat-row">
-                                  <div className="seat-item booked"><img src="/seat1.png" alt="seat" className="seat-icon" /><span>₹1190</span></div>
+                                  <div className="seat-item booked"><img src="/seat1.png" alt="seat" className="seat-icon" /><span>Γé╣1190</span></div>
                                   <div className="seat-item-spacer"></div>
-                                  <div className="seat-item booked"><img src="/seat1.png" alt="seat" className="seat-icon" /><span>₹571</span></div>
-                                  <div className="seat-item booked"><img src="/seat1.png" alt="seat" className="seat-icon" /><span>₹582</span></div>
+                                  <div className="seat-item booked"><img src="/seat1.png" alt="seat" className="seat-icon" /><span>Γé╣571</span></div>
+                                  <div className="seat-item booked"><img src="/seat1.png" alt="seat" className="seat-icon" /><span>Γé╣582</span></div>
                                 </div>
                                 <div className="seat-row">
-                                  <div className="seat-item booked"><img src="/seat1.png" alt="seat" className="seat-icon" /><span>₹1190</span></div>
+                                  <div className="seat-item booked"><img src="/seat1.png" alt="seat" className="seat-icon" /><span>Γé╣1190</span></div>
                                   <div className="seat-item-spacer"></div>
-                                  <div className={`seat-item ${isSeatSelected('bus1', 'L10') ? 'selected' : 'available'}`} onClick={() => toggleSeatSelection('bus1', 'L10', false)}><img src="/seat1.png" alt="seat" className="seat-icon" /><span>₹581</span></div>
-                                  <div className={`seat-item ${isSeatSelected('bus1', 'L11') ? 'selected' : 'available'}`} onClick={() => toggleSeatSelection('bus1', 'L11', false)}><img src="/seat1.png" alt="seat" className="seat-icon" /><span>₹581</span></div>
+                                  <div className={`seat-item ${isSeatSelected('bus1', 'L10') ? 'selected' : 'available'}`} onClick={() => toggleSeatSelection('bus1', 'L10', false)}><img src="/seat1.png" alt="seat" className="seat-icon" /><span>Γé╣581</span></div>
+                                  <div className={`seat-item ${isSeatSelected('bus1', 'L11') ? 'selected' : 'available'}`} onClick={() => toggleSeatSelection('bus1', 'L11', false)}><img src="/seat1.png" alt="seat" className="seat-icon" /><span>Γé╣581</span></div>
                                 </div>
                                 <div className="seat-row">
-                                  <div className="seat-item booked"><img src="/seat1.png" alt="seat" className="seat-icon" /><span>₹1190</span></div>
+                                  <div className="seat-item booked"><img src="/seat1.png" alt="seat" className="seat-icon" /><span>Γé╣1190</span></div>
                                   <div className="seat-item-spacer"></div>
-                                  <div className={`seat-item ${isSeatSelected('bus1', 'L12') ? 'selected' : 'available'}`} onClick={() => toggleSeatSelection('bus1', 'L12', false)}><img src="/seat1.png" alt="seat" className="seat-icon" /><span>₹560</span></div>
-                                  <div className={`seat-item ${isSeatSelected('bus1', 'L13') ? 'selected' : 'available'}`} onClick={() => toggleSeatSelection('bus1', 'L13', false)}><img src="/seat1.png" alt="seat" className="seat-icon" /><span>₹560</span></div>
+                                  <div className={`seat-item ${isSeatSelected('bus1', 'L12') ? 'selected' : 'available'}`} onClick={() => toggleSeatSelection('bus1', 'L12', false)}><img src="/seat1.png" alt="seat" className="seat-icon" /><span>Γé╣560</span></div>
+                                  <div className={`seat-item ${isSeatSelected('bus1', 'L13') ? 'selected' : 'available'}`} onClick={() => toggleSeatSelection('bus1', 'L13', false)}><img src="/seat1.png" alt="seat" className="seat-icon" /><span>Γé╣560</span></div>
                                 </div>
                                 <div className="seat-row">
-                                  <div className="seat-item booked"><img src="/seat1.png" alt="seat" className="seat-icon" /><span>₹1190</span></div>
+                                  <div className="seat-item booked"><img src="/seat1.png" alt="seat" className="seat-icon" /><span>Γé╣1190</span></div>
                                   <div className="seat-item-spacer"></div>
-                                  <div className={`seat-item ${isSeatSelected('bus1', 'L14') ? 'selected' : 'available'}`} onClick={() => toggleSeatSelection('bus1', 'L14', false)}><img src="/seat1.png" alt="seat" className="seat-icon" /><span>₹560</span></div>
-                                  <div className={`seat-item ${isSeatSelected('bus1', 'L15') ? 'selected' : 'available'}`} onClick={() => toggleSeatSelection('bus1', 'L15', false)}><img src="/seat1.png" alt="seat" className="seat-icon" /><span>₹560</span></div>
+                                  <div className={`seat-item ${isSeatSelected('bus1', 'L14') ? 'selected' : 'available'}`} onClick={() => toggleSeatSelection('bus1', 'L14', false)}><img src="/seat1.png" alt="seat" className="seat-icon" /><span>Γé╣560</span></div>
+                                  <div className={`seat-item ${isSeatSelected('bus1', 'L15') ? 'selected' : 'available'}`} onClick={() => toggleSeatSelection('bus1', 'L15', false)}><img src="/seat1.png" alt="seat" className="seat-icon" /><span>Γé╣560</span></div>
                                 </div>
                                 <div className="seat-row">
-                                  <div className="seat-item booked"><img src="/seat1.png" alt="seat" className="seat-icon" /><span>₹1190</span></div>
+                                  <div className="seat-item booked"><img src="/seat1.png" alt="seat" className="seat-icon" /><span>Γé╣1190</span></div>
                                   <div className="seat-item-spacer"></div>
-                                  <div className="seat-item booked"><img src="/seat1.png" alt="seat" className="seat-icon" /><span>₹348</span></div>
-                                  <div className="seat-item booked"><img src="/seat1.png" alt="seat" className="seat-icon" /><span>₹604</span></div>
+                                  <div className="seat-item booked"><img src="/seat1.png" alt="seat" className="seat-icon" /><span>Γé╣348</span></div>
+                                  <div className="seat-item booked"><img src="/seat1.png" alt="seat" className="seat-icon" /><span>Γé╣604</span></div>
                                 </div>
                                 <div className="seat-row">
-                                  <div className="seat-item booked"><img src="/seat1.png" alt="seat" className="seat-icon" /><span>₹1190</span></div>
+                                  <div className="seat-item booked"><img src="/seat1.png" alt="seat" className="seat-icon" /><span>Γé╣1190</span></div>
                                   <div className="seat-item-spacer"></div>
-                                  <div className="seat-item booked"><img src="/seat1.png" alt="seat" className="seat-icon" /><span>₹1136</span></div>
-                                  <div className="seat-item booked"><img src="/seat1.png" alt="seat" className="seat-icon" /><span>₹490</span></div>
+                                  <div className="seat-item booked"><img src="/seat1.png" alt="seat" className="seat-icon" /><span>Γé╣1136</span></div>
+                                  <div className="seat-item booked"><img src="/seat1.png" alt="seat" className="seat-icon" /><span>Γé╣490</span></div>
                                 </div>
                               </div>
                             </div>
@@ -1106,52 +1227,52 @@ function BusResults() {
                               <div className="berth-header">UPPER BERTH(7)</div>
                               <div className="seats-grid">
                                 <div className="seat-row">
-                                  <div className="seat-item booked"><img src="/seat2.png" alt="sleeper" className="sleeper-icon" /><span>₹1155</span></div>
+                                  <div className="seat-item booked"><img src="/seat2.png" alt="sleeper" className="sleeper-icon" /><span>Γé╣1155</span></div>
                                   <div className="seat-item-spacer"></div>
-                                  <div className={`seat-item ${isSeatSelected('bus1', 'U1') ? 'selected' : 'available'}`} onClick={() => toggleSeatSelection('bus1', 'U1', false)}><img src="/seat2.png" alt="sleeper" className="sleeper-icon" /><span>₹1136</span></div>
-                                  <div className={`seat-item ${isSeatSelected('bus1', 'U2') ? 'selected' : 'available'}`} onClick={() => toggleSeatSelection('bus1', 'U2', false)}><img src="/seat2.png" alt="sleeper" className="sleeper-icon" /><span>₹1136</span></div>
+                                  <div className={`seat-item ${isSeatSelected('bus1', 'U1') ? 'selected' : 'available'}`} onClick={() => toggleSeatSelection('bus1', 'U1', false)}><img src="/seat2.png" alt="sleeper" className="sleeper-icon" /><span>Γé╣1136</span></div>
+                                  <div className={`seat-item ${isSeatSelected('bus1', 'U2') ? 'selected' : 'available'}`} onClick={() => toggleSeatSelection('bus1', 'U2', false)}><img src="/seat2.png" alt="sleeper" className="sleeper-icon" /><span>Γé╣1136</span></div>
                                 </div>
                                 <div className="seat-row">
                                   <div className="seat-item-spacer"></div>
                                   <div className="seat-item-spacer"></div>
-                                  <div className="seat-item booked"><img src="/seat2.png" alt="sleeper" className="sleeper-icon" /><span>₹857</span></div>
-                                  <div className="seat-item booked"><img src="/seat2.png" alt="sleeper" className="sleeper-icon" /><span>₹989</span></div>
+                                  <div className="seat-item booked"><img src="/seat2.png" alt="sleeper" className="sleeper-icon" /><span>Γé╣857</span></div>
+                                  <div className="seat-item booked"><img src="/seat2.png" alt="sleeper" className="sleeper-icon" /><span>Γé╣989</span></div>
                                 </div>
                                 <div className="seat-row">
-                                  <div className="seat-item booked"><img src="/seat2.png" alt="sleeper" className="sleeper-icon" /><span>₹1256</span></div>
+                                  <div className="seat-item booked"><img src="/seat2.png" alt="sleeper" className="sleeper-icon" /><span>Γé╣1256</span></div>
                                   <div className="seat-item-spacer"></div>
-                                  <div className="seat-item booked"><img src="/seat2.png" alt="sleeper" className="sleeper-icon" /><span>₹1052</span></div>
-                                  <div className="seat-item booked"><img src="/seat2.png" alt="sleeper" className="sleeper-icon" /><span>₹1052</span></div>
-                                </div>
-                                <div className="seat-row">
-                                  <div className="seat-item-spacer"></div>
-                                  <div className="seat-item-spacer"></div>
-                                  <div className="seat-item booked"><img src="/seat2.png" alt="sleeper" className="sleeper-icon" /><span>₹1036</span></div>
-                                  <div className="seat-item booked"><img src="/seat2.png" alt="sleeper" className="sleeper-icon" /><span>₹513</span></div>
-                                </div>
-                                <div className="seat-row">
-                                  <div className="seat-item booked"><img src="/seat2.png" alt="sleeper" className="sleeper-icon" /><span>₹1190</span></div>
-                                  <div className="seat-item-spacer"></div>
-                                  <div className="seat-item booked"><img src="/seat2.png" alt="sleeper" className="sleeper-icon" /><span>₹1036</span></div>
-                                  <div className="seat-item-spacer"></div>
+                                  <div className="seat-item booked"><img src="/seat2.png" alt="sleeper" className="sleeper-icon" /><span>Γé╣1052</span></div>
+                                  <div className="seat-item booked"><img src="/seat2.png" alt="sleeper" className="sleeper-icon" /><span>Γé╣1052</span></div>
                                 </div>
                                 <div className="seat-row">
                                   <div className="seat-item-spacer"></div>
                                   <div className="seat-item-spacer"></div>
-                                  <div className={`seat-item ${isSeatSelected('bus1', 'U3') ? 'selected' : 'available'}`} onClick={() => toggleSeatSelection('bus1', 'U3', false)}><img src="/seat2.png" alt="sleeper" className="sleeper-icon" /><span>₹976</span></div>
-                                  <div className="seat-item booked"><img src="/seat2.png" alt="sleeper" className="sleeper-icon" /><span>₹813</span></div>
+                                  <div className="seat-item booked"><img src="/seat2.png" alt="sleeper" className="sleeper-icon" /><span>Γé╣1036</span></div>
+                                  <div className="seat-item booked"><img src="/seat2.png" alt="sleeper" className="sleeper-icon" /><span>Γé╣513</span></div>
+                                </div>
+                                <div className="seat-row">
+                                  <div className="seat-item booked"><img src="/seat2.png" alt="sleeper" className="sleeper-icon" /><span>Γé╣1190</span></div>
+                                  <div className="seat-item-spacer"></div>
+                                  <div className="seat-item booked"><img src="/seat2.png" alt="sleeper" className="sleeper-icon" /><span>Γé╣1036</span></div>
+                                  <div className="seat-item-spacer"></div>
+                                </div>
+                                <div className="seat-row">
+                                  <div className="seat-item-spacer"></div>
+                                  <div className="seat-item-spacer"></div>
+                                  <div className={`seat-item ${isSeatSelected('bus1', 'U3') ? 'selected' : 'available'}`} onClick={() => toggleSeatSelection('bus1', 'U3', false)}><img src="/seat2.png" alt="sleeper" className="sleeper-icon" /><span>Γé╣976</span></div>
+                                  <div className="seat-item booked"><img src="/seat2.png" alt="sleeper" className="sleeper-icon" /><span>Γé╣813</span></div>
                                 </div>
                                 <div className="seat-row">
                                   <div className="seat-item-spacer"></div>
                                   <div className="seat-item-spacer"></div>
                                   <div className="seat-item-spacer"></div>
-                                  <div className="seat-item booked"><img src="/seat2.png" alt="sleeper" className="sleeper-icon" /><span>₹620</span></div>
+                                  <div className="seat-item booked"><img src="/seat2.png" alt="sleeper" className="sleeper-icon" /><span>Γé╣620</span></div>
                                 </div>
                                 <div className="seat-row">
-                                  <div className="seat-item booked"><img src="/seat2.png" alt="sleeper" className="sleeper-icon" /><span>₹1136</span></div>
+                                  <div className="seat-item booked"><img src="/seat2.png" alt="sleeper" className="sleeper-icon" /><span>Γé╣1136</span></div>
                                   <div className="seat-item-spacer"></div>
-                                  <div className="seat-item booked"><img src="/seat2.png" alt="sleeper" className="sleeper-icon" /><span>₹490</span></div>
-                                  <div className={`seat-item ${isSeatSelected('bus1', 'U4') ? 'selected' : 'available'}`} onClick={() => toggleSeatSelection('bus1', 'U4', false)}><img src="/seat2.png" alt="sleeper" className="sleeper-icon" /><span>₹976</span></div>
+                                  <div className="seat-item booked"><img src="/seat2.png" alt="sleeper" className="sleeper-icon" /><span>Γé╣490</span></div>
+                                  <div className={`seat-item ${isSeatSelected('bus1', 'U4') ? 'selected' : 'available'}`} onClick={() => toggleSeatSelection('bus1', 'U4', false)}><img src="/seat2.png" alt="sleeper" className="sleeper-icon" /><span>Γé╣976</span></div>
                                 </div>
                               </div>
                             </div>
@@ -1163,13 +1284,13 @@ function BusResults() {
                                   className={`points-tab ${(!activePointsTab['bus1'] || activePointsTab['bus1'] === 'boarding') ? 'active' : ''}`}
                                   onClick={() => setActivePointsTab(prev => ({ ...prev, 'bus1': 'boarding' }))}
                                 >
-                                  ✓ Boarding Points
+                                  Γ£ô Boarding Points
                                 </button>
                                 <button 
                                   className={`points-tab ${activePointsTab['bus1'] === 'dropping' ? 'active' : ''}`}
                                   onClick={() => setActivePointsTab(prev => ({ ...prev, 'bus1': 'dropping' }))}
                                 >
-                                  ✓ Dropping Points
+                                  Γ£ô Dropping Points
                                 </button>
                               </div>
 
@@ -1257,15 +1378,15 @@ function BusResults() {
                                   className={`continue-btn ${!isContinueEnabled('bus1') ? 'disabled' : ''}`}
                                   disabled={!isContinueEnabled('bus1')}
                                   onClick={() => handleContinue('bus1', {
-                                    name: 'Yolo Bus',
-                                    type: 'Bharat Benz A/C Seater / Sleeper (2+1)',
-                                    departureTime: '19:30',
-                                    departureDate: '31 Jan \'26, Sat',
-                                    departureCity: 'Delhi',
-                                    arrivalTime: '04:19',
-                                    arrivalDate: '1 Feb\' 26, Sun',
-                                    arrivalCity: 'Kanpur (Uttar Pradesh)',
-                                    duration: '08h 49m',
+                                    name: bus1.operatorName,
+                                    type: bus1.busType,
+                                    departureTime: bus1.departureTime,
+                                    departureDate: bus1.departureDateLong,
+                                    departureCity: bus1.fromCity,
+                                    arrivalTime: bus1.arrivalTime,
+                                    arrivalDate: bus1.arrivalDateLong,
+                                    arrivalCity: bus1.toCity,
+                                    duration: bus1.duration,
                                     boardingPoint: selectedBoardingPoint['bus1'],
                                     droppingPoint: selectedDroppingPoint['bus1']
                                   })}
@@ -1285,39 +1406,39 @@ function BusResults() {
                   <div className="bus-ticket-content">
                     <div className="bus-operator-info">
                       <div className="bus-name-section">
-                        <span className="bus-name">Sharma Travels</span>
-                        <span className="bus-type">Volvo Multi-Axle A/C Sleeper(2+1)</span>
+                        <span className="bus-name">{bus2.operatorName}</span>
+                        <span className="bus-type">{bus2.busType}</span>
                       </div>
                     </div>
                     
                     <div className="bus-timing">
                       <div className="bus-time-section">
-                        <span className="bus-time">22:00</span>
-                        <span className="bus-date">26 JAN</span>
+                        <span className="bus-time">{bus2.departureTime}</span>
+                        <span className="bus-date">{bus2.departureDate}</span>
                       </div>
                       <div className="bus-duration-section">
-                        <span className="bus-duration">09h 30m</span>
+                        <span className="bus-duration">{bus2.duration}</span>
                         <div className="bus-line">
                           <div className="line"></div>
                         </div>
                       </div>
                       <div className="bus-time-section">
-                        <span className="bus-time">07:30</span>
-                        <span className="bus-date">27 JAN<sup>+1 day</sup></span>
+                        <span className="bus-time">{bus2.arrivalTime}</span>
+                        <span className="bus-date">{bus2.arrivalDate}<sup>{bus2.arrivalDayOffset}</sup></span>
                       </div>
                     </div>
 
                     <div className="bus-price-section">
                       <div className="bus-seat-info">
-                        <span>15 Seats Left | 3 Single Seats</span>
+                        <span>{bus2.seatsLeft} Seats Left | {bus2.singleSeats} Single Seats</span>
                       </div>
-                      <div className="bus-price-main">₹450</div>
+                      <div className="bus-price-main">₹{bus2.price}</div>
                       
                       <button 
                         className="bus-details-link"
                         onClick={() => toggleBusDetails('bus2')}
                       >
-                        {openBusDetails['bus2'] ? 'Hide Details' : 'Bus Details'} →
+                        {openBusDetails['bus2'] ? 'Hide Details' : 'Bus Details'} ΓåÆ
                       </button>
                     </div>
                   </div>
@@ -1325,10 +1446,10 @@ function BusResults() {
                     
                     <div className="bus-rating-badge">
                       
-                      <FaStar className="star-icon" /> 4.2
+                      <FaStar className="star-icon" /> {bus2.rating}
                       
                     </div>
-                    <span className="review-count">18 Reviews</span>
+                    <span className="review-count">{bus2.reviewCount} Reviews</span>
                     <button className="bus-select-seat-btn" onClick={() => toggleDropdown('bus2')}>SELECT SEATS</button>
                   </div>
                 </div>
@@ -1516,39 +1637,39 @@ function BusResults() {
                                     <tr>
                                       <th>CANCELLATION TIME</th>
                                       <th>PENALTY (%)</th>
-                                      <th>PENALTY (₹)</th>
+                                      <th>PENALTY (Γé╣)</th>
                                     </tr>
                                   </thead>
                                   <tbody>
                                     <tr>
                                       <td>more than 168 hrs before travel</td>
                                       <td>15.0%</td>
-                                      <td>₹ 119</td>
+                                      <td>Γé╣ 119</td>
                                     </tr>
                                     <tr>
                                       <td>72 to 168 hr(s) before travel</td>
                                       <td>15.0%</td>
-                                      <td>₹ 119</td>
+                                      <td>Γé╣ 119</td>
                                     </tr>
                                     <tr>
                                       <td>24 to 72 hr(s) before travel</td>
                                       <td>15.0%</td>
-                                      <td>₹ 119</td>
+                                      <td>Γé╣ 119</td>
                                     </tr>
                                     <tr>
                                       <td>12 to 24 hr(s) before travel</td>
                                       <td>25.0%</td>
-                                      <td>₹ 199</td>
+                                      <td>Γé╣ 199</td>
                                     </tr>
                                     <tr>
                                       <td>4 to 12 hr(s) before travel</td>
                                       <td>50.0%</td>
-                                      <td>₹ 397</td>
+                                      <td>Γé╣ 397</td>
                                     </tr>
                                     <tr>
                                       <td>0 to 4 hr(s) before travel</td>
                                       <td>100.0%</td>
-                                      <td>₹ 793</td>
+                                      <td>Γé╣ 793</td>
                                     </tr>
                                   </tbody>
                                 </table>
@@ -1653,39 +1774,39 @@ function BusResults() {
                   <div className="bus-ticket-content">
                     <div className="bus-operator-info">
                       <div className="bus-name-section">
-                        <span className="bus-name">Red Bus Express</span>
-                        <span className="bus-type">Scania Multi-Axle A/C Sleeper(2+1)</span>
+                        <span className="bus-name">{bus3.operatorName}</span>
+                        <span className="bus-type">{bus3.busType}</span>
                       </div>
                     </div>
                     
                     <div className="bus-timing">
                       <div className="bus-time-section">
-                        <span className="bus-time">18:45</span>
-                        <span className="bus-date">26 JAN</span>
+                        <span className="bus-time">{bus3.departureTime}</span>
+                        <span className="bus-date">{bus3.departureDate}</span>
                       </div>
                       <div className="bus-duration-section">
-                        <span className="bus-duration">07h 15</span>
+                        <span className="bus-duration">{bus3.duration}</span>
                         <div className="bus-line">
                           <div className="line"></div>
                         </div>
                       </div>
                       <div className="bus-time-section">
-                        <span className="bus-time">02:00</span>
-                        <span className="bus-date">27 JAN<sup>+1 day</sup></span>
+                        <span className="bus-time">{bus3.arrivalTime}</span>
+                        <span className="bus-date">{bus3.arrivalDate}<sup>{bus3.arrivalDayOffset}</sup></span>
                       </div>
                     </div>
 
                     <div className="bus-price-section">
                       <div className="bus-seat-info">
-                        <span>12 Seats Left | 2 Single Seats</span>
+                        <span>{bus3.seatsLeft} Seats Left | {bus3.singleSeats} Single Seats</span>
                       </div>
-                      <div className="bus-price-main">₹550</div>
+                      <div className="bus-price-main">₹{bus3.price}</div>
                       
                       <button 
                         className="bus-details-link"
                         onClick={() => toggleBusDetails('bus3')}
                       >
-                        {openBusDetails['bus3'] ? 'Hide Details' : 'Bus Details'} →
+                        {openBusDetails['bus3'] ? 'Hide Details' : 'Bus Details'} ΓåÆ
                       </button>
                     </div>
                   </div>
@@ -1693,10 +1814,10 @@ function BusResults() {
                     
                     <div className="bus-rating-badge">
                       
-                      <FaStar className="star-icon" /> 4.1
+                      <FaStar className="star-icon" /> {bus3.rating}
                       
                     </div>
-                    <span className="review-count">24 Reviews</span>
+                    <span className="review-count">{bus3.reviewCount} Reviews</span>
                     <button className="bus-select-seat-btn" onClick={() => toggleDropdown('bus3')}>SELECT SEATS</button>
                   </div>
                 </div>
@@ -1884,39 +2005,39 @@ function BusResults() {
                                     <tr>
                                       <th>CANCELLATION TIME</th>
                                       <th>PENALTY (%)</th>
-                                      <th>PENALTY (₹)</th>
+                                      <th>PENALTY (Γé╣)</th>
                                     </tr>
                                   </thead>
                                   <tbody>
                                     <tr>
                                       <td>more than 168 hrs before travel</td>
                                       <td>15.0%</td>
-                                      <td>₹ 119</td>
+                                      <td>Γé╣ 119</td>
                                     </tr>
                                     <tr>
                                       <td>72 to 168 hr(s) before travel</td>
                                       <td>15.0%</td>
-                                      <td>₹ 119</td>
+                                      <td>Γé╣ 119</td>
                                     </tr>
                                     <tr>
                                       <td>24 to 72 hr(s) before travel</td>
                                       <td>15.0%</td>
-                                      <td>₹ 119</td>
+                                      <td>Γé╣ 119</td>
                                     </tr>
                                     <tr>
                                       <td>12 to 24 hr(s) before travel</td>
                                       <td>25.0%</td>
-                                      <td>₹ 199</td>
+                                      <td>Γé╣ 199</td>
                                     </tr>
                                     <tr>
                                       <td>4 to 12 hr(s) before travel</td>
                                       <td>50.0%</td>
-                                      <td>₹ 397</td>
+                                      <td>Γé╣ 397</td>
                                     </tr>
                                     <tr>
                                       <td>0 to 4 hr(s) before travel</td>
                                       <td>100.0%</td>
-                                      <td>₹ 793</td>
+                                      <td>Γé╣ 793</td>
                                     </tr>
                                   </tbody>
                                 </table>
@@ -2021,39 +2142,39 @@ function BusResults() {
                   <div className="bus-ticket-content">
                     <div className="bus-operator-info">
                       <div className="bus-name-section">
-                        <span className="bus-name">Orange Travels</span>
-                        <span className="bus-type">Mercedes Benz A/C Seater(2+1)</span>
+                        <span className="bus-name">{bus4.operatorName}</span>
+                        <span className="bus-type">{bus4.busType}</span>
                       </div>
                     </div>
                     
                     <div className="bus-timing">
                       <div className="bus-time-section">
-                        <span className="bus-time">20:15</span>
-                        <span className="bus-date">26 JAN</span>
+                        <span className="bus-time">{bus4.departureTime}</span>
+                        <span className="bus-date">{bus4.departureDate}</span>
                       </div>
                       <div className="bus-duration-section">
-                        <span className="bus-duration">08h 00m</span>
+                        <span className="bus-duration">{bus4.duration}</span>
                         <div className="bus-line">
                           <div className="line"></div>
                         </div>
                       </div>
                       <div className="bus-time-section">
-                        <span className="bus-time">04:15</span>
-                        <span className="bus-date">27 JAN<sup>+1 day</sup></span>
+                        <span className="bus-time">{bus4.arrivalTime}</span>
+                        <span className="bus-date">{bus4.arrivalDate}<sup>{bus4.arrivalDayOffset}</sup></span>
                       </div>
                     </div>
 
                     <div className="bus-price-section">
                       <div className="bus-seat-info">
-                        <span>25 Seats Left | 10 Single Seats</span>
+                        <span>{bus4.seatsLeft} Seats Left | {bus4.singleSeats} Single Seats</span>
                       </div>
-                      <div className="bus-price-main">₹380</div>
+                      <div className="bus-price-main">₹{bus4.price}</div>
                       
                       <button 
                         className="bus-details-link"
                         onClick={() => toggleBusDetails('bus4')}
                       >
-                        {openBusDetails['bus4'] ? 'Hide Details' : 'Bus Details'} →
+                        {openBusDetails['bus4'] ? 'Hide Details' : 'Bus Details'} ΓåÆ
                       </button>
                     </div>
                   </div>
@@ -2061,10 +2182,10 @@ function BusResults() {
                     
                     <div className="bus-rating-badge">
                       
-                      <FaStar className="star-icon" /> 4.0
+                      <FaStar className="star-icon" /> {bus4.rating}
                       
                     </div>
-                    <span className="review-count">10 Reviews</span>
+                    <span className="review-count">{bus4.reviewCount} Reviews</span>
                     <button className="bus-select-seat-btn" onClick={() => toggleDropdown('bus4')}>SELECT SEATS</button>
                   </div>
                 </div>
@@ -2252,39 +2373,39 @@ function BusResults() {
                                     <tr>
                                       <th>CANCELLATION TIME</th>
                                       <th>PENALTY (%)</th>
-                                      <th>PENALTY (₹)</th>
+                                      <th>PENALTY (Γé╣)</th>
                                     </tr>
                                   </thead>
                                   <tbody>
                                     <tr>
                                       <td>more than 168 hrs before travel</td>
                                       <td>15.0%</td>
-                                      <td>₹ 119</td>
+                                      <td>Γé╣ 119</td>
                                     </tr>
                                     <tr>
                                       <td>72 to 168 hr(s) before travel</td>
                                       <td>15.0%</td>
-                                      <td>₹ 119</td>
+                                      <td>Γé╣ 119</td>
                                     </tr>
                                     <tr>
                                       <td>24 to 72 hr(s) before travel</td>
                                       <td>15.0%</td>
-                                      <td>₹ 119</td>
+                                      <td>Γé╣ 119</td>
                                     </tr>
                                     <tr>
                                       <td>12 to 24 hr(s) before travel</td>
                                       <td>25.0%</td>
-                                      <td>₹ 199</td>
+                                      <td>Γé╣ 199</td>
                                     </tr>
                                     <tr>
                                       <td>4 to 12 hr(s) before travel</td>
                                       <td>50.0%</td>
-                                      <td>₹ 397</td>
+                                      <td>Γé╣ 397</td>
                                     </tr>
                                     <tr>
                                       <td>0 to 4 hr(s) before travel</td>
                                       <td>100.0%</td>
-                                      <td>₹ 793</td>
+                                      <td>Γé╣ 793</td>
                                     </tr>
                                   </tbody>
                                 </table>
@@ -2399,7 +2520,7 @@ function BusResults() {
           {/* Side Panel */}
           <div className="passenger-details-panel">
             {/* Close Button */}
-            <button className="panel-close-btn" onClick={closePanel}>✕</button>
+            <button className="panel-close-btn" onClick={closePanel}>Γ£ò</button>
             
             {/* Panel Header */}
             <div className="panel-header">
@@ -2551,13 +2672,13 @@ function BusResults() {
                       <div className="offer-content">
                         <div className="offer-code">{offer.code}</div>
                         <div className="offer-description">
-                          <span className="save-text">Save ₹{offer.discount}.</span> {offer.description}
+                          <span className="save-text">Save Γé╣{offer.discount}.</span> {offer.description}
                         </div>
                       </div>
                       <div className="offer-action">
                         {appliedOffer?.code === offer.code ? (
                           <>
-                            <span className="discount-value">-₹{offer.discount}</span>
+                            <span className="discount-value">-Γé╣{offer.discount}</span>
                             <button className="remove-btn" onClick={handleRemoveOffer}>Remove</button>
                           </>
                         ) : (
@@ -2578,17 +2699,17 @@ function BusResults() {
                 <h3 className="section-title">Price details</h3>
                 <div className="price-row">
                   <span className="price-label">Base Fare</span>
-                  <span className="price-value">₹{baseFare.toFixed(1)}</span>
+                  <span className="price-value">Γé╣{baseFare.toFixed(1)}</span>
                 </div>
                 {appliedOffer && (
                   <div className="price-row">
                     <span className="price-label">Discounts</span>
-                    <span className="price-value discount">-₹{discountAmount.toFixed(1)}</span>
+                    <span className="price-value discount">-Γé╣{discountAmount.toFixed(1)}</span>
                   </div>
                 )}
                 <div className="price-row total">
                   <span className="price-label">Amount</span>
-                  <span className="price-value">₹{finalAmount}</span>
+                  <span className="price-value">Γé╣{finalAmount}</span>
                 </div>
                 <p className="price-note">Final payable amount will be updated on the next page</p>
               </div>
@@ -2714,7 +2835,7 @@ function BusResults() {
                           </div>
                           <div className="bus-review-detail-row">
                             <span className="bus-review-detail-label">Discount:</span>
-                            <span className="bus-review-detail-value">₹{appliedOffer.discount}</span>
+                            <span className="bus-review-detail-value">Γé╣{appliedOffer.discount}</span>
                           </div>
                         </div>
                       </div>
@@ -2726,18 +2847,18 @@ function BusResults() {
                       <div className="bus-review-total-card">
                         <div className="bus-review-detail-row">
                           <span className="bus-review-detail-label">Base Fare:</span>
-                          <span className="bus-review-detail-value">₹{baseFare.toFixed(1)}</span>
+                          <span className="bus-review-detail-value">Γé╣{baseFare.toFixed(1)}</span>
                         </div>
                         {appliedOffer && (
                           <div className="bus-review-detail-row">
                             <span className="bus-review-detail-label">Discount:</span>
-                            <span className="bus-review-detail-value">-₹{discountAmount.toFixed(1)}</span>
+                            <span className="bus-review-detail-value">-Γé╣{discountAmount.toFixed(1)}</span>
                           </div>
                         )}
                         <div className="bus-review-total-divider"></div>
                         <div className="bus-review-detail-row bus-review-total-row">
                           <span className="bus-review-total-label">Grand Total:</span>
-                          <span className="bus-review-total-value">₹{finalAmount}</span>
+                          <span className="bus-review-total-value">Γé╣{finalAmount}</span>
                         </div>
                       </div>
                     </div>
@@ -2839,3 +2960,4 @@ function BusResults() {
 }
 
 export default BusResults;
+

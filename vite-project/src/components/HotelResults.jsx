@@ -29,6 +29,43 @@ function HotelResults() {
   const profileDropdownRef = useRef(null);
   const { isLoggedIn, currentUser, refreshAuth, logoutUser } = useAuth();
 
+  // Results state for hotels
+  const [results, setResults] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [page, setPage] = useState(1);
+  const perPage = 20;
+
+  const buildHotelApiUrl = () => {
+    if (location.search && location.search.length > 1) return `/api/hotels${location.search}`;
+    const s = new URLSearchParams();
+    if (location.state?.city) s.set('city', location.state.city);
+    if (location.state?.checkInDate) s.set('checkIn', new Date(location.state.checkInDate).toISOString().split('T')[0]);
+    if (location.state?.checkOutDate) s.set('checkOut', new Date(location.state.checkOutDate).toISOString().split('T')[0]);
+    return `/api/hotels?${s.toString()}`;
+  };
+
+  const fetchHotels = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const base = buildHotelApiUrl();
+      const url = new URL(base, window.location.origin);
+      url.searchParams.set('page', page);
+      url.searchParams.set('limit', perPage);
+      const resp = await fetch(url.toString());
+      if (!resp.ok) throw new Error('Failed to fetch hotels');
+      const body = await resp.json();
+      setResults(body.data || []);
+    } catch (err) {
+      setError(err.message || 'Unknown error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => { fetchHotels(); }, [location.search, page]);
+
   // Hotel Sorting state management - 3 states: null (no sort), 'asc', 'desc'
   // Smart is 'active' by default
   const [hotelSortStates, setHotelSortStates] = useState({
@@ -474,7 +511,42 @@ function HotelResults() {
                 </div>
               </div>
               
-              {/* HOTEL CARDS */}
+              {/* HOTEL CARDS (dynamic from backend) */}
+              {loading ? (
+                <div className="loading-state">Loading hotels...</div>
+              ) : error ? (
+                <div className="error-state">{error}</div>
+              ) : results && results.length > 0 ? (
+                <div className="hotel-cards-container">
+                  {results.map((hotel) => (
+                    <div key={hotel.id} className="hotel-card">
+                      <div className="hotel-rooms-left">{hotel.available_rooms} rooms left</div>
+                      <div className="hotel-card-image-section">
+                        <div className="hotel-image-wrapper">
+                          <img src={hotel.image || '/hotels/h2.jpg'} alt={hotel.name} className="hotel-main-image" />
+                        </div>
+                      </div>
+                      <div className="hotel-card-details">
+                        <div className="hotel-name-rating">
+                          <h3 className="hotel-name">{hotel.name}</h3>
+                        </div>
+                        <p className="hotel-location">{hotel.city}</p>
+                        <div className="hotel-rating-block">
+                          <span className="hotel-rating-badge">{hotel.rating}</span>
+                        </div>
+                      </div>
+                      <div className="hotel-card-divider"></div>
+                      <div className="hotel-card-price-section">
+                        <div className="hotel-price-details">
+                          <div className="hotel-main-price">₹{hotel.price_per_night}</div>
+                          <div className="hotel-per-info">per night</div>
+                        </div>
+                        <button className="hotel-book-btn">Book Now</button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
               <div className="hotel-cards-container">
                 {hotelData.map((hotel) => (
                   <div key={hotel.id} className="hotel-card">
@@ -588,6 +660,7 @@ function HotelResults() {
                   </div>
                 ))}
               </div>
+              )}
             </section>
           </div>
         </div>

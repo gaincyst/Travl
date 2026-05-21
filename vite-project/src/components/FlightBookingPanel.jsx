@@ -1,5 +1,6 @@
 import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { API_ENDPOINTS } from "../utils/api";
 import "../styles/FlightBookingPanel.css";
 
 // ===== SEATS AND MEALS SECTION - COMMENTED OUT (NOT IN USE) =====
@@ -410,6 +411,12 @@ function FlightBookingPanel({ isOpen, onClose, flightData }) {
   
   // GST checkbox state
   const [hasGST, setHasGST] = useState(false);
+
+  const [bookingContact, setBookingContact] = useState({
+    countryCode: '91',
+    phone: '',
+    email: ''
+  });
   
   /* ===== SEATS AND MEALS STATE - COMMENTED OUT =====
   // Seats and Meals state
@@ -462,6 +469,8 @@ function FlightBookingPanel({ isOpen, onClose, flightData }) {
       title: '',
       firstName: '',
       lastName: '',
+      gender: '',
+      age: '',
       countryCode: '',
       mobile: '',
       email: '',
@@ -488,6 +497,114 @@ function FlightBookingPanel({ isOpen, onClose, flightData }) {
       return { type: 'infant', number: index - totalAdults - totalChildren + 1, label: `INFANT ${index - totalAdults - totalChildren + 1}` };
     }
   };
+
+  const parsePriceValue = (value) => {
+    if (!value) return 0;
+    return parseInt(String(value).replace(/[^0-9]/g, ''), 10) || 0;
+  };
+
+  const getTotalPrice = () => {
+    const outbound = parsePriceValue(flightData?.price);
+    const inbound = flightData?.isRoundTrip && flightData?.returnFlight
+      ? parsePriceValue(flightData.returnFlight.price)
+      : 0;
+    return outbound + inbound;
+  };
+
+  const formatDuration = (minutes) => {
+    const total = Number(minutes) || 0;
+    const hours = Math.floor(total / 60);
+    const mins = total % 60;
+    return `${hours}h ${mins}m`;
+  };
+
+  const parseTimeMinutes = (timeValue) => {
+    if (!timeValue) return 0;
+    const [hours, minutes] = String(timeValue).split(':').map(Number);
+    return (hours || 0) * 60 + (minutes || 0);
+  };
+
+  const getLayoverMinutes = (segment, nextSegment) => {
+    if (!nextSegment) return null;
+    if (segment.layoverMinutes !== undefined && segment.layoverMinutes !== null) {
+      return Number(segment.layoverMinutes);
+    }
+    if (!segment.arrivalTime || !nextSegment.departureTime) return null;
+    return (parseTimeMinutes(nextSegment.departureTime) - parseTimeMinutes(segment.arrivalTime) + 1440) % 1440;
+  };
+
+  const renderConnectedTimeline = (flight) => {
+    const segments = flight?.segments || [];
+    if (segments.length < 2) return null;
+
+    return (
+      <div className="connected-flight-timeline">
+        {segments.map((segment, index) => {
+          const nextSegment = segments[index + 1];
+          const layoverMinutes = getLayoverMinutes(segment, nextSegment);
+          const showLayover = layoverMinutes !== null && nextSegment;
+          const terminalChange = showLayover && segment.terminal && nextSegment.terminal
+            ? segment.terminal !== nextSegment.terminal
+            : false;
+
+          return (
+            <React.Fragment key={`${flight?.id || 'flight'}-segment-${index}`}>
+              <div className="flight-segment">
+                <div className="segment-airline-row">
+                  <img src={flight.airlineLogo} alt={flight.airline} className="segment-airline-logo" />
+                  <span className="segment-flight-number">{flight.flightNumber}</span>
+                  <span className="segment-aircraft-badge">{segment.aircraft || flight.aircraft || 'Airbus A320'}</span>
+                </div>
+                <div className="segment-journey">
+                  <div className="segment-point">
+                    <div className="segment-time">{segment.departureTime}</div>
+                    <div className="segment-city">{segment.fromCity}</div>
+                    <div className="segment-airport">{segment.fromAirportName}</div>
+                  </div>
+                  <div className="segment-duration">
+                    <div className="segment-duration-text">{formatDuration(segment.durationMinutes)}</div>
+                    <div className="segment-timeline-line">
+                      <div className="segment-circle"></div>
+                      <div className="segment-dotted"></div>
+                      <div className="segment-circle"></div>
+                    </div>
+                  </div>
+                  <div className="segment-point">
+                    <div className="segment-time">{segment.arrivalTime}</div>
+                    <div className="segment-city">{segment.toCity}</div>
+                    <div className="segment-airport">{segment.toAirportName}</div>
+                  </div>
+                </div>
+              </div>
+
+              {showLayover && (
+                <div className="layover-section">
+                  <div className="layover-indicator">
+                    <div className="layover-dot"></div>
+                  </div>
+                  <div className="layover-details">
+                    <div className="layover-change-text">{terminalChange ? 'Change of Terminal' : 'Change of planes'}</div>
+                    <div className="layover-duration">{formatDuration(layoverMinutes)} Layover in {segment.toCity}</div>
+                  </div>
+                </div>
+              )}
+            </React.Fragment>
+          );
+        })}
+      </div>
+    );
+  };
+
+  const buildPassengers = () => {
+    return travellersData.slice(0, totalTravellers)
+      .filter((traveller) => traveller.firstName || traveller.lastName)
+      .map((traveller) => ({
+        firstName: traveller.firstName,
+        lastName: traveller.lastName,
+        gender: traveller.gender || null,
+        age: traveller.age ? Number(traveller.age) : null
+      }));
+  };
   
   // Handle fare selection
   const handleFareSelection = (fareType) => {
@@ -498,6 +615,36 @@ function FlightBookingPanel({ isOpen, onClose, flightData }) {
   const getStopCityDetails = (flight) => {
     if (!flight || !flight.duration || !flight.departureTime) {
       return null;
+    }
+
+    if (flight.segments && flight.segments.length > 1) {
+      const firstSegment = flight.segments[0];
+      const secondSegment = flight.segments[1];
+      const computedLayover = (parseTimeMinutes(secondSegment.departureTime) - parseTimeMinutes(firstSegment.arrivalTime) + 1440) % 1440;
+      const layoverMinutes = firstSegment.layoverMinutes || computedLayover;
+
+      return {
+        stopCity: {
+          code: firstSegment.toAirport,
+          name: firstSegment.toCity,
+          airport: firstSegment.toAirportName,
+          terminal: firstSegment.terminal
+        },
+        segment1: {
+          duration: formatDuration(firstSegment.durationMinutes),
+          arrivalTime: firstSegment.arrivalTime
+        },
+        layover: {
+          duration: formatDuration(layoverMinutes),
+          changeType: firstSegment.terminal && secondSegment.terminal && firstSegment.terminal !== secondSegment.terminal
+            ? 'Change of Terminal'
+            : 'Change of planes'
+        },
+        segment2: {
+          duration: formatDuration(secondSegment.durationMinutes),
+          departureTime: secondSegment.departureTime
+        }
+      };
     }
     
     const stopCities = [
@@ -601,22 +748,60 @@ function FlightBookingPanel({ isOpen, onClose, flightData }) {
       setCompletedSteps([...completedSteps, currentStepIndex]);
     }
     
-    // If on Review Booking (step 3), show confirmation modal
     if (currentStepIndex === 3) {
       setShowConfirmationModal(true);
+      return;
+    }
+
+    if (currentStepIndex === navigationSteps.length - 1) {
+      setCurrentStepIndex(3);
     } else {
-      // Move to next step
       setCurrentStepIndex(currentStepIndex + 1);
-      if (panelContentRef.current) {
-        panelContentRef.current.scrollTop = 0;
-      }
+    }
+
+    if (panelContentRef.current) {
+      panelContentRef.current.scrollTop = 0;
     }
   };
 
   const handleConfirmBooking = async () => {
     try {
-      // TODO: API call to save booking
-      console.log("Saving booking data:", stepData);
+      const requiredTravellers = travellersData.slice(0, totalTravellers);
+      const missingTravellerInfo = requiredTravellers.some((traveller) =>
+        !traveller.firstName || !traveller.lastName || !traveller.gender || !traveller.age
+      );
+
+      if (missingTravellerInfo) {
+        alert("Please complete traveller names, gender, and age.");
+        return;
+      }
+
+      if (!bookingContact.email || !bookingContact.phone) {
+        alert("Please provide booking email and phone.");
+        return;
+      }
+
+      const payload = {
+        tripType: flightData?.isRoundTrip ? 'roundTrip' : 'oneWay',
+        departureFlightId: flightData?.id,
+        returnFlightId: flightData?.returnFlight?.id || null,
+        email: bookingContact.email,
+        phone: `${bookingContact.countryCode}${bookingContact.phone}`,
+        totalPrice: getTotalPrice(),
+        passengers: buildPassengers()
+      };
+
+      const response = await fetch(API_ENDPOINTS.BOOKINGS, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data?.message || 'Failed to save booking');
+      }
       
       // Close confirmation modal and show success modal
       setShowConfirmationModal(false);
@@ -629,10 +814,9 @@ function FlightBookingPanel({ isOpen, onClose, flightData }) {
 
   const handleCancelBooking = (e) => {
     if (e) e.stopPropagation();
-    window.alert('CANCEL BUTTON CLICKED!');
-    console.log('Cancel booking clicked - navigating to /cancel');
-    alert('Cancel button clicked! Navigating now...');
-    navigate('/cancel', { replace: true });
+    setShowConfirmationModal(false);
+    onClose();
+    navigate('/', { replace: true });
   };
 
   // Baggage options
@@ -696,14 +880,13 @@ function FlightBookingPanel({ isOpen, onClose, flightData }) {
                   </div>
                 </div>
                 <div className="economy-class-text">
-                  Economy &gt; <span className="fare-class">SAVER</span>
+                  Economy &gt; <span className="fare-class">{flightData.selectedFareType || 'SAVER'}</span>
                 </div>
               </div>
 
               {/* Flight Timeline */}
               {flightData.stops !== "Non Stop" ? (
-                // Connected flight with stop
-                (() => {
+                renderConnectedTimeline(flightData) || (() => {
                   const stopDetails = getStopCityDetails(flightData);
                   if (!stopDetails) {
                     // Fall back to simple layout if calculations fail
@@ -885,14 +1068,13 @@ function FlightBookingPanel({ isOpen, onClose, flightData }) {
                     </div>
                   </div>
                   <div className="economy-class-text">
-                    Economy &gt; <span className="fare-class">SAVER</span>
+                    Economy &gt; <span className="fare-class">{flightData.returnFlight?.selectedFareType || 'SAVER'}</span>
                   </div>
                 </div>
 
                 {/* Flight Timeline */}
                 {flightData.returnFlight.stops !== "Non Stop" ? (
-                  // Connected flight with stop
-                  (() => {
+                  renderConnectedTimeline(flightData.returnFlight) || (() => {
                     const stopDetails = getStopCityDetails(flightData.returnFlight);
                     if (!stopDetails) {
                       // Fall back to simple layout if calculations fail
@@ -1336,6 +1518,28 @@ function FlightBookingPanel({ isOpen, onClose, flightData }) {
                     />
                   </div>
 
+                  <div className="form-row">
+                    <select
+                      className="form-input"
+                      value={travellersData[index].gender}
+                      onChange={(e) => updateTravellerData(index, 'gender', e.target.value)}
+                    >
+                      <option value="">Gender</option>
+                      <option value="Male">Male</option>
+                      <option value="Female">Female</option>
+                      <option value="Other">Other</option>
+                    </select>
+                    <input
+                      type="number"
+                      className="form-input"
+                      placeholder="Age"
+                      min="0"
+                      max="120"
+                      value={travellersData[index].age}
+                      onChange={(e) => updateTravellerData(index, 'age', e.target.value)}
+                    />
+                  </div>
+
                   {/* Contact Details Row */}
                   <div className="form-labels-row">
                     <label className="form-field-label">Country Code</label>
@@ -1404,20 +1608,28 @@ function FlightBookingPanel({ isOpen, onClose, flightData }) {
                 <label className="form-field-label">Email</label>
               </div>
               <div className="form-row contact-row">
-                <select className="form-input form-select-country">
+                <select
+                  className="form-input form-select-country"
+                  value={bookingContact.countryCode}
+                  onChange={(e) => setBookingContact((prev) => ({ ...prev, countryCode: e.target.value }))}
+                >
                   <option value="91">India(91)</option>
                   <option value="1">USA(1)</option>
                   <option value="44">UK(44)</option>
                 </select>
                 <input 
-                  type="text" 
+                  type="tel" 
                   className="form-input" 
                   placeholder="Mobile No"
+                  value={bookingContact.phone}
+                  onChange={(e) => setBookingContact((prev) => ({ ...prev, phone: e.target.value }))}
                 />
                 <input 
-                  type="text" 
+                  type="email" 
                   className="form-input" 
                   placeholder="Email"
+                  value={bookingContact.email}
+                  onChange={(e) => setBookingContact((prev) => ({ ...prev, email: e.target.value }))}
                 />
               </div>
 
@@ -2028,7 +2240,7 @@ function FlightBookingPanel({ isOpen, onClose, flightData }) {
           {navigationSteps.map((step, index) => (
             <button
               key={step.id}
-              className={`flight-step-item ${currentStepIndex === index ? 'flight-step-active' : ''} ${index > currentStepIndex && !completedSteps.includes(index) ? 'flight-step-disabled' : ''}`}
+              className={`flight-step-item ${(currentStepIndex === index || (currentStepIndex > navigationSteps.length - 1 && index === navigationSteps.length - 1)) ? 'flight-step-active' : ''} ${index > currentStepIndex && !completedSteps.includes(index) ? 'flight-step-disabled' : ''}`}
               onClick={() => handleStepClick(index)}
               disabled={index > currentStepIndex && !completedSteps.includes(index)}
             >
