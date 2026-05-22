@@ -6,7 +6,7 @@ SET @col_date := (
 );
 SET @sql_date := IF(
   @col_date = 0,
-  "ALTER TABLE flights ADD COLUMN `date` DATE NOT NULL DEFAULT '2000-01-01'",
+  'ALTER TABLE flights ADD COLUMN `date` DATE NOT NULL DEFAULT \''2000-01-01\'',
   'SELECT 1'
 );
 PREPARE stmt FROM @sql_date;

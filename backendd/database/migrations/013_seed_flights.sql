@@ -19,7 +19,7 @@ SET @col_flight_number := (
 );
 SET @sql_flight_number := IF(
   @col_flight_number = 0,
-  "ALTER TABLE flights ADD COLUMN flight_number VARCHAR(20) NOT NULL DEFAULT ''",
+  'ALTER TABLE flights ADD COLUMN flight_number VARCHAR(20) NOT NULL DEFAULT \''\'',
   'SELECT 1'
 );
 PREPARE stmt FROM @sql_flight_number;
@@ -32,7 +32,7 @@ SET @col_from_airport := (
 );
 SET @sql_from_airport := IF(
   @col_from_airport = 0,
-  "ALTER TABLE flights ADD COLUMN from_airport VARCHAR(5) NOT NULL DEFAULT ''",
+  'ALTER TABLE flights ADD COLUMN from_airport VARCHAR(5) NOT NULL DEFAULT \''\'',
   'SELECT 1'
 );
 PREPARE stmt FROM @sql_from_airport;
@@ -45,7 +45,7 @@ SET @col_to_airport := (
 );
 SET @sql_to_airport := IF(
   @col_to_airport = 0,
-  "ALTER TABLE flights ADD COLUMN to_airport VARCHAR(5) NOT NULL DEFAULT ''",
+  'ALTER TABLE flights ADD COLUMN to_airport VARCHAR(5) NOT NULL DEFAULT \''\'',
   'SELECT 1'
 );
 PREPARE stmt FROM @sql_to_airport;
@@ -58,7 +58,7 @@ SET @col_departure_time := (
 );
 SET @sql_departure_time := IF(
   @col_departure_time = 0,
-  "ALTER TABLE flights ADD COLUMN departure_time TIME NOT NULL DEFAULT '00:00:00'",
+  'ALTER TABLE flights ADD COLUMN departure_time TIME NOT NULL DEFAULT \''00:00:00\'',
   'SELECT 1'
 );
 PREPARE stmt FROM @sql_departure_time;
@@ -71,7 +71,7 @@ SET @col_arrival_time := (
 );
 SET @sql_arrival_time := IF(
   @col_arrival_time = 0,
-  "ALTER TABLE flights ADD COLUMN arrival_time TIME NOT NULL DEFAULT '00:00:00'",
+  'ALTER TABLE flights ADD COLUMN arrival_time TIME NOT NULL DEFAULT \''00:00:00\'',
   'SELECT 1'
 );
 PREPARE stmt FROM @sql_arrival_time;
@@ -123,7 +123,7 @@ SET @col_cabin_class := (
 );
 SET @sql_cabin_class := IF(
   @col_cabin_class = 0,
-  "ALTER TABLE flights ADD COLUMN cabin_class VARCHAR(50) NOT NULL DEFAULT 'Economy'",
+  'ALTER TABLE flights ADD COLUMN cabin_class VARCHAR(50) NOT NULL DEFAULT \''Economy\'',
   'SELECT 1'
 );
 PREPARE stmt FROM @sql_cabin_class;
@@ -162,7 +162,7 @@ SET @col_trip_type := (
 );
 SET @sql_trip_type := IF(
   @col_trip_type = 0,
-  "ALTER TABLE flights ADD COLUMN trip_type VARCHAR(20) NOT NULL DEFAULT 'oneway'",
+  'ALTER TABLE flights ADD COLUMN trip_type VARCHAR(20) NOT NULL DEFAULT \''oneway\'',
   'SELECT 1'
 );
 PREPARE stmt FROM @sql_trip_type;
@@ -175,8 +175,8 @@ SET @col_from_city := (
 );
 SET @sql_from_city := IF(
   @col_from_city = 0,
-  "ALTER TABLE flights ADD COLUMN from_city VARCHAR(100) NOT NULL DEFAULT ''",
-  "ALTER TABLE flights MODIFY COLUMN from_city VARCHAR(100) NOT NULL DEFAULT ''"
+  'ALTER TABLE flights ADD COLUMN from_city VARCHAR(100) NOT NULL DEFAULT \''\'',
+  'ALTER TABLE flights MODIFY COLUMN from_city VARCHAR(100) NOT NULL DEFAULT \''\''
 );
 PREPARE stmt FROM @sql_from_city;
 EXECUTE stmt;
@@ -188,8 +188,8 @@ SET @col_to_city := (
 );
 SET @sql_to_city := IF(
   @col_to_city = 0,
-  "ALTER TABLE flights ADD COLUMN to_city VARCHAR(100) NOT NULL DEFAULT ''",
-  "ALTER TABLE flights MODIFY COLUMN to_city VARCHAR(100) NOT NULL DEFAULT ''"
+  'ALTER TABLE flights ADD COLUMN to_city VARCHAR(100) NOT NULL DEFAULT \''\'',
+  'ALTER TABLE flights MODIFY COLUMN to_city VARCHAR(100) NOT NULL DEFAULT \''\''
 );
 PREPARE stmt FROM @sql_to_city;
 EXECUTE stmt;
@@ -201,8 +201,8 @@ SET @col_date := (
 );
 SET @sql_date := IF(
   @col_date = 0,
-  "ALTER TABLE flights ADD COLUMN date DATE NOT NULL DEFAULT '2000-01-01'",
-  "ALTER TABLE flights MODIFY COLUMN date DATE NOT NULL DEFAULT '2000-01-01'"
+  'ALTER TABLE flights ADD COLUMN date DATE NOT NULL DEFAULT \''2000-01-01\'',
+  'ALTER TABLE flights MODIFY COLUMN date DATE NOT NULL DEFAULT \''2000-01-01\''
 );
 PREPARE stmt FROM @sql_date;
 EXECUTE stmt;
