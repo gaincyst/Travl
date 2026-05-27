@@ -514,7 +514,84 @@ function BusResults() {
     }
   }, [busError]);
 
-  const buses = Array.isArray(busResults) ? busResults : [];
+  const fallbackBusResults = [
+    {
+      id: "static-bus-1",
+      operator_name: "BlueLine Travels",
+      bus_type: "AC Sleeper",
+      departure_time: "21:30",
+      arrival_time: "05:45",
+      date: "2026-01-21",
+      arrival_date: "2026-01-22",
+      arrival_day_offset: "+1",
+      duration: "8h 15m",
+      seats_left: 12,
+      single_seats: 4,
+      price: 1299,
+      rating: 4.5,
+      review_count: 128,
+      from_city: "Delhi",
+      to_city: "Jaipur"
+    },
+    {
+      id: "static-bus-2",
+      operator_name: "NightRider Express",
+      bus_type: "Non AC Seater",
+      departure_time: "19:15",
+      arrival_time: "03:30",
+      date: "2026-01-21",
+      arrival_date: "2026-01-22",
+      arrival_day_offset: "+1",
+      duration: "8h 15m",
+      seats_left: 7,
+      single_seats: 2,
+      price: 899,
+      rating: 4.1,
+      review_count: 92,
+      from_city: "Delhi",
+      to_city: "Jaipur"
+    },
+    {
+      id: "static-bus-3",
+      operator_name: "Skyline Volvo",
+      bus_type: "AC Seater",
+      departure_time: "06:00",
+      arrival_time: "14:10",
+      date: "2026-01-21",
+      arrival_date: "2026-01-21",
+      arrival_day_offset: "",
+      duration: "8h 10m",
+      seats_left: 15,
+      single_seats: 6,
+      price: 1599,
+      rating: 4.7,
+      review_count: 210,
+      from_city: "Delhi",
+      to_city: "Jaipur"
+    },
+    {
+      id: "static-bus-4",
+      operator_name: "GreenRoute",
+      bus_type: "AC Sleeper",
+      departure_time: "23:05",
+      arrival_time: "07:20",
+      date: "2026-01-21",
+      arrival_date: "2026-01-22",
+      arrival_day_offset: "+1",
+      duration: "8h 15m",
+      seats_left: 5,
+      single_seats: 1,
+      price: 1399,
+      rating: 4.3,
+      review_count: 76,
+      from_city: "Delhi",
+      to_city: "Jaipur"
+    }
+  ];
+
+  const buses = Array.isArray(busResults) && busResults.length > 0
+    ? busResults
+    : fallbackBusResults;
   const bus1 = normalizeBus(buses[0]);
   const bus2 = normalizeBus(buses[1]);
   const bus3 = normalizeBus(buses[2]);
@@ -666,7 +743,7 @@ function BusResults() {
               
               {/* SORT BY BAR */}
               <div className="sort-by-bar">
-                <span className="results-count">{busResults.length} Buses Available</span>
+                <span className="results-count">{buses.length} Buses Available</span>
                 <div className="sort-options">
                   <button 
                     className={`sort-btn ${sortStates.ratings !== null ? 'active' : ''}`}
@@ -773,7 +850,7 @@ function BusResults() {
                         className="bus-details-link"
                         onClick={() => toggleBusDetails('bus1')}
                       >
-                        {openBusDetails['bus1'] ? 'Hide Details' : 'Bus Details'} ΓåÆ
+                        {openBusDetails['bus1'] ? 'Hide Details' : 'Bus Details'} →
                       </button>
                     </div>
                   </div>
@@ -972,39 +1049,39 @@ function BusResults() {
                                     <tr>
                                       <th>CANCELLATION TIME</th>
                                       <th>PENALTY (%)</th>
-                                      <th>PENALTY (Γé╣)</th>
+                                      <th>PENALTY (₹)</th>
                                     </tr>
                                   </thead>
                                   <tbody>
                                     <tr>
                                       <td>more than 168 hrs before travel</td>
                                       <td>15.0%</td>
-                                      <td>Γé╣ 119</td>
+                                      <td> 119</td>
                                     </tr>
                                     <tr>
                                       <td>72 to 168 hr(s) before travel</td>
                                       <td>15.0%</td>
-                                      <td>Γé╣ 119</td>
+                                      <td> 119</td>
                                     </tr>
                                     <tr>
                                       <td>24 to 72 hr(s) before travel</td>
                                       <td>15.0%</td>
-                                      <td>Γé╣ 119</td>
+                                      <td> 119</td>
                                     </tr>
                                     <tr>
                                       <td>12 to 24 hr(s) before travel</td>
                                       <td>25.0%</td>
-                                      <td>Γé╣ 199</td>
+                                      <td> 199</td>
                                     </tr>
                                     <tr>
                                       <td>4 to 12 hr(s) before travel</td>
                                       <td>50.0%</td>
-                                      <td>Γé╣ 397</td>
+                                      <td> 397</td>
                                     </tr>
                                     <tr>
                                       <td>0 to 4 hr(s) before travel</td>
                                       <td>100.0%</td>
-                                      <td>Γé╣ 793</td>
+                                      <td> 793</td>
                                     </tr>
                                   </tbody>
                                 </table>
@@ -1160,64 +1237,64 @@ function BusResults() {
                               <div className="berth-header">LOWER BERTH(22)</div>
                               <div className="seats-grid">
                                 <div className="seat-row">
-                                  <div className="seat-item booked"><img src="/seat1.png" alt="seat" className="seat-icon" /><span>Γé╣1190</span></div>
+                                  <div className="seat-item booked"><img src="/seat1.png" alt="seat" className="seat-icon" /><span>1190</span></div>
                                   <div className="seat-item-spacer"></div>
-                                  <div className={`seat-item ${isSeatSelected('bus1', 'L1') ? 'selected' : 'available'}`} onClick={() => toggleSeatSelection('bus1', 'L1', false)}><img src="/seat1.png" alt="seat" className="seat-icon" /><span>Γé╣651</span></div>
-                                  <div className={`seat-item ${isSeatSelected('bus1', 'L2') ? 'selected' : 'available'}`} onClick={() => toggleSeatSelection('bus1', 'L2', false)}><img src="/seat1.png" alt="seat" className="seat-icon" /><span>Γé╣604</span></div>
+                                  <div className={`seat-item ${isSeatSelected('bus1', 'L1') ? 'selected' : 'available'}`} onClick={() => toggleSeatSelection('bus1', 'L1', false)}><img src="/seat1.png" alt="seat" className="seat-icon" /><span>651</span></div>
+                                  <div className={`seat-item ${isSeatSelected('bus1', 'L2') ? 'selected' : 'available'}`} onClick={() => toggleSeatSelection('bus1', 'L2', false)}><img src="/seat1.png" alt="seat" className="seat-icon" /><span>604</span></div>
                                 </div>
                                 <div className="seat-row">
-                                  <div className={`seat-item ${isSeatSelected('bus1', 'L3') ? 'selected' : 'available'}`} onClick={() => toggleSeatSelection('bus1', 'L3', false)}><img src="/seat1.png" alt="seat" className="seat-icon" /><span>Γé╣604</span></div>
+                                  <div className={`seat-item ${isSeatSelected('bus1', 'L3') ? 'selected' : 'available'}`} onClick={() => toggleSeatSelection('bus1', 'L3', false)}><img src="/seat1.png" alt="seat" className="seat-icon" /><span>604</span></div>
                                   <div className="seat-item-spacer"></div>
-                                  <div className={`seat-item ${isSeatSelected('bus1', 'L4') ? 'selected' : 'available'}`} onClick={() => toggleSeatSelection('bus1', 'L4', false)}><img src="/seat1.png" alt="seat" className="seat-icon" /><span>Γé╣604</span></div>
-                                  <div className={`seat-item ${isSeatSelected('bus1', 'L5') ? 'selected' : 'available'}`} onClick={() => toggleSeatSelection('bus1', 'L5', false)}><img src="/seat1.png" alt="seat" className="seat-icon" /><span>Γé╣604</span></div>
+                                  <div className={`seat-item ${isSeatSelected('bus1', 'L4') ? 'selected' : 'available'}`} onClick={() => toggleSeatSelection('bus1', 'L4', false)}><img src="/seat1.png" alt="seat" className="seat-icon" /><span>604</span></div>
+                                  <div className={`seat-item ${isSeatSelected('bus1', 'L5') ? 'selected' : 'available'}`} onClick={() => toggleSeatSelection('bus1', 'L5', false)}><img src="/seat1.png" alt="seat" className="seat-icon" /><span>604</span></div>
                                 </div>
                                 <div className="seat-row">
-                                  <div className={`seat-item ${isSeatSelected('bus1', 'L6') ? 'selected' : 'available'}`} onClick={() => toggleSeatSelection('bus1', 'L6', false)}><img src="/seat1.png" alt="seat" className="seat-icon" /><span>Γé╣604</span></div>
+                                  <div className={`seat-item ${isSeatSelected('bus1', 'L6') ? 'selected' : 'available'}`} onClick={() => toggleSeatSelection('bus1', 'L6', false)}><img src="/seat1.png" alt="seat" className="seat-icon" /><span>604</span></div>
                                   <div className="seat-item-spacer"></div>
-                                  <div className={`seat-item ${isSeatSelected('bus1', 'L7') ? 'selected' : 'available'}`} onClick={() => toggleSeatSelection('bus1', 'L7', false)}><img src="/seat1.png" alt="seat" className="seat-icon" /><span>Γé╣604</span></div>
-                                  <div className={`seat-item ${isSeatSelected('bus1', 'L8') ? 'selected' : 'available'}`} onClick={() => toggleSeatSelection('bus1', 'L8', false)}><img src="/seat1.png" alt="seat" className="seat-icon" /><span>Γé╣604</span></div>
+                                  <div className={`seat-item ${isSeatSelected('bus1', 'L7') ? 'selected' : 'available'}`} onClick={() => toggleSeatSelection('bus1', 'L7', false)}><img src="/seat1.png" alt="seat" className="seat-icon" /><span>604</span></div>
+                                  <div className={`seat-item ${isSeatSelected('bus1', 'L8') ? 'selected' : 'available'}`} onClick={() => toggleSeatSelection('bus1', 'L8', false)}><img src="/seat1.png" alt="seat" className="seat-icon" /><span>604</span></div>
                                 </div>
                                 <div className="seat-row">
-                                  <div className="seat-item booked"><img src="/seat1.png" alt="seat" className="seat-icon" /><span>Γé╣1190</span></div>
+                                  <div className="seat-item booked"><img src="/seat1.png" alt="seat" className="seat-icon" /><span>1190</span></div>
                                   <div className="seat-item-spacer"></div>
-                                  <div className={`seat-item ${isSeatSelected('bus1', 'L9') ? 'selected' : 'available'}`} onClick={() => toggleSeatSelection('bus1', 'L9', false)}><img src="/seat1.png" alt="seat" className="seat-icon" /><span>Γé╣581</span></div>
-                                  <div className="seat-item booked"><img src="/seat1.png" alt="seat" className="seat-icon" /><span>Γé╣490</span></div>
+                                  <div className={`seat-item ${isSeatSelected('bus1', 'L9') ? 'selected' : 'available'}`} onClick={() => toggleSeatSelection('bus1', 'L9', false)}><img src="/seat1.png" alt="seat" className="seat-icon" /><span>581</span></div>
+                                  <div className="seat-item booked"><img src="/seat1.png" alt="seat" className="seat-icon" /><span>490</span></div>
                                 </div>
                                 <div className="seat-row">
-                                  <div className="seat-item booked"><img src="/seat1.png" alt="seat" className="seat-icon" /><span>Γé╣1190</span></div>
+                                  <div className="seat-item booked"><img src="/seat1.png" alt="seat" className="seat-icon" /><span>1190</span></div>
                                   <div className="seat-item-spacer"></div>
-                                  <div className="seat-item booked"><img src="/seat1.png" alt="seat" className="seat-icon" /><span>Γé╣571</span></div>
-                                  <div className="seat-item booked"><img src="/seat1.png" alt="seat" className="seat-icon" /><span>Γé╣582</span></div>
+                                  <div className="seat-item booked"><img src="/seat1.png" alt="seat" className="seat-icon" /><span>571</span></div>
+                                  <div className="seat-item booked"><img src="/seat1.png" alt="seat" className="seat-icon" /><span>582</span></div>
                                 </div>
                                 <div className="seat-row">
-                                  <div className="seat-item booked"><img src="/seat1.png" alt="seat" className="seat-icon" /><span>Γé╣1190</span></div>
+                                  <div className="seat-item booked"><img src="/seat1.png" alt="seat" className="seat-icon" /><span>1190</span></div>
                                   <div className="seat-item-spacer"></div>
-                                  <div className={`seat-item ${isSeatSelected('bus1', 'L10') ? 'selected' : 'available'}`} onClick={() => toggleSeatSelection('bus1', 'L10', false)}><img src="/seat1.png" alt="seat" className="seat-icon" /><span>Γé╣581</span></div>
-                                  <div className={`seat-item ${isSeatSelected('bus1', 'L11') ? 'selected' : 'available'}`} onClick={() => toggleSeatSelection('bus1', 'L11', false)}><img src="/seat1.png" alt="seat" className="seat-icon" /><span>Γé╣581</span></div>
+                                  <div className={`seat-item ${isSeatSelected('bus1', 'L10') ? 'selected' : 'available'}`} onClick={() => toggleSeatSelection('bus1', 'L10', false)}><img src="/seat1.png" alt="seat" className="seat-icon" /><span>581</span></div>
+                                  <div className={`seat-item ${isSeatSelected('bus1', 'L11') ? 'selected' : 'available'}`} onClick={() => toggleSeatSelection('bus1', 'L11', false)}><img src="/seat1.png" alt="seat" className="seat-icon" /><span>581</span></div>
                                 </div>
                                 <div className="seat-row">
-                                  <div className="seat-item booked"><img src="/seat1.png" alt="seat" className="seat-icon" /><span>Γé╣1190</span></div>
+                                  <div className="seat-item booked"><img src="/seat1.png" alt="seat" className="seat-icon" /><span>1190</span></div>
                                   <div className="seat-item-spacer"></div>
-                                  <div className={`seat-item ${isSeatSelected('bus1', 'L12') ? 'selected' : 'available'}`} onClick={() => toggleSeatSelection('bus1', 'L12', false)}><img src="/seat1.png" alt="seat" className="seat-icon" /><span>Γé╣560</span></div>
-                                  <div className={`seat-item ${isSeatSelected('bus1', 'L13') ? 'selected' : 'available'}`} onClick={() => toggleSeatSelection('bus1', 'L13', false)}><img src="/seat1.png" alt="seat" className="seat-icon" /><span>Γé╣560</span></div>
+                                  <div className={`seat-item ${isSeatSelected('bus1', 'L12') ? 'selected' : 'available'}`} onClick={() => toggleSeatSelection('bus1', 'L12', false)}><img src="/seat1.png" alt="seat" className="seat-icon" /><span>560</span></div>
+                                  <div className={`seat-item ${isSeatSelected('bus1', 'L13') ? 'selected' : 'available'}`} onClick={() => toggleSeatSelection('bus1', 'L13', false)}><img src="/seat1.png" alt="seat" className="seat-icon" /><span>560</span></div>
                                 </div>
                                 <div className="seat-row">
-                                  <div className="seat-item booked"><img src="/seat1.png" alt="seat" className="seat-icon" /><span>Γé╣1190</span></div>
+                                  <div className="seat-item booked"><img src="/seat1.png" alt="seat" className="seat-icon" /><span>1190</span></div>
                                   <div className="seat-item-spacer"></div>
-                                  <div className={`seat-item ${isSeatSelected('bus1', 'L14') ? 'selected' : 'available'}`} onClick={() => toggleSeatSelection('bus1', 'L14', false)}><img src="/seat1.png" alt="seat" className="seat-icon" /><span>Γé╣560</span></div>
-                                  <div className={`seat-item ${isSeatSelected('bus1', 'L15') ? 'selected' : 'available'}`} onClick={() => toggleSeatSelection('bus1', 'L15', false)}><img src="/seat1.png" alt="seat" className="seat-icon" /><span>Γé╣560</span></div>
+                                  <div className={`seat-item ${isSeatSelected('bus1', 'L14') ? 'selected' : 'available'}`} onClick={() => toggleSeatSelection('bus1', 'L14', false)}><img src="/seat1.png" alt="seat" className="seat-icon" /><span>560</span></div>
+                                  <div className={`seat-item ${isSeatSelected('bus1', 'L15') ? 'selected' : 'available'}`} onClick={() => toggleSeatSelection('bus1', 'L15', false)}><img src="/seat1.png" alt="seat" className="seat-icon" /><span>560</span></div>
                                 </div>
                                 <div className="seat-row">
-                                  <div className="seat-item booked"><img src="/seat1.png" alt="seat" className="seat-icon" /><span>Γé╣1190</span></div>
+                                  <div className="seat-item booked"><img src="/seat1.png" alt="seat" className="seat-icon" /><span>1190</span></div>
                                   <div className="seat-item-spacer"></div>
-                                  <div className="seat-item booked"><img src="/seat1.png" alt="seat" className="seat-icon" /><span>Γé╣348</span></div>
-                                  <div className="seat-item booked"><img src="/seat1.png" alt="seat" className="seat-icon" /><span>Γé╣604</span></div>
+                                  <div className="seat-item booked"><img src="/seat1.png" alt="seat" className="seat-icon" /><span>348</span></div>
+                                  <div className="seat-item booked"><img src="/seat1.png" alt="seat" className="seat-icon" /><span>604</span></div>
                                 </div>
                                 <div className="seat-row">
-                                  <div className="seat-item booked"><img src="/seat1.png" alt="seat" className="seat-icon" /><span>Γé╣1190</span></div>
+                                  <div className="seat-item booked"><img src="/seat1.png" alt="seat" className="seat-icon" /><span>1190</span></div>
                                   <div className="seat-item-spacer"></div>
-                                  <div className="seat-item booked"><img src="/seat1.png" alt="seat" className="seat-icon" /><span>Γé╣1136</span></div>
-                                  <div className="seat-item booked"><img src="/seat1.png" alt="seat" className="seat-icon" /><span>Γé╣490</span></div>
+                                  <div className="seat-item booked"><img src="/seat1.png" alt="seat" className="seat-icon" /><span>1136</span></div>
+                                  <div className="seat-item booked"><img src="/seat1.png" alt="seat" className="seat-icon" /><span>490</span></div>
                                 </div>
                               </div>
                             </div>
@@ -1227,52 +1304,52 @@ function BusResults() {
                               <div className="berth-header">UPPER BERTH(7)</div>
                               <div className="seats-grid">
                                 <div className="seat-row">
-                                  <div className="seat-item booked"><img src="/seat2.png" alt="sleeper" className="sleeper-icon" /><span>Γé╣1155</span></div>
+                                  <div className="seat-item booked"><img src="/seat2.png" alt="sleeper" className="sleeper-icon" /><span>1155</span></div>
                                   <div className="seat-item-spacer"></div>
-                                  <div className={`seat-item ${isSeatSelected('bus1', 'U1') ? 'selected' : 'available'}`} onClick={() => toggleSeatSelection('bus1', 'U1', false)}><img src="/seat2.png" alt="sleeper" className="sleeper-icon" /><span>Γé╣1136</span></div>
-                                  <div className={`seat-item ${isSeatSelected('bus1', 'U2') ? 'selected' : 'available'}`} onClick={() => toggleSeatSelection('bus1', 'U2', false)}><img src="/seat2.png" alt="sleeper" className="sleeper-icon" /><span>Γé╣1136</span></div>
+                                  <div className={`seat-item ${isSeatSelected('bus1', 'U1') ? 'selected' : 'available'}`} onClick={() => toggleSeatSelection('bus1', 'U1', false)}><img src="/seat2.png" alt="sleeper" className="sleeper-icon" /><span>1136</span></div>
+                                  <div className={`seat-item ${isSeatSelected('bus1', 'U2') ? 'selected' : 'available'}`} onClick={() => toggleSeatSelection('bus1', 'U2', false)}><img src="/seat2.png" alt="sleeper" className="sleeper-icon" /><span>1136</span></div>
                                 </div>
                                 <div className="seat-row">
                                   <div className="seat-item-spacer"></div>
                                   <div className="seat-item-spacer"></div>
-                                  <div className="seat-item booked"><img src="/seat2.png" alt="sleeper" className="sleeper-icon" /><span>Γé╣857</span></div>
-                                  <div className="seat-item booked"><img src="/seat2.png" alt="sleeper" className="sleeper-icon" /><span>Γé╣989</span></div>
+                                  <div className="seat-item booked"><img src="/seat2.png" alt="sleeper" className="sleeper-icon" /><span>857</span></div>
+                                  <div className="seat-item booked"><img src="/seat2.png" alt="sleeper" className="sleeper-icon" /><span>989</span></div>
                                 </div>
                                 <div className="seat-row">
-                                  <div className="seat-item booked"><img src="/seat2.png" alt="sleeper" className="sleeper-icon" /><span>Γé╣1256</span></div>
+                                  <div className="seat-item booked"><img src="/seat2.png" alt="sleeper" className="sleeper-icon" /><span>1256</span></div>
                                   <div className="seat-item-spacer"></div>
-                                  <div className="seat-item booked"><img src="/seat2.png" alt="sleeper" className="sleeper-icon" /><span>Γé╣1052</span></div>
-                                  <div className="seat-item booked"><img src="/seat2.png" alt="sleeper" className="sleeper-icon" /><span>Γé╣1052</span></div>
-                                </div>
-                                <div className="seat-row">
-                                  <div className="seat-item-spacer"></div>
-                                  <div className="seat-item-spacer"></div>
-                                  <div className="seat-item booked"><img src="/seat2.png" alt="sleeper" className="sleeper-icon" /><span>Γé╣1036</span></div>
-                                  <div className="seat-item booked"><img src="/seat2.png" alt="sleeper" className="sleeper-icon" /><span>Γé╣513</span></div>
-                                </div>
-                                <div className="seat-row">
-                                  <div className="seat-item booked"><img src="/seat2.png" alt="sleeper" className="sleeper-icon" /><span>Γé╣1190</span></div>
-                                  <div className="seat-item-spacer"></div>
-                                  <div className="seat-item booked"><img src="/seat2.png" alt="sleeper" className="sleeper-icon" /><span>Γé╣1036</span></div>
-                                  <div className="seat-item-spacer"></div>
+                                  <div className="seat-item booked"><img src="/seat2.png" alt="sleeper" className="sleeper-icon" /><span>1052</span></div>
+                                  <div className="seat-item booked"><img src="/seat2.png" alt="sleeper" className="sleeper-icon" /><span>1052</span></div>
                                 </div>
                                 <div className="seat-row">
                                   <div className="seat-item-spacer"></div>
                                   <div className="seat-item-spacer"></div>
-                                  <div className={`seat-item ${isSeatSelected('bus1', 'U3') ? 'selected' : 'available'}`} onClick={() => toggleSeatSelection('bus1', 'U3', false)}><img src="/seat2.png" alt="sleeper" className="sleeper-icon" /><span>Γé╣976</span></div>
-                                  <div className="seat-item booked"><img src="/seat2.png" alt="sleeper" className="sleeper-icon" /><span>Γé╣813</span></div>
+                                  <div className="seat-item booked"><img src="/seat2.png" alt="sleeper" className="sleeper-icon" /><span>1036</span></div>
+                                  <div className="seat-item booked"><img src="/seat2.png" alt="sleeper" className="sleeper-icon" /><span>513</span></div>
+                                </div>
+                                <div className="seat-row">
+                                  <div className="seat-item booked"><img src="/seat2.png" alt="sleeper" className="sleeper-icon" /><span>1190</span></div>
+                                  <div className="seat-item-spacer"></div>
+                                  <div className="seat-item booked"><img src="/seat2.png" alt="sleeper" className="sleeper-icon" /><span>1036</span></div>
+                                  <div className="seat-item-spacer"></div>
+                                </div>
+                                <div className="seat-row">
+                                  <div className="seat-item-spacer"></div>
+                                  <div className="seat-item-spacer"></div>
+                                  <div className={`seat-item ${isSeatSelected('bus1', 'U3') ? 'selected' : 'available'}`} onClick={() => toggleSeatSelection('bus1', 'U3', false)}><img src="/seat2.png" alt="sleeper" className="sleeper-icon" /><span>976</span></div>
+                                  <div className="seat-item booked"><img src="/seat2.png" alt="sleeper" className="sleeper-icon" /><span>813</span></div>
                                 </div>
                                 <div className="seat-row">
                                   <div className="seat-item-spacer"></div>
                                   <div className="seat-item-spacer"></div>
                                   <div className="seat-item-spacer"></div>
-                                  <div className="seat-item booked"><img src="/seat2.png" alt="sleeper" className="sleeper-icon" /><span>Γé╣620</span></div>
+                                  <div className="seat-item booked"><img src="/seat2.png" alt="sleeper" className="sleeper-icon" /><span>620</span></div>
                                 </div>
                                 <div className="seat-row">
-                                  <div className="seat-item booked"><img src="/seat2.png" alt="sleeper" className="sleeper-icon" /><span>Γé╣1136</span></div>
+                                  <div className="seat-item booked"><img src="/seat2.png" alt="sleeper" className="sleeper-icon" /><span>1136</span></div>
                                   <div className="seat-item-spacer"></div>
-                                  <div className="seat-item booked"><img src="/seat2.png" alt="sleeper" className="sleeper-icon" /><span>Γé╣490</span></div>
-                                  <div className={`seat-item ${isSeatSelected('bus1', 'U4') ? 'selected' : 'available'}`} onClick={() => toggleSeatSelection('bus1', 'U4', false)}><img src="/seat2.png" alt="sleeper" className="sleeper-icon" /><span>Γé╣976</span></div>
+                                  <div className="seat-item booked"><img src="/seat2.png" alt="sleeper" className="sleeper-icon" /><span>490</span></div>
+                                  <div className={`seat-item ${isSeatSelected('bus1', 'U4') ? 'selected' : 'available'}`} onClick={() => toggleSeatSelection('bus1', 'U4', false)}><img src="/seat2.png" alt="sleeper" className="sleeper-icon" /><span>976</span></div>
                                 </div>
                               </div>
                             </div>
@@ -1284,13 +1361,13 @@ function BusResults() {
                                   className={`points-tab ${(!activePointsTab['bus1'] || activePointsTab['bus1'] === 'boarding') ? 'active' : ''}`}
                                   onClick={() => setActivePointsTab(prev => ({ ...prev, 'bus1': 'boarding' }))}
                                 >
-                                  Γ£ô Boarding Points
+                                  Boarding Points
                                 </button>
                                 <button 
                                   className={`points-tab ${activePointsTab['bus1'] === 'dropping' ? 'active' : ''}`}
                                   onClick={() => setActivePointsTab(prev => ({ ...prev, 'bus1': 'dropping' }))}
                                 >
-                                  Γ£ô Dropping Points
+                                  Dropping Points
                                 </button>
                               </div>
 
@@ -1438,7 +1515,7 @@ function BusResults() {
                         className="bus-details-link"
                         onClick={() => toggleBusDetails('bus2')}
                       >
-                        {openBusDetails['bus2'] ? 'Hide Details' : 'Bus Details'} ΓåÆ
+                        {openBusDetails['bus2'] ? 'Hide Details' : 'Bus Details'} →
                       </button>
                     </div>
                   </div>
@@ -1637,39 +1714,39 @@ function BusResults() {
                                     <tr>
                                       <th>CANCELLATION TIME</th>
                                       <th>PENALTY (%)</th>
-                                      <th>PENALTY (Γé╣)</th>
+                                      <th>PENALTY (₹)</th>
                                     </tr>
                                   </thead>
                                   <tbody>
                                     <tr>
                                       <td>more than 168 hrs before travel</td>
                                       <td>15.0%</td>
-                                      <td>Γé╣ 119</td>
+                                      <td> 119</td>
                                     </tr>
                                     <tr>
                                       <td>72 to 168 hr(s) before travel</td>
                                       <td>15.0%</td>
-                                      <td>Γé╣ 119</td>
+                                      <td> 119</td>
                                     </tr>
                                     <tr>
                                       <td>24 to 72 hr(s) before travel</td>
                                       <td>15.0%</td>
-                                      <td>Γé╣ 119</td>
+                                      <td> 119</td>
                                     </tr>
                                     <tr>
                                       <td>12 to 24 hr(s) before travel</td>
                                       <td>25.0%</td>
-                                      <td>Γé╣ 199</td>
+                                      <td> 199</td>
                                     </tr>
                                     <tr>
                                       <td>4 to 12 hr(s) before travel</td>
                                       <td>50.0%</td>
-                                      <td>Γé╣ 397</td>
+                                      <td> 397</td>
                                     </tr>
                                     <tr>
                                       <td>0 to 4 hr(s) before travel</td>
                                       <td>100.0%</td>
-                                      <td>Γé╣ 793</td>
+                                      <td> 793</td>
                                     </tr>
                                   </tbody>
                                 </table>
@@ -1806,7 +1883,7 @@ function BusResults() {
                         className="bus-details-link"
                         onClick={() => toggleBusDetails('bus3')}
                       >
-                        {openBusDetails['bus3'] ? 'Hide Details' : 'Bus Details'} ΓåÆ
+                        {openBusDetails['bus3'] ? 'Hide Details' : 'Bus Details'} →
                       </button>
                     </div>
                   </div>
@@ -2005,39 +2082,39 @@ function BusResults() {
                                     <tr>
                                       <th>CANCELLATION TIME</th>
                                       <th>PENALTY (%)</th>
-                                      <th>PENALTY (Γé╣)</th>
+                                      <th>PENALTY (₹)</th>
                                     </tr>
                                   </thead>
                                   <tbody>
                                     <tr>
                                       <td>more than 168 hrs before travel</td>
                                       <td>15.0%</td>
-                                      <td>Γé╣ 119</td>
+                                      <td> 119</td>
                                     </tr>
                                     <tr>
                                       <td>72 to 168 hr(s) before travel</td>
                                       <td>15.0%</td>
-                                      <td>Γé╣ 119</td>
+                                      <td> 119</td>
                                     </tr>
                                     <tr>
                                       <td>24 to 72 hr(s) before travel</td>
                                       <td>15.0%</td>
-                                      <td>Γé╣ 119</td>
+                                      <td> 119</td>
                                     </tr>
                                     <tr>
                                       <td>12 to 24 hr(s) before travel</td>
                                       <td>25.0%</td>
-                                      <td>Γé╣ 199</td>
+                                      <td> 199</td>
                                     </tr>
                                     <tr>
                                       <td>4 to 12 hr(s) before travel</td>
                                       <td>50.0%</td>
-                                      <td>Γé╣ 397</td>
+                                      <td> 397</td>
                                     </tr>
                                     <tr>
                                       <td>0 to 4 hr(s) before travel</td>
                                       <td>100.0%</td>
-                                      <td>Γé╣ 793</td>
+                                      <td> 793</td>
                                     </tr>
                                   </tbody>
                                 </table>
@@ -2174,7 +2251,7 @@ function BusResults() {
                         className="bus-details-link"
                         onClick={() => toggleBusDetails('bus4')}
                       >
-                        {openBusDetails['bus4'] ? 'Hide Details' : 'Bus Details'} ΓåÆ
+                        {openBusDetails['bus4'] ? 'Hide Details' : 'Bus Details'} →
                       </button>
                     </div>
                   </div>
@@ -2373,39 +2450,39 @@ function BusResults() {
                                     <tr>
                                       <th>CANCELLATION TIME</th>
                                       <th>PENALTY (%)</th>
-                                      <th>PENALTY (Γé╣)</th>
+                                      <th>PENALTY (₹)</th>
                                     </tr>
                                   </thead>
                                   <tbody>
                                     <tr>
                                       <td>more than 168 hrs before travel</td>
                                       <td>15.0%</td>
-                                      <td>Γé╣ 119</td>
+                                      <td> 119</td>
                                     </tr>
                                     <tr>
                                       <td>72 to 168 hr(s) before travel</td>
                                       <td>15.0%</td>
-                                      <td>Γé╣ 119</td>
+                                      <td> 119</td>
                                     </tr>
                                     <tr>
                                       <td>24 to 72 hr(s) before travel</td>
                                       <td>15.0%</td>
-                                      <td>Γé╣ 119</td>
+                                      <td> 119</td>
                                     </tr>
                                     <tr>
                                       <td>12 to 24 hr(s) before travel</td>
                                       <td>25.0%</td>
-                                      <td>Γé╣ 199</td>
+                                      <td> 199</td>
                                     </tr>
                                     <tr>
                                       <td>4 to 12 hr(s) before travel</td>
                                       <td>50.0%</td>
-                                      <td>Γé╣ 397</td>
+                                      <td> 397</td>
                                     </tr>
                                     <tr>
                                       <td>0 to 4 hr(s) before travel</td>
                                       <td>100.0%</td>
-                                      <td>Γé╣ 793</td>
+                                      <td> 793</td>
                                     </tr>
                                   </tbody>
                                 </table>
@@ -2520,7 +2597,7 @@ function BusResults() {
           {/* Side Panel */}
           <div className="passenger-details-panel">
             {/* Close Button */}
-            <button className="panel-close-btn" onClick={closePanel}>Γ£ò</button>
+            <button className="panel-close-btn" onClick={closePanel}>✕</button>
             
             {/* Panel Header */}
             <div className="panel-header">
@@ -2672,20 +2749,20 @@ function BusResults() {
                       <div className="offer-content">
                         <div className="offer-code">{offer.code}</div>
                         <div className="offer-description">
-                          <span className="save-text">Save Γé╣{offer.discount}.</span> {offer.description}
+                          <span className="save-text">Save ₹{offer.discount}.</span> {offer.description}
                         </div>
                       </div>
                       <div className="offer-action">
                         {appliedOffer?.code === offer.code ? (
                           <>
-                            <span className="discount-value">-Γé╣{offer.discount}</span>
+                            <span className="discount-value">-₹{offer.discount}</span>
                             <button className="remove-btn" onClick={handleRemoveOffer}>Remove</button>
                           </>
                         ) : (
                           offer.requiresLogin ? (
                             <button className="login-btn">Login to avail offer</button>
                           ) : (
-                            <button className="appply-btn" onClick={() => handleApplyOffer(offer)}>Apply</button>
+                            <button className="bus-appply-btn" onClick={() => handleApplyOffer(offer)}>Apply</button>
                           )
                         )}
                       </div>
@@ -2699,17 +2776,17 @@ function BusResults() {
                 <h3 className="section-title">Price details</h3>
                 <div className="price-row">
                   <span className="price-label">Base Fare</span>
-                  <span className="price-value">Γé╣{baseFare.toFixed(1)}</span>
+                  <span className="price-value">₹{baseFare.toFixed(1)}</span>
                 </div>
                 {appliedOffer && (
                   <div className="price-row">
                     <span className="price-label">Discounts</span>
-                    <span className="price-value discount">-Γé╣{discountAmount.toFixed(1)}</span>
+                    <span className="price-value discount">-₹{discountAmount.toFixed(1)}</span>
                   </div>
                 )}
                 <div className="price-row total">
                   <span className="price-label">Amount</span>
-                  <span className="price-value">Γé╣{finalAmount}</span>
+                  <span className="price-value">₹{finalAmount}</span>
                 </div>
                 <p className="price-note">Final payable amount will be updated on the next page</p>
               </div>
@@ -2835,7 +2912,7 @@ function BusResults() {
                           </div>
                           <div className="bus-review-detail-row">
                             <span className="bus-review-detail-label">Discount:</span>
-                            <span className="bus-review-detail-value">Γé╣{appliedOffer.discount}</span>
+                            <span className="bus-review-detail-value">₹{appliedOffer.discount}</span>
                           </div>
                         </div>
                       </div>
@@ -2847,18 +2924,18 @@ function BusResults() {
                       <div className="bus-review-total-card">
                         <div className="bus-review-detail-row">
                           <span className="bus-review-detail-label">Base Fare:</span>
-                          <span className="bus-review-detail-value">Γé╣{baseFare.toFixed(1)}</span>
+                          <span className="bus-review-detail-value">₹{baseFare.toFixed(1)}</span>
                         </div>
                         {appliedOffer && (
                           <div className="bus-review-detail-row">
                             <span className="bus-review-detail-label">Discount:</span>
-                            <span className="bus-review-detail-value">-Γé╣{discountAmount.toFixed(1)}</span>
+                            <span className="bus-review-detail-value">-₹{discountAmount.toFixed(1)}</span>
                           </div>
                         )}
                         <div className="bus-review-total-divider"></div>
                         <div className="bus-review-detail-row bus-review-total-row">
                           <span className="bus-review-total-label">Grand Total:</span>
-                          <span className="bus-review-total-value">Γé╣{finalAmount}</span>
+                          <span className="bus-review-total-value">₹{finalAmount}</span>
                         </div>
                       </div>
                     </div>

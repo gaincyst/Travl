@@ -27,6 +27,21 @@ function FlightResults() {
   const location = useLocation();
   const navigate = useNavigate();
   const searchData = location.state || {};
+
+  const resolveLocationLabel = (value, fallback) => {
+    if (!value) return fallback;
+    const trimmed = String(value).trim();
+    return trimmed ? trimmed : fallback;
+  };
+
+  const fromLabel = resolveLocationLabel(
+    searchData.fromCity || searchData.fromAirport?.city || searchData.fromAirport?.country,
+    "New Delhi"
+  );
+  const toLabel = resolveLocationLabel(
+    searchData.toCity || searchData.toAirport?.city || searchData.toAirport?.country,
+    "Bengaluru"
+  );
   
   // Check if trip is round trip
   const isRoundTrip = searchData.tripType === "roundTrip";
@@ -51,6 +66,8 @@ function FlightResults() {
   // State for selected flights in round trip
   const [selectedOutbound, setSelectedOutbound] = useState(null);
   const [selectedReturn, setSelectedReturn] = useState(null);
+  const [selectedOutboundKey, setSelectedOutboundKey] = useState(null);
+  const [selectedReturnKey, setSelectedReturnKey] = useState(null);
 
   // Fare Modal State
   const [isFareModalOpen, setIsFareModalOpen] = useState(false);
@@ -340,6 +357,10 @@ function FlightResults() {
     hour12: false
   })}`;
 
+  const getFlightSelectionKey = (flight, fallbackKey) => (
+    fallbackKey ?? flight?.id ?? flight?.flightNumber ?? flight?.flightCode
+  );
+
   const parseTimeToMinutes = (timeValue) => {
     if (!timeValue) return 0;
     const [hours, minutes] = formatTime(timeValue).split(":").map(Number);
@@ -410,6 +431,7 @@ function FlightResults() {
       duration: formatDuration(flight.duration),
       durationMinutes: Number(flight.duration) || 0,
       departureMinutes: parseTimeToMinutes(flight.departure_time),
+      arrivalMinutes: parseTimeToMinutes(flight.arrival_time),
       stops: stopsLabel,
       stopsCount,
       price: formatCurrency(flight.price),
@@ -430,19 +452,56 @@ function FlightResults() {
     if (!filtersState) return flights;
 
     const popularFilters = filtersState.popularFilters || {};
-    const journeyStops = journeyType === 'return'
-      ? filtersState.returnJourney?.stops
-      : filtersState.onwardJourney?.stops;
+    const journeyFilters = journeyType === 'return'
+      ? filtersState.returnJourney
+      : filtersState.onwardJourney;
+    const journeyStops = journeyFilters?.stops;
 
-    const allowNonStop = journeyStops?.nonStop ?? popularFilters.nonStop;
-    const allowOneStop = journeyStops?.oneStop ?? popularFilters.oneStop;
+    const allowNonStop = Boolean(journeyStops?.nonStop || popularFilters.nonStop);
+    const allowOneStop = Boolean(journeyStops?.oneStop || popularFilters.oneStop);
+
+    const departureSlots = journeyFilters?.departureTime || [];
+    const arrivalSlots = journeyFilters?.arrivalTime || [];
+
+    const matchesTimeSlots = (minutes, slots) => {
+      if (!slots.length) return true;
+
+      return slots.some((slot) => {
+        if (slot === 'Before 6 AM') return minutes < 360;
+        if (slot === '6 AM - 12 PM') return minutes >= 360 && minutes < 720;
+        if (slot === '12 PM - 6 PM') return minutes >= 720 && minutes < 1080;
+        if (slot === 'After 6 PM') return minutes >= 1080 && minutes < 1440;
+        return false;
+      });
+    };
+
+    const normalizeAirline = (value) => String(value || "").toLowerCase().replace(/\s+/g, " ").trim();
+    const selectedAirlines = [];
+
+    if (filtersState.airlines?.airIndia) selectedAirlines.push("air india");
+    if (filtersState.airlines?.airIndiaExpress) selectedAirlines.push("air india express");
+    if (filtersState.airlines?.akasaAir) selectedAirlines.push("akasa air");
+    if (filtersState.airlines?.indigo) selectedAirlines.push("indigo");
+    if (filtersState.airlines?.spicejet) selectedAirlines.push("spicejet");
 
     return flights.filter((flight) => {
+      if (selectedAirlines.length > 0 && !selectedAirlines.includes(normalizeAirline(flight.airline))) {
+        return false;
+      }
+
       if (popularFilters.refundableFares && !flight.refundable) {
         return false;
       }
 
       if (filtersState.priceTouched && parsePriceValue(flight.price) > filtersState.priceRange) {
+        return false;
+      }
+
+      if (!matchesTimeSlots(flight.departureMinutes, departureSlots)) {
+        return false;
+      }
+
+      if (!matchesTimeSlots(flight.arrivalMinutes, arrivalSlots)) {
         return false;
       }
 
@@ -644,6 +703,8 @@ function FlightResults() {
         setReturnFlights(mappedReturn);
         setSelectedOutbound(null);
         setSelectedReturn(null);
+        setSelectedOutboundKey(null);
+        setSelectedReturnKey(null);
       } catch (error) {
         console.error('Flight fetch error:', error);
         setFlightError(error.message || 'Failed to load flights');
@@ -774,24 +835,25 @@ function FlightResults() {
     isRoundTrip ? outboundSortStates : sortStates
   );
   const sortedReturnFlights = applySort(filteredReturnFlights, returnSortStates);
-  const displayFlights = isRoundTrip
-    ? buildRoundTripPairs(sortedOutboundFlights, sortedReturnFlights)
-    : sortedOutboundFlights;
+  const hasOutboundResults = sortedOutboundFlights.length > 0;
+  const hasReturnResults = sortedReturnFlights.length > 0;
 
   // Handlers for round trip selection
-  const handleOutboundSelect = (flight) => {
+  const handleOutboundSelect = (flight, selectionKey) => {
     setSelectedOutbound(flight);
+    setSelectedOutboundKey(selectionKey);
   };
 
-  const handleReturnSelect = (flight) => {
+  const handleReturnSelect = (flight, selectionKey) => {
     setSelectedReturn(flight);
+    setSelectedReturnKey(selectionKey);
   };
 
   const handleSummaryBookNow = () => {
     if (selectedOutbound && selectedReturn) {
       // Open round trip fare modal instead of directly opening booking panel
       setSelectedDepartureFare(selectedOutbound?.fareOptions?.[0] || null);
-      setSelectedReturnFare(selectedReturn?.returnFlight?.fareOptions?.[0] || null);
+      setSelectedReturnFare(selectedReturn?.fareOptions?.[0] || null);
       setIsRoundTripFareModalOpen(true);
       setRoundTripFareTab('departure'); // Default to departure tab
       document.body.style.overflow = 'hidden';
@@ -809,12 +871,12 @@ function FlightResults() {
   // Open Booking Panel from Round Trip Fare Modal
   const openBookingPanelFromRoundTrip = () => {
     const defaultDepartureFare = selectedOutbound?.fareOptions?.[0] || null;
-    const defaultReturnFare = selectedReturn?.returnFlight?.fareOptions?.[0] || null;
+    const defaultReturnFare = selectedReturn?.fareOptions?.[0] || null;
     const chosenDeparture = selectedDepartureFare || defaultDepartureFare;
     const chosenReturn = selectedReturnFare || defaultReturnFare;
 
     const selectedDeparturePrice = chosenDeparture?.price || parsePriceValue(selectedOutbound?.price);
-    const selectedReturnPrice = chosenReturn?.price || parsePriceValue(selectedReturn?.returnFlight?.price);
+    const selectedReturnPrice = chosenReturn?.price || parsePriceValue(selectedReturn?.price);
     
     const combinedFlightData = {
       ...selectedOutbound,
@@ -822,7 +884,7 @@ function FlightResults() {
       selectedFareType: chosenDeparture?.fareName || 'Saver',
       selectedFareDetails: chosenDeparture || null,
       returnFlight: {
-        ...selectedReturn.returnFlight,
+        ...selectedReturn,
         price: `₹${selectedReturnPrice.toLocaleString('en-IN')}`,
         selectedFareType: chosenReturn?.fareName || 'Saver',
         selectedFareDetails: chosenReturn || null
@@ -992,7 +1054,12 @@ function FlightResults() {
     <div className="results-layout">
       {/* LEFT SIDEBAR */}
       <aside className="sidebar-filters">
-        <FiltersPanel onFiltersChange={setFiltersState} />
+        <FiltersPanel
+          onFiltersChange={setFiltersState}
+          fromLabel={fromLabel}
+          toLabel={toLabel}
+          isRoundTrip={isRoundTrip}
+        />
       </aside>
 
       {/* RIGHT SIDE CONTENT */}
@@ -1156,527 +1223,549 @@ function FlightResults() {
           {!flightLoading && flightError && (
             <div className="flight-loading">{flightError}</div>
           )}
-          {!flightLoading && !flightError && displayFlights.length === 0 && (
+          {!flightLoading && !flightError && (
+            (isRoundTrip && !hasOutboundResults && !hasReturnResults)
+            || (!isRoundTrip && !hasOutboundResults)
+          ) && (
             <div className="flight-empty">No flights found for this route.</div>
           )}
-          {displayFlights.map((flight) => (
-            <div key={flight.id} className="flight-card-wrapper">
-                {/* Conditional rendering based on trip type */}
-                {isRoundTrip ? (
-                  // ROUND TRIP LAYOUT - Two independent side-by-side mini cards
-                  <>
-                  <div className="round-trip-content">
-                    {/* Outbound Flight Card Wrapper */}
-                    <div className="round-trip-card-wrapper">
-                    <div className="round-trip-mini-card">
-                      <div className="mini-card-top-row">
-                        <div className="mini-airline-info">
-                          <img src={flight.airlineLogo} alt={flight.airline} className="mini-airline-logo" />
-                          <div className="mini-airline-details">
-                            <div className="mini-airline-name">{flight.airline}</div>
-                            <div className="mini-flight-code">{flight.flightCode}</div>
-                          </div>
-                        </div>
-                        <input 
-                          type="radio" 
-                          name="outbound-flight" 
-                          value={flight.id} 
-                          className="mini-radio-top" 
-                          checked={selectedOutbound?.id === flight.id}
-                          onChange={() => handleOutboundSelect(flight)}
-                        />
-                        <div className="mini-price-section">
-                          <div className="mini-price">{flight.price}</div>
-                        </div>
-                      </div>
-                      
-                      <div className="mini-card-main-row">
-                        <div className="mini-departure-section">
-                          <div className="mini-time">{flight.departureTime}</div>
-                          <div className="mini-date">{flight.departureDate?.split(' at ')[0] || 'Tue, 14-10-2025'}</div>
-                          <div className="mini-city">{flight.departureCity || flight.departureLocation}</div>
-                        </div>
-                        
-                        <div className="mini-duration-section">
-                          <div className="mini-duration">{flight.duration}</div>
-                          <div className="mini-flight-line">
-                            <div className="mini-line"></div>
-                          </div>
-                          <div className="mini-stops-info">{flight.stops}</div>
-                        </div>
-                        
-                        <div className="mini-arrival-section">
-                          <div className="mini-time">{flight.arrivalTime}</div>
-                          <div className="mini-date">{flight.arrivalDate?.split(' at ')[0] || 'Wed, 15-10-2025'}</div>
-                          <div className="mini-city">{flight.arrivalCity || flight.arrivalLocation}</div>
-                        </div>
-                      </div>
-                      
-                      <div className="mini-card-bottom-row">
-                        <div className="mini-seats-info">{flight.seatsLeft || 0} Seats Available</div>
-                        <div className="mini-stop-details">{flight.stopsCount === 0 ? "Non-stop" : `${flight.stopsCount} Stop${flight.stopsCount > 1 ? 's' : ''}`}</div>
-                      </div>
-                      
-                      <div className="mini-card-footer-btn">
-                        <button 
-                          className="mini-flight-details-btn"
-                          onClick={() => toggleFlightDetails(`${flight.id}-outbound`)}
-                        >
-                          {openFlightDetails[`${flight.id}-outbound`] ? 'Hide Details' : 'Flight Details'} →
-                        </button>
-                      </div>
-                    </div>
-                    
-                    {/* FLIGHT DETAILS DROPDOWN FOR OUTBOUND */}
-                  {openFlightDetails[`${flight.id}-outbound`] && (
-                    <div className="flight-details-dropdown">
-                      {/* Tabs */}
-                      <div className="flight-details-tabs">
-                        <button 
-                          className={`tab-btn ${activeTab[`${flight.id}-outbound`] === 'flight-info' ? 'active' : ''}`}
-                          onClick={() => handleTabChange(`${flight.id}-outbound`, 'flight-info')}
-                        >
-                          <FaPlane style={{marginRight: '6px', fontSize: '14px'}} />
-                          FLIGHT INFORMATION
-                        </button>
-                        <button 
-                          className={`tab-btn ${activeTab[`${flight.id}-outbound`] === 'fare-details' ? 'active' : ''}`}
-                          onClick={() => handleTabChange(`${flight.id}-outbound`, 'fare-details')}
-                        >
-                          <FaLock style={{marginRight: '6px', fontSize: '14px'}} />
-                          FARE DETAILS
-                        </button>
-                        <button 
-                          className={`tab-btn ${activeTab[`${flight.id}-outbound`] === 'baggage-rules' ? 'active' : ''}`}
-                          onClick={() => handleTabChange(`${flight.id}-outbound`, 'baggage-rules')}
-                        >
-                          <FaSuitcase style={{marginRight: '6px', fontSize: '14px'}} />
-                          BAGGAGE RULES
-                        </button>
-                      </div>
+          {isRoundTrip ? (
+            <div className="round-trip-content">
+              <div className="round-trip-column">
+                {sortedOutboundFlights.map((flight, index) => {
+                  const outboundKey = getFlightSelectionKey(flight, index);
+                  const outboundSelectionKey = `outbound-${outboundKey}`;
+                  const outboundDetailsKey = `${outboundSelectionKey}-details`;
 
-                      {/* Tab Content */}
-                      <div className="flight-details-content">
-                        {activeTab[`${flight.id}-outbound`] === 'flight-info' && (
-                          <div className="flight-info-tab">
-                            <div className="flight-info-header">
-                              <div className="airline-header">
-                                <img src={flight.airlineLogo} alt={flight.airline} className="dropdown-airline-logo" />
-                                <div className="airline-details">
-                                  <span className="airline-name">{flight.airline}</span>
-                                  <span className="flight-number">{flight.flightCode}</span>
-                                </div>
+                  return (
+                    <div key={outboundSelectionKey} className="flight-card-wrapper">
+                      <div className="round-trip-card-wrapper">
+                        <div className="round-trip-mini-card">
+                          <div className="mini-card-top-row">
+                            <div className="mini-airline-info">
+                              <img src={flight.airlineLogo} alt={flight.airline} className="mini-airline-logo" />
+                              <div className="mini-airline-details">
+                                <div className="mini-airline-name">{flight.airline}</div>
+                                <div className="mini-flight-code">{flight.flightCode}</div>
                               </div>
-                              <div className="flight-route">
-                                <div className="route-segment">
-                                  <div className="route-location">
-                                    <span className="route-code">{flight.departureLocation}</span>
-                                    <span className="route-time">{flight.departureDate}</span>
-                                  </div>
-                                  <div className="route-city">
-                                    <span>{flight.departureCity}</span>
-                                    <span className="terminal-info">{flight.departureTerminal}</span>
-                                  </div>
-                                </div>
-                                <div className="route-duration">
-                                  <span className="duration-text">{flight.duration}</span>
-                                  <div className="duration-timeline-line"></div>
-                                  <div className={`refundable-badge ${flight.refundable ? '' : 'non-refundable'}`}>
-                                    {flight.refundable ? 'Refundable' : 'Non-Refundable'}
-                                  </div>
-                                </div>
-                                <div className="route-segment">
-                                  <div className="route-location">
-                                    <span className="route-code">{flight.arrivalLocation}</span>
-                                    <span className="route-time">{flight.arrivalDate}</span>
-                                  </div>
-                                  <div className="route-city">
-                                    <span>{flight.arrivalCity}</span>
-                                    <span className="terminal-info">{flight.arrivalTerminal}</span>
-                                  </div>
-                                </div>
-                              </div>
+                            </div>
+                            <input 
+                              type="radio" 
+                              name="outbound-flight" 
+                              value={outboundSelectionKey} 
+                              className={`mini-radio-top ${selectedOutboundKey === outboundSelectionKey ? 'is-checked' : ''}`}
+                              checked={selectedOutboundKey === outboundSelectionKey}
+                              onChange={() => handleOutboundSelect(flight, outboundSelectionKey)}
+                            />
+                            <div className="mini-price-section">
+                              <div className="mini-price">{flight.price}</div>
+                            </div>
+                          </div>
+                          
+                          <div className="mini-card-main-row">
+                            <div className="mini-departure-section">
+                              <div className="mini-time">{flight.departureTime}</div>
+                              <div className="mini-date">{flight.departureDate?.split(' at ')[0] || 'Tue, 14-10-2025'}</div>
+                              <div className="mini-city">{flight.departureCity || flight.departureLocation}</div>
                             </div>
                             
-                            <div className="flight-amenities">
-                              <div className="amenity-item">
-                                <FaThLarge style={{fontSize: '16px', color: '#666'}} />
-                                <span>{flight.layout}</span>
+                            <div className="mini-duration-section">
+                              <div className="mini-duration">{flight.duration}</div>
+                              <div className="mini-flight-line">
+                                <div className="mini-line"></div>
                               </div>
-                              <div className="amenity-item">
-                                <FaUtensils style={{fontSize: '16px', color: '#666'}} />
-                                <span>{flight.beverage}</span>
-                              </div>
-                            </div>
-
-                            {flight.segments?.length > 1 && (
-                              <div className="segment-details">
-                                {flight.segments.map((segment, index) => {
-                                  const nextSegment = flight.segments[index + 1];
-                                  const showLayover = segment.layoverMinutes && nextSegment;
-                                  const terminalChange = showLayover && segment.terminal && nextSegment.terminal
-                                    ? segment.terminal !== nextSegment.terminal
-                                    : false;
-
-                                  return (
-                                    <div key={`${flight.id}-outbound-seg-${index}`} className="segment-row">
-                                      <div className="segment-airport">
-                                        <div className="segment-time">{segment.departureTime}</div>
-                                        <div className="segment-code">{segment.fromAirport}</div>
-                                        <div className="segment-city">{segment.fromCity}</div>
-                                      </div>
-                                      <div className="segment-path">
-                                        <div className="segment-duration">{formatDuration(segment.durationMinutes)}</div>
-                                        <div className="segment-line"></div>
-                                        <div className="segment-aircraft">{segment.aircraft}</div>
-                                      </div>
-                                      <div className="segment-airport">
-                                        <div className="segment-time">{segment.arrivalTime}</div>
-                                        <div className="segment-code">{segment.toAirport}</div>
-                                        <div className="segment-city">{segment.toCity}</div>
-                                      </div>
-
-                                      {showLayover && (
-                                        <div className="layover-row">
-                                          <span>{formatDuration(segment.layoverMinutes)} Layover in {segment.toCity}</span>
-                                          {terminalChange && <span className="terminal-change">Change of Terminal</span>}
-                                        </div>
-                                      )}
-                                    </div>
-                                  );
-                                })}
-                              </div>
-                            )}
-                          </div>
-                        )}
-
-                        {activeTab[`${flight.id}-outbound`] === 'fare-details' && (
-                          <div className="fare-details-tab">
-                            <div className="fare-breakdown-card">
-                              <h3 className="fare-breakdown-heading">Fare breakdown</h3>
-                              
-                              <div className="fare-breakdown-row">
-                                <span className="fare-label">Base Fare</span>
-                                <span className="fare-value">₹{flight.baseFare}</span>
-                              </div>
-                              
-                              <div className="fare-breakdown-row">
-                                <span className="fare-label">Taxes & Fees</span>
-                                <span className="fare-value">₹{flight.taxes}</span>
-                              </div>
-                              
-                              <div className="fare-divider"></div>
-                              
-                              <div className="fare-breakdown-row fare-total-row">
-                                <span className="fare-total-label">TOTAL</span>
-                                <span className="fare-total-value">₹{flight.baseFare + flight.taxes}</span>
-                              </div>
-                            </div>
-                          </div>
-                        )}
-
-                        {activeTab[`${flight.id}-outbound`] === 'baggage-rules' && (
-                          <div className="baggage-rules-tab">
-                            <div className="baggage-section">
-                              <h3 className="baggage-heading">CHECK-IN</h3>
-                              <div className="baggage-divider"></div>
-                              <div className="baggage-columns">
-                                <div className="baggage-column">
-                                  <div className="baggage-column-header">ADULT</div>
-                                  <div className="baggage-column-value">15 kgs (1-piece only)</div>
-                                </div>
-                                <div className="baggage-column">
-                                  <div className="baggage-column-header">CHILD</div>
-                                  <div className="baggage-column-value">15 kgs (1-piece only)</div>
-                                </div>
-                                <div className="baggage-column">
-                                  <div className="baggage-column-header">INFANT</div>
-                                  <div className="baggage-column-value">0 kgs</div>
-                                </div>
-                              </div>
-                            </div>
-
-                            <div className="baggage-section">
-                              <h3 className="baggage-heading">CABIN</h3>
-                              <div className="baggage-divider"></div>
-                              <div className="baggage-columns">
-                                <div className="baggage-column">
-                                  <div className="baggage-column-header">ADULT</div>
-                                  <div className="baggage-column-value">7 kgs (1-piece only)</div>
-                                </div>
-                                <div className="baggage-column">
-                                  <div className="baggage-column-header">CHILD</div>
-                                  <div className="baggage-column-value">7 kgs (1-piece only)</div>
-                                </div>
-                                <div className="baggage-column">
-                                  <div className="baggage-column-header">INFANT</div>
-                                  <div className="baggage-column-value">7 kgs (1-piece only)</div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
-                    </div>
-                    
-                    {/* Return Flight Card Wrapper */}
-                    <div className="round-trip-card-wrapper">
-                    {/* Return Flight Card */}
-                    <div className="round-trip-mini-card">
-                      <div className="mini-card-top-row">
-                        <div className="mini-airline-info">
-                          <img src={flight.returnFlight.airlineLogo} alt={flight.returnFlight.airline} className="mini-airline-logo" />
-                          <div className="mini-airline-details">
-                            <div className="mini-airline-name">{flight.returnFlight.airline}</div>
-                            <div className="mini-flight-code">{flight.returnFlight.flightCode}</div>
-                          </div>
-                        </div>
-                        <input 
-                          type="radio" 
-                          name="return-flight" 
-                          value={`${flight.id}-return`} 
-                          className="mini-radio-top" 
-                          checked={selectedReturn?.id === flight.id}
-                          onChange={() => handleReturnSelect(flight)}
-                        />
-                        <div className="mini-price-section">
-                          <div className="mini-price">{flight.returnFlight.price}</div>
-                        </div>
-                      </div>
-                      
-                      <div className="mini-card-main-row">
-                        <div className="mini-departure-section">
-                          <div className="mini-time">{flight.returnFlight.departureTime}</div>
-                          <div className="mini-date">{flight.returnFlight.departureDate?.split(' at ')[0] || 'Wed, 15-10-2025'}</div>
-                          <div className="mini-city">{flight.arrivalCity || flight.returnFlight.departureLocation}</div>
-                        </div>
-                        
-                        <div className="mini-duration-section">
-                          <div className="mini-duration">{flight.returnFlight.duration}</div>
-                          <div className="mini-flight-line">
-                            <div className="mini-line"></div>
-                          </div>
-                          <div className="mini-stops-info">{flight.returnFlight.stops}</div>
-                        </div>
-                        
-                        <div className="mini-arrival-section">
-                          <div className="mini-time">{flight.returnFlight.arrivalTime}</div>
-                          <div className="mini-date">{flight.returnFlight.arrivalDate?.split(' at ')[0] || 'Wed, 15-10-2025'}</div>
-                          <div className="mini-city">{flight.departureCity || flight.returnFlight.arrivalLocation}</div>
-                        </div>
-                      </div>
-                      
-                      <div className="mini-card-bottom-row">
-                        <div className="mini-seats-info">{flight.returnFlight.seatsLeft || 0} Seats Available</div>
-                        <div className="mini-stop-details">{flight.returnFlight.stopsCount === 0 ? "Non-stop" : `${flight.returnFlight.stopsCount} Stop${flight.returnFlight.stopsCount > 1 ? 's' : ''}`}</div>
-                      </div>
-                      
-                      <div className="mini-card-footer-btn">
-                        <button 
-                          className="mini-flight-details-btn"
-                          onClick={() => toggleFlightDetails(`${flight.id}-return`)}
-                        >
-                          {openFlightDetails[`${flight.id}-return`] ? 'Hide Details' : 'Flight Details'} →
-                        </button>
-                      </div>
-                    </div>
-                  
-                  {/* FLIGHT DETAILS DROPDOWN FOR RETURN */}
-                  {openFlightDetails[`${flight.id}-return`] && (
-                    <div className="flight-details-dropdown">
-                      {/* Tabs */}
-                      <div className="flight-details-tabs">
-                        <button 
-                          className={`tab-btn ${activeTab[`${flight.id}-return`] === 'flight-info' ? 'active' : ''}`}
-                          onClick={() => handleTabChange(`${flight.id}-return`, 'flight-info')}
-                        >
-                          <FaPlane style={{marginRight: '6px', fontSize: '14px'}} />
-                          FLIGHT INFORMATION
-                        </button>
-                        <button 
-                          className={`tab-btn ${activeTab[`${flight.id}-return`] === 'fare-details' ? 'active' : ''}`}
-                          onClick={() => handleTabChange(`${flight.id}-return`, 'fare-details')}
-                        >
-                          <FaLock style={{marginRight: '6px', fontSize: '14px'}} />
-                          FARE DETAILS
-                        </button>
-                        <button 
-                          className={`tab-btn ${activeTab[`${flight.id}-return`] === 'baggage-rules' ? 'active' : ''}`}
-                          onClick={() => handleTabChange(`${flight.id}-return`, 'baggage-rules')}
-                        >
-                          <FaSuitcase style={{marginRight: '6px', fontSize: '14px'}} />
-                          BAGGAGE RULES
-                        </button>
-                      </div>
-
-                      {/* Tab Content for Return Flight */}
-                      <div className="flight-details-content">
-                        {activeTab[`${flight.id}-return`] === 'flight-info' && (
-                          <div className="flight-info-tab">
-                            <div className="flight-info-header">
-                              <div className="airline-header">
-                                <img src={flight.returnFlight.airlineLogo} alt={flight.returnFlight.airline} className="dropdown-airline-logo" />
-                                <div className="airline-details">
-                                  <span className="airline-name">{flight.returnFlight.airline}</span>
-                                  <span className="flight-number">{flight.returnFlight.flightCode}</span>
-                                </div>
-                              </div>
-                              <div className="flight-route">
-                                <div className="route-segment">
-                                  <div className="route-location">
-                                    <span className="route-code">{flight.returnFlight.departureLocation}</span>
-                                    <span className="route-time">{flight.returnFlight.departureDate || 'Wed, 15-10-2025'}</span>
-                                  </div>
-                                  <div className="route-city">
-                                    <span>{flight.arrivalCity || flight.returnFlight.departureLocation}</span>
-                                    <span className="terminal-info">Terminal: 1</span>
-                                  </div>
-                                </div>
-                                <div className="route-duration">
-                                  <span className="duration-text">{flight.returnFlight.duration}</span>
-                                  <div className="duration-timeline-line"></div>
-                                  <div className="refundable-badge non-refundable">Non-Refundable</div>
-                                </div>
-                                <div className="route-segment">
-                                  <div className="route-location">
-                                    <span className="route-code">{flight.returnFlight.arrivalLocation}</span>
-                                    <span className="route-time">{flight.returnFlight.arrivalDate || 'Wed, 15-10-2025'}</span>
-                                  </div>
-                                  <div className="route-city">
-                                    <span>{flight.departureCity || flight.returnFlight.arrivalLocation}</span>
-                                    <span className="terminal-info">Terminal: 2</span>
-                                  </div>
-                                </div>
-                              </div>
+                              <div className="mini-stops-info">{flight.stops}</div>
                             </div>
                             
-                            <div className="flight-amenities">
-                              <div className="amenity-item">
-                                <FaThLarge style={{fontSize: '16px', color: '#666'}} />
-                                <span>3-3 Layout</span>
-                              </div>
-                              <div className="amenity-item">
-                                <FaUtensils style={{fontSize: '16px', color: '#666'}} />
-                                <span>Beverage Available</span>
-                              </div>
+                            <div className="mini-arrival-section">
+                              <div className="mini-time">{flight.arrivalTime}</div>
+                              <div className="mini-date">{flight.arrivalDate?.split(' at ')[0] || 'Wed, 15-10-2025'}</div>
+                              <div className="mini-city">{flight.arrivalCity || flight.arrivalLocation}</div>
+                            </div>
+                          </div>
+                          
+                          <div className="mini-card-bottom-row">
+                            <div className="mini-seats-info">{flight.seatsLeft || 0} Seats Available</div>
+                            <div className="mini-stop-details">{flight.stopsCount === 0 ? "Non-stop" : `${flight.stopsCount} Stop${flight.stopsCount > 1 ? 's' : ''}`}</div>
+                          </div>
+                          
+                          <div className="mini-card-footer-btn">
+                            <button 
+                              className="mini-flight-details-btn"
+                              onClick={() => toggleFlightDetails(outboundDetailsKey)}
+                            >
+                              {openFlightDetails[outboundDetailsKey] ? 'Hide Details' : 'Flight Details'} →
+                            </button>
+                          </div>
+                        </div>
+                        
+                        {/* FLIGHT DETAILS DROPDOWN FOR OUTBOUND */}
+                        {openFlightDetails[outboundDetailsKey] && (
+                          <div className="flight-details-dropdown">
+                            {/* Tabs */}
+                            <div className="flight-details-tabs">
+                              <button 
+                                className={`tab-btn ${activeTab[outboundDetailsKey] === 'flight-info' ? 'active' : ''}`}
+                                onClick={() => handleTabChange(outboundDetailsKey, 'flight-info')}
+                              >
+                                <FaPlane style={{marginRight: '6px', fontSize: '14px'}} />
+                                FLIGHT INFORMATION
+                              </button>
+                              <button 
+                                className={`tab-btn ${activeTab[outboundDetailsKey] === 'fare-details' ? 'active' : ''}`}
+                                onClick={() => handleTabChange(outboundDetailsKey, 'fare-details')}
+                              >
+                                <FaLock style={{marginRight: '6px', fontSize: '14px'}} />
+                                FARE DETAILS
+                              </button>
+                              <button 
+                                className={`tab-btn ${activeTab[outboundDetailsKey] === 'baggage-rules' ? 'active' : ''}`}
+                                onClick={() => handleTabChange(outboundDetailsKey, 'baggage-rules')}
+                              >
+                                <FaSuitcase style={{marginRight: '6px', fontSize: '14px'}} />
+                                BAGGAGE RULES
+                              </button>
                             </div>
 
-                            {flight.returnFlight?.segments?.length > 1 && (
-                              <div className="segment-details">
-                                {flight.returnFlight.segments.map((segment, index) => {
-                                  const nextSegment = flight.returnFlight.segments[index + 1];
-                                  const showLayover = segment.layoverMinutes && nextSegment;
-                                  const terminalChange = showLayover && segment.terminal && nextSegment.terminal
-                                    ? segment.terminal !== nextSegment.terminal
-                                    : false;
-
-                                  return (
-                                    <div key={`${flight.id}-return-seg-${index}`} className="segment-row">
-                                      <div className="segment-airport">
-                                        <div className="segment-time">{segment.departureTime}</div>
-                                        <div className="segment-code">{segment.fromAirport}</div>
-                                        <div className="segment-city">{segment.fromCity}</div>
+                            {/* Tab Content */}
+                            <div className="flight-details-content">
+                              {activeTab[outboundDetailsKey] === 'flight-info' && (
+                                <div className="flight-info-tab">
+                                  <div className="flight-info-header">
+                                    <div className="airline-header">
+                                      <img src={flight.airlineLogo} alt={flight.airline} className="dropdown-airline-logo" />
+                                      <div className="airline-details">
+                                        <span className="airline-name">{flight.airline}</span>
+                                        <span className="flight-number">{flight.flightCode}</span>
                                       </div>
-                                      <div className="segment-path">
-                                        <div className="segment-duration">{formatDuration(segment.durationMinutes)}</div>
-                                        <div className="segment-line"></div>
-                                        <div className="segment-aircraft">{segment.aircraft}</div>
-                                      </div>
-                                      <div className="segment-airport">
-                                        <div className="segment-time">{segment.arrivalTime}</div>
-                                        <div className="segment-code">{segment.toAirport}</div>
-                                        <div className="segment-city">{segment.toCity}</div>
-                                      </div>
-
-                                      {showLayover && (
-                                        <div className="layover-row">
-                                          <span>{formatDuration(segment.layoverMinutes)} Layover in {segment.toCity}</span>
-                                          {terminalChange && <span className="terminal-change">Change of Terminal</span>}
-                                        </div>
-                                      )}
                                     </div>
-                                  );
-                                })}
-                              </div>
-                            )}
-                          </div>
-                        )}
+                                    <div className="flight-route">
+                                      <div className="route-segment">
+                                        <div className="route-location">
+                                          <span className="route-code">{flight.departureLocation}</span>
+                                          <span className="route-time">{flight.departureDate}</span>
+                                        </div>
+                                        <div className="route-city">
+                                          <span>{flight.departureCity}</span>
+                                          <span className="terminal-info">{flight.departureTerminal}</span>
+                                        </div>
+                                      </div>
+                                      <div className="route-duration">
+                                        <span className="duration-text">{flight.duration}</span>
+                                        <div className="duration-timeline-line"></div>
+                                        <div className={`refundable-badge ${flight.refundable ? '' : 'non-refundable'}`}>
+                                          {flight.refundable ? 'Refundable' : 'Non-Refundable'}
+                                        </div>
+                                      </div>
+                                      <div className="route-segment">
+                                        <div className="route-location">
+                                          <span className="route-code">{flight.arrivalLocation}</span>
+                                          <span className="route-time">{flight.arrivalDate}</span>
+                                        </div>
+                                        <div className="route-city">
+                                          <span>{flight.arrivalCity}</span>
+                                          <span className="terminal-info">{flight.arrivalTerminal}</span>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  
+                                  <div className="flight-amenities">
+                                    <div className="amenity-item">
+                                      <FaThLarge style={{fontSize: '16px', color: '#666'}} />
+                                      <span>{flight.layout}</span>
+                                    </div>
+                                    <div className="amenity-item">
+                                      <FaUtensils style={{fontSize: '16px', color: '#666'}} />
+                                      <span>{flight.beverage}</span>
+                                    </div>
+                                  </div>
 
-                        {activeTab[`${flight.id}-return`] === 'fare-details' && (
-                          <div className="fare-details-tab">
-                            <div className="fare-breakdown-card">
-                              <h3 className="fare-breakdown-heading">Fare breakdown</h3>
-                              
-                              <div className="fare-breakdown-row">
-                                <span className="fare-label">Base Fare</span>
-                                <span className="fare-value">₹{flight.baseFare || 2800}</span>
-                              </div>
-                              
-                              <div className="fare-breakdown-row">
-                                <span className="fare-label">Taxes & Fees</span>
-                                <span className="fare-value">₹{flight.taxes || 451}</span>
-                              </div>
-                              
-                              <div className="fare-divider"></div>
-                              
-                              <div className="fare-breakdown-row fare-total-row">
-                                <span className="fare-total-label">TOTAL</span>
-                                <span className="fare-total-value">{flight.returnFlight.price}</span>
-                              </div>
-                            </div>
-                          </div>
-                        )}
+                                  {flight.segments?.length > 1 && (
+                                    <div className="segment-details">
+                                      {flight.segments.map((segment, segmentIndex) => {
+                                        const nextSegment = flight.segments[segmentIndex + 1];
+                                        const showLayover = segment.layoverMinutes && nextSegment;
+                                        const terminalChange = showLayover && segment.terminal && nextSegment.terminal
+                                          ? segment.terminal !== nextSegment.terminal
+                                          : false;
 
-                        {activeTab[`${flight.id}-return`] === 'baggage-rules' && (
-                          <div className="baggage-rules-tab">
-                            <div className="baggage-section">
-                              <h3 className="baggage-heading">CHECK-IN</h3>
-                              <div className="baggage-divider"></div>
-                              <div className="baggage-columns">
-                                <div className="baggage-column">
-                                  <div className="baggage-column-header">ADULT</div>
-                                  <div className="baggage-column-value">15 kgs (1-piece only)</div>
-                                </div>
-                                <div className="baggage-column">
-                                  <div className="baggage-column-header">CHILD</div>
-                                  <div className="baggage-column-value">15 kgs (1-piece only)</div>
-                                </div>
-                                <div className="baggage-column">
-                                  <div className="baggage-column-header">INFANT</div>
-                                  <div className="baggage-column-value">0 kgs</div>
-                                </div>
-                              </div>
-                            </div>
+                                        return (
+                                          <div key={`${outboundDetailsKey}-seg-${segmentIndex}`} className="segment-row">
+                                            <div className="segment-airport">
+                                              <div className="segment-time">{segment.departureTime}</div>
+                                              <div className="segment-code">{segment.fromAirport}</div>
+                                              <div className="segment-city">{segment.fromCity}</div>
+                                            </div>
+                                            <div className="segment-path">
+                                              <div className="segment-duration">{formatDuration(segment.durationMinutes)}</div>
+                                              <div className="segment-line"></div>
+                                              <div className="segment-aircraft">{segment.aircraft}</div>
+                                            </div>
+                                            <div className="segment-airport">
+                                              <div className="segment-time">{segment.arrivalTime}</div>
+                                              <div className="segment-code">{segment.toAirport}</div>
+                                              <div className="segment-city">{segment.toCity}</div>
+                                            </div>
 
-                            <div className="baggage-section">
-                              <h3 className="baggage-heading">CABIN</h3>
-                              <div className="baggage-divider"></div>
-                              <div className="baggage-columns">
-                                <div className="baggage-column">
-                                  <div className="baggage-column-header">ADULT</div>
-                                  <div className="baggage-column-value">7 kgs (1-piece only)</div>
+                                            {showLayover && (
+                                              <div className="layover-row">
+                                                <span>{formatDuration(segment.layoverMinutes)} Layover in {segment.toCity}</span>
+                                                {terminalChange && <span className="terminal-change">Change of Terminal</span>}
+                                              </div>
+                                            )}
+                                          </div>
+                                        );
+                                      })}
+                                    </div>
+                                  )}
                                 </div>
-                                <div className="baggage-column">
-                                  <div className="baggage-column-header">CHILD</div>
-                                  <div className="baggage-column-value">7 kgs (1-piece only)</div>
+                              )}
+
+                              {activeTab[outboundDetailsKey] === 'fare-details' && (
+                                <div className="fare-details-tab">
+                                  <div className="fare-breakdown-card">
+                                    <h3 className="fare-breakdown-heading">Fare breakdown</h3>
+                                    
+                                    <div className="fare-breakdown-row">
+                                      <span className="fare-label">Base Fare</span>
+                                      <span className="fare-value">₹{flight.baseFare}</span>
+                                    </div>
+                                    
+                                    <div className="fare-breakdown-row">
+                                      <span className="fare-label">Taxes & Fees</span>
+                                      <span className="fare-value">₹{flight.taxes}</span>
+                                    </div>
+                                    
+                                    <div className="fare-divider"></div>
+                                    
+                                    <div className="fare-breakdown-row fare-total-row">
+                                      <span className="fare-total-label">TOTAL</span>
+                                      <span className="fare-total-value">₹{flight.baseFare + flight.taxes}</span>
+                                    </div>
+                                  </div>
                                 </div>
-                                <div className="baggage-column">
-                                  <div className="baggage-column-header">INFANT</div>
-                                  <div className="baggage-column-value">7 kgs (1-piece only)</div>
+                              )}
+
+                              {activeTab[outboundDetailsKey] === 'baggage-rules' && (
+                                <div className="baggage-rules-tab">
+                                  <div className="baggage-section">
+                                    <h3 className="baggage-heading">CHECK-IN</h3>
+                                    <div className="baggage-divider"></div>
+                                    <div className="baggage-columns">
+                                      <div className="baggage-column">
+                                        <div className="baggage-column-header">ADULT</div>
+                                        <div className="baggage-column-value">15 kgs (1-piece only)</div>
+                                      </div>
+                                      <div className="baggage-column">
+                                        <div className="baggage-column-header">CHILD</div>
+                                        <div className="baggage-column-value">15 kgs (1-piece only)</div>
+                                      </div>
+                                      <div className="baggage-column">
+                                        <div className="baggage-column-header">INFANT</div>
+                                        <div className="baggage-column-value">0 kgs</div>
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  <div className="baggage-section">
+                                    <h3 className="baggage-heading">CABIN</h3>
+                                    <div className="baggage-divider"></div>
+                                    <div className="baggage-columns">
+                                      <div className="baggage-column">
+                                        <div className="baggage-column-header">ADULT</div>
+                                        <div className="baggage-column-value">7 kgs (1-piece only)</div>
+                                      </div>
+                                      <div className="baggage-column">
+                                        <div className="baggage-column-header">CHILD</div>
+                                        <div className="baggage-column-value">7 kgs (1-piece only)</div>
+                                      </div>
+                                      <div className="baggage-column">
+                                        <div className="baggage-column-header">INFANT</div>
+                                        <div className="baggage-column-value">7 kgs (1-piece only)</div>
+                                      </div>
+                                    </div>
+                                  </div>
                                 </div>
-                              </div>
+                              )}
                             </div>
                           </div>
                         )}
                       </div>
                     </div>
-                  )}
+                  );
+                })}
+              </div>
+              <div className="round-trip-column">
+                {sortedReturnFlights.map((flight, index) => {
+                  const returnKey = getFlightSelectionKey(flight, index);
+                  const returnSelectionKey = `return-${returnKey}`;
+                  const returnDetailsKey = `${returnSelectionKey}-details`;
+
+                  return (
+                    <div key={returnSelectionKey} className="flight-card-wrapper">
+                      <div className="round-trip-card-wrapper">
+                        <div className="round-trip-mini-card">
+                          <div className="mini-card-top-row">
+                            <div className="mini-airline-info">
+                              <img src={flight.airlineLogo} alt={flight.airline} className="mini-airline-logo" />
+                              <div className="mini-airline-details">
+                                <div className="mini-airline-name">{flight.airline}</div>
+                                <div className="mini-flight-code">{flight.flightCode}</div>
+                              </div>
+                            </div>
+                            <input 
+                              type="radio" 
+                              name="return-flight" 
+                              value={returnSelectionKey} 
+                              className={`mini-radio-top ${selectedReturnKey === returnSelectionKey ? 'is-checked' : ''}`}
+                              checked={selectedReturnKey === returnSelectionKey}
+                              onChange={() => handleReturnSelect(flight, returnSelectionKey)}
+                            />
+                            <div className="mini-price-section">
+                              <div className="mini-price">{flight.price}</div>
+                            </div>
+                          </div>
+                          
+                          <div className="mini-card-main-row">
+                            <div className="mini-departure-section">
+                              <div className="mini-time">{flight.departureTime}</div>
+                              <div className="mini-date">{flight.departureDate?.split(' at ')[0] || 'Wed, 15-10-2025'}</div>
+                              <div className="mini-city">{flight.departureCity || flight.departureLocation}</div>
+                            </div>
+                            
+                            <div className="mini-duration-section">
+                              <div className="mini-duration">{flight.duration}</div>
+                              <div className="mini-flight-line">
+                                <div className="mini-line"></div>
+                              </div>
+                              <div className="mini-stops-info">{flight.stops}</div>
+                            </div>
+                            
+                            <div className="mini-arrival-section">
+                              <div className="mini-time">{flight.arrivalTime}</div>
+                              <div className="mini-date">{flight.arrivalDate?.split(' at ')[0] || 'Wed, 15-10-2025'}</div>
+                              <div className="mini-city">{flight.arrivalCity || flight.arrivalLocation}</div>
+                            </div>
+                          </div>
+                          
+                          <div className="mini-card-bottom-row">
+                            <div className="mini-seats-info">{flight.seatsLeft || 0} Seats Available</div>
+                            <div className="mini-stop-details">{flight.stopsCount === 0 ? "Non-stop" : `${flight.stopsCount} Stop${flight.stopsCount > 1 ? 's' : ''}`}</div>
+                          </div>
+                          
+                          <div className="mini-card-footer-btn">
+                            <button 
+                              className="mini-flight-details-btn"
+                              onClick={() => toggleFlightDetails(returnDetailsKey)}
+                            >
+                              {openFlightDetails[returnDetailsKey] ? 'Hide Details' : 'Flight Details'} →
+                            </button>
+                          </div>
+                        </div>
+                      
+                        {/* FLIGHT DETAILS DROPDOWN FOR RETURN */}
+                        {openFlightDetails[returnDetailsKey] && (
+                          <div className="flight-details-dropdown">
+                            {/* Tabs */}
+                            <div className="flight-details-tabs">
+                              <button 
+                                className={`tab-btn ${activeTab[returnDetailsKey] === 'flight-info' ? 'active' : ''}`}
+                                onClick={() => handleTabChange(returnDetailsKey, 'flight-info')}
+                              >
+                                <FaPlane style={{marginRight: '6px', fontSize: '14px'}} />
+                                FLIGHT INFORMATION
+                              </button>
+                              <button 
+                                className={`tab-btn ${activeTab[returnDetailsKey] === 'fare-details' ? 'active' : ''}`}
+                                onClick={() => handleTabChange(returnDetailsKey, 'fare-details')}
+                              >
+                                <FaLock style={{marginRight: '6px', fontSize: '14px'}} />
+                                FARE DETAILS
+                              </button>
+                              <button 
+                                className={`tab-btn ${activeTab[returnDetailsKey] === 'baggage-rules' ? 'active' : ''}`}
+                                onClick={() => handleTabChange(returnDetailsKey, 'baggage-rules')}
+                              >
+                                <FaSuitcase style={{marginRight: '6px', fontSize: '14px'}} />
+                                BAGGAGE RULES
+                              </button>
+                            </div>
+
+                            {/* Tab Content for Return Flight */}
+                            <div className="flight-details-content">
+                              {activeTab[returnDetailsKey] === 'flight-info' && (
+                                <div className="flight-info-tab">
+                                  <div className="flight-info-header">
+                                    <div className="airline-header">
+                                      <img src={flight.airlineLogo} alt={flight.airline} className="dropdown-airline-logo" />
+                                      <div className="airline-details">
+                                        <span className="airline-name">{flight.airline}</span>
+                                        <span className="flight-number">{flight.flightCode}</span>
+                                      </div>
+                                    </div>
+                                    <div className="flight-route">
+                                      <div className="route-segment">
+                                        <div className="route-location">
+                                          <span className="route-code">{flight.departureLocation}</span>
+                                          <span className="route-time">{flight.departureDate || 'Wed, 15-10-2025'}</span>
+                                        </div>
+                                        <div className="route-city">
+                                          <span>{flight.departureCity || flight.departureLocation}</span>
+                                          <span className="terminal-info">Terminal: 1</span>
+                                        </div>
+                                      </div>
+                                      <div className="route-duration">
+                                        <span className="duration-text">{flight.duration}</span>
+                                        <div className="duration-timeline-line"></div>
+                                        <div className="refundable-badge non-refundable">Non-Refundable</div>
+                                      </div>
+                                      <div className="route-segment">
+                                        <div className="route-location">
+                                          <span className="route-code">{flight.arrivalLocation}</span>
+                                          <span className="route-time">{flight.arrivalDate || 'Wed, 15-10-2025'}</span>
+                                        </div>
+                                        <div className="route-city">
+                                          <span>{flight.arrivalCity || flight.arrivalLocation}</span>
+                                          <span className="terminal-info">Terminal: 2</span>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  
+                                  <div className="flight-amenities">
+                                    <div className="amenity-item">
+                                      <FaThLarge style={{fontSize: '16px', color: '#666'}} />
+                                      <span>3-3 Layout</span>
+                                    </div>
+                                    <div className="amenity-item">
+                                      <FaUtensils style={{fontSize: '16px', color: '#666'}} />
+                                      <span>Beverage Available</span>
+                                    </div>
+                                  </div>
+
+                                  {flight.segments?.length > 1 && (
+                                    <div className="segment-details">
+                                      {flight.segments.map((segment, segmentIndex) => {
+                                        const nextSegment = flight.segments[segmentIndex + 1];
+                                        const showLayover = segment.layoverMinutes && nextSegment;
+                                        const terminalChange = showLayover && segment.terminal && nextSegment.terminal
+                                          ? segment.terminal !== nextSegment.terminal
+                                          : false;
+
+                                        return (
+                                          <div key={`${returnDetailsKey}-seg-${segmentIndex}`} className="segment-row">
+                                            <div className="segment-airport">
+                                              <div className="segment-time">{segment.departureTime}</div>
+                                              <div className="segment-code">{segment.fromAirport}</div>
+                                              <div className="segment-city">{segment.fromCity}</div>
+                                            </div>
+                                            <div className="segment-path">
+                                              <div className="segment-duration">{formatDuration(segment.durationMinutes)}</div>
+                                              <div className="segment-line"></div>
+                                              <div className="segment-aircraft">{segment.aircraft}</div>
+                                            </div>
+                                            <div className="segment-airport">
+                                              <div className="segment-time">{segment.arrivalTime}</div>
+                                              <div className="segment-code">{segment.toAirport}</div>
+                                              <div className="segment-city">{segment.toCity}</div>
+                                            </div>
+
+                                            {showLayover && (
+                                              <div className="layover-row">
+                                                <span>{formatDuration(segment.layoverMinutes)} Layover in {segment.toCity}</span>
+                                                {terminalChange && <span className="terminal-change">Change of Terminal</span>}
+                                              </div>
+                                            )}
+                                          </div>
+                                        );
+                                      })}
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+
+                              {activeTab[returnDetailsKey] === 'fare-details' && (
+                                <div className="fare-details-tab">
+                                  <div className="fare-breakdown-card">
+                                    <h3 className="fare-breakdown-heading">Fare breakdown</h3>
+                                    
+                                    <div className="fare-breakdown-row">
+                                      <span className="fare-label">Base Fare</span>
+                                      <span className="fare-value">₹{flight.baseFare || 2800}</span>
+                                    </div>
+                                    
+                                    <div className="fare-breakdown-row">
+                                      <span className="fare-label">Taxes & Fees</span>
+                                      <span className="fare-value">₹{flight.taxes || 451}</span>
+                                    </div>
+                                    
+                                    <div className="fare-divider"></div>
+                                    
+                                    <div className="fare-breakdown-row fare-total-row">
+                                      <span className="fare-total-label">TOTAL</span>
+                                      <span className="fare-total-value">{flight.price}</span>
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+
+                              {activeTab[returnDetailsKey] === 'baggage-rules' && (
+                                <div className="baggage-rules-tab">
+                                  <div className="baggage-section">
+                                    <h3 className="baggage-heading">CHECK-IN</h3>
+                                    <div className="baggage-divider"></div>
+                                    <div className="baggage-columns">
+                                      <div className="baggage-column">
+                                        <div className="baggage-column-header">ADULT</div>
+                                        <div className="baggage-column-value">15 kgs (1-piece only)</div>
+                                      </div>
+                                      <div className="baggage-column">
+                                        <div className="baggage-column-header">CHILD</div>
+                                        <div className="baggage-column-value">15 kgs (1-piece only)</div>
+                                      </div>
+                                      <div className="baggage-column">
+                                        <div className="baggage-column-header">INFANT</div>
+                                        <div className="baggage-column-value">0 kgs</div>
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  <div className="baggage-section">
+                                    <h3 className="baggage-heading">CABIN</h3>
+                                    <div className="baggage-divider"></div>
+                                    <div className="baggage-columns">
+                                      <div className="baggage-column">
+                                        <div className="baggage-column-header">ADULT</div>
+                                        <div className="baggage-column-value">7 kgs (1-piece only)</div>
+                                      </div>
+                                      <div className="baggage-column">
+                                        <div className="baggage-column-header">CHILD</div>
+                                        <div className="baggage-column-value">7 kgs (1-piece only)</div>
+                                      </div>
+                                      <div className="baggage-column">
+                                        <div className="baggage-column-header">INFANT</div>
+                                        <div className="baggage-column-value">7 kgs (1-piece only)</div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                  </>
-                ) : (
+                  );
+                })}
+              </div>
+            </div>
+          ) : (
+            sortedOutboundFlights.map((flight, index) => {
+              const flightKey = getFlightSelectionKey(flight, index);
+
+              return (
+                <div key={flightKey} className="flight-card-wrapper">
                   <div className="flight-card">
                     {flight.badge && (
                       <div className="flight-card-header">
@@ -1732,234 +1821,235 @@ function FlightResults() {
                       </button>
                     </div>
                   </div>
-                )}
 
-              {/* FLIGHT DETAILS DROPDOWN */}
-              {openFlightDetails[flight.id] && (
-                <div className="flight-details-dropdown">
-                  {/* Tabs */}
-                  <div className="flight-details-tabs">
-                    <button 
-                      className={`tab-btn ${activeTab[flight.id] === 'flight-info' ? 'active' : ''}`}
-                      onClick={() => handleTabChange(flight.id, 'flight-info')}
-                    >
-                      <FaPlane style={{marginRight: '6px', fontSize: '14px'}} />
-                      FLIGHT INFORMATION
-                    </button>
-                    <button 
-                      className={`tab-btn ${activeTab[flight.id] === 'fare-details' ? 'active' : ''}`}
-                      onClick={() => handleTabChange(flight.id, 'fare-details')}
-                    >
-                      <FaLock style={{marginRight: '6px', fontSize: '14px'}} />
-                      FARE DETAILS
-                    </button>
-                    <button 
-                      className={`tab-btn ${activeTab[flight.id] === 'baggage-rules' ? 'active' : ''}`}
-                      onClick={() => handleTabChange(flight.id, 'baggage-rules')}
-                    >
-                      <FaSuitcase style={{marginRight: '6px', fontSize: '14px'}} />
-                      BAGGAGE RULES
-                    </button>
-                    <button 
-                      className={`tab-btn ${activeTab[flight.id] === 'cancellation' ? 'active' : ''}`}
-                      onClick={() => handleTabChange(flight.id, 'cancellation')}
-                    >
-                      <FaLock style={{marginRight: '6px', fontSize: '14px'}} />
-                      CANCELLATION
-                    </button>
-                  </div>
+                  {/* FLIGHT DETAILS DROPDOWN */}
+                  {openFlightDetails[flight.id] && (
+                    <div className="flight-details-dropdown">
+                      {/* Tabs */}
+                      <div className="flight-details-tabs">
+                        <button 
+                          className={`tab-btn ${activeTab[flight.id] === 'flight-info' ? 'active' : ''}`}
+                          onClick={() => handleTabChange(flight.id, 'flight-info')}
+                        >
+                          <FaPlane style={{marginRight: '6px', fontSize: '14px'}} />
+                          FLIGHT INFORMATION
+                        </button>
+                        <button 
+                          className={`tab-btn ${activeTab[flight.id] === 'fare-details' ? 'active' : ''}`}
+                          onClick={() => handleTabChange(flight.id, 'fare-details')}
+                        >
+                          <FaLock style={{marginRight: '6px', fontSize: '14px'}} />
+                          FARE DETAILS
+                        </button>
+                        <button 
+                          className={`tab-btn ${activeTab[flight.id] === 'baggage-rules' ? 'active' : ''}`}
+                          onClick={() => handleTabChange(flight.id, 'baggage-rules')}
+                        >
+                          <FaSuitcase style={{marginRight: '6px', fontSize: '14px'}} />
+                          BAGGAGE RULES
+                        </button>
+                        <button 
+                          className={`tab-btn ${activeTab[flight.id] === 'cancellation' ? 'active' : ''}`}
+                          onClick={() => handleTabChange(flight.id, 'cancellation')}
+                        >
+                          <FaLock style={{marginRight: '6px', fontSize: '14px'}} />
+                          CANCELLATION
+                        </button>
+                      </div>
 
-                  {/* Tab Content */}
-                  <div className="flight-details-content">
-                    {activeTab[flight.id] === 'flight-info' && (
-                      <div className="flight-info-tab">
-                        <div className="flight-info-header">
-                          <div className="airline-header">
-                            <img src={flight.airlineLogo} alt={flight.airline} className="dropdown-airline-logo" />
-                            <div className="airline-details">
-                              <span className="airline-name">{flight.airline}</span>
-                              <span className="flight-number">{flight.flightCode}</span>
-                            </div>
-                          </div>
-                          <div className="flight-route">
-                            <div className="route-segment">
-                              <div className="route-location">
-                                <span className="route-code">{flight.departureLocation}</span>
-                                <span className="route-time">{flight.departureDate}</span>
-                              </div>
-                              <div className="route-city">
-                                <span>{flight.departureCity}</span>
-                                <span className="terminal-info">{flight.departureTerminal}</span>
-                              </div>
-                            </div>
-                            <div className="route-duration">
-                              <span className="duration-text">{flight.duration}</span>
-                              <div className="duration-timeline-line"></div>
-                              <div className={`refundable-badge ${flight.refundable ? '' : 'non-refundable'}`}>
-                                {flight.refundable ? 'Refundable' : 'Non-Refundable'}
-                              </div>
-                            </div>
-                            <div className="route-segment">
-                              <div className="route-location">
-                                <span className="route-code">{flight.arrivalLocation}</span>
-                                <span className="route-time">{flight.arrivalDate}</span>
-                              </div>
-                              <div className="route-city">
-                                <span>{flight.arrivalCity}</span>
-                                <span className="terminal-info">{flight.arrivalTerminal}</span>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        
-                        {/* Bottom Icons Section */}
-                        <div className="flight-amenities">
-                          <div className="amenity-item">
-                            <FaThLarge style={{fontSize: '16px', color: '#666'}} />
-                            <span>{flight.layout}</span>
-                          </div>
-                          <div className="amenity-item">
-                            <FaUtensils style={{fontSize: '16px', color: '#666'}} />
-                            <span>{flight.beverage}</span>
-                          </div>
-                        </div>
-
-                        {flight.segments?.length > 1 && (
-                          <div className="segment-details">
-                            {flight.segments.map((segment, index) => {
-                              const nextSegment = flight.segments[index + 1];
-                              const showLayover = segment.layoverMinutes && nextSegment;
-                              const terminalChange = showLayover && segment.terminal && nextSegment.terminal
-                                ? segment.terminal !== nextSegment.terminal
-                                : false;
-
-                              return (
-                                <div key={`${flight.id}-seg-${index}`} className="segment-row">
-                                  <div className="segment-airport">
-                                    <div className="segment-time">{segment.departureTime}</div>
-                                    <div className="segment-code">{segment.fromAirport}</div>
-                                    <div className="segment-city">{segment.fromCity}</div>
-                                  </div>
-                                  <div className="segment-path">
-                                    <div className="segment-duration">{formatDuration(segment.durationMinutes)}</div>
-                                    <div className="segment-line"></div>
-                                    <div className="segment-aircraft">{segment.aircraft}</div>
-                                  </div>
-                                  <div className="segment-airport">
-                                    <div className="segment-time">{segment.arrivalTime}</div>
-                                    <div className="segment-code">{segment.toAirport}</div>
-                                    <div className="segment-city">{segment.toCity}</div>
-                                  </div>
-
-                                  {showLayover && (
-                                    <div className="layover-row">
-                                      <span>{formatDuration(segment.layoverMinutes)} Layover in {segment.toCity}</span>
-                                      {terminalChange && <span className="terminal-change">Change of Terminal</span>}
-                                    </div>
-                                  )}
+                      {/* Tab Content */}
+                      <div className="flight-details-content">
+                        {activeTab[flight.id] === 'flight-info' && (
+                          <div className="flight-info-tab">
+                            <div className="flight-info-header">
+                              <div className="airline-header">
+                                <img src={flight.airlineLogo} alt={flight.airline} className="dropdown-airline-logo" />
+                                <div className="airline-details">
+                                  <span className="airline-name">{flight.airline}</span>
+                                  <span className="flight-number">{flight.flightCode}</span>
                                 </div>
-                              );
-                            })}
+                              </div>
+                              <div className="flight-route">
+                                <div className="route-segment">
+                                  <div className="route-location">
+                                    <span className="route-code">{flight.departureLocation}</span>
+                                    <span className="route-time">{flight.departureDate}</span>
+                                  </div>
+                                  <div className="route-city">
+                                    <span>{flight.departureCity}</span>
+                                    <span className="terminal-info">{flight.departureTerminal}</span>
+                                  </div>
+                                </div>
+                                <div className="route-duration">
+                                  <span className="duration-text">{flight.duration}</span>
+                                  <div className="duration-timeline-line"></div>
+                                  <div className={`refundable-badge ${flight.refundable ? '' : 'non-refundable'}`}>
+                                    {flight.refundable ? 'Refundable' : 'Non-Refundable'}
+                                  </div>
+                                </div>
+                                <div className="route-segment">
+                                  <div className="route-location">
+                                    <span className="route-code">{flight.arrivalLocation}</span>
+                                    <span className="route-time">{flight.arrivalDate}</span>
+                                  </div>
+                                  <div className="route-city">
+                                    <span>{flight.arrivalCity}</span>
+                                    <span className="terminal-info">{flight.arrivalTerminal}</span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            
+                            {/* Bottom Icons Section */}
+                            <div className="flight-amenities">
+                              <div className="amenity-item">
+                                <FaThLarge style={{fontSize: '16px', color: '#666'}} />
+                                <span>{flight.layout}</span>
+                              </div>
+                              <div className="amenity-item">
+                                <FaUtensils style={{fontSize: '16px', color: '#666'}} />
+                                <span>{flight.beverage}</span>
+                              </div>
+                            </div>
+
+                            {flight.segments?.length > 1 && (
+                              <div className="segment-details">
+                                {flight.segments.map((segment, segmentIndex) => {
+                                  const nextSegment = flight.segments[segmentIndex + 1];
+                                  const showLayover = segment.layoverMinutes && nextSegment;
+                                  const terminalChange = showLayover && segment.terminal && nextSegment.terminal
+                                    ? segment.terminal !== nextSegment.terminal
+                                    : false;
+
+                                  return (
+                                    <div key={`${flight.id}-seg-${segmentIndex}`} className="segment-row">
+                                      <div className="segment-airport">
+                                        <div className="segment-time">{segment.departureTime}</div>
+                                        <div className="segment-code">{segment.fromAirport}</div>
+                                        <div className="segment-city">{segment.fromCity}</div>
+                                      </div>
+                                      <div className="segment-path">
+                                        <div className="segment-duration">{formatDuration(segment.durationMinutes)}</div>
+                                        <div className="segment-line"></div>
+                                        <div className="segment-aircraft">{segment.aircraft}</div>
+                                      </div>
+                                      <div className="segment-airport">
+                                        <div className="segment-time">{segment.arrivalTime}</div>
+                                        <div className="segment-code">{segment.toAirport}</div>
+                                        <div className="segment-city">{segment.toCity}</div>
+                                      </div>
+
+                                      {showLayover && (
+                                        <div className="layover-row">
+                                          <span>{formatDuration(segment.layoverMinutes)} Layover in {segment.toCity}</span>
+                                          {terminalChange && <span className="terminal-change">Change of Terminal</span>}
+                                        </div>
+                                      )}
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            )}
+                          </div>
+                        )}
+
+                        {activeTab[flight.id] === 'fare-details' && (
+                          <div className="fare-details-tab">
+                            <div className="fare-breakdown-card">
+                              <h3 className="fare-breakdown-heading">Fare breakdown</h3>
+                              
+                              <div className="fare-breakdown-row">
+                                <span className="fare-label">Base Fare</span>
+                                <span className="fare-value">₹{flight.baseFare}</span>
+                              </div>
+                              
+                              <div className="fare-breakdown-row">
+                                <span className="fare-label">Taxes & Fees</span>
+                                <span className="fare-value">₹{flight.taxes}</span>
+                              </div>
+                              
+                              <div className="fare-divider"></div>
+                              
+                              <div className="fare-breakdown-row fare-total-row">
+                                <span className="fare-total-label">TOTAL</span>
+                                <span className="fare-total-value">₹{flight.baseFare + flight.taxes}</span>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {activeTab[flight.id] === 'baggage-rules' && (
+                          <div className="baggage-rules-tab">
+                            {/* CHECK-IN Section */}
+                            <div className="baggage-section">
+                              <h3 className="baggage-heading">CHECK-IN</h3>
+                              <div className="baggage-divider"></div>
+                              <div className="baggage-columns">
+                                <div className="baggage-column">
+                                  <div className="baggage-column-header">ADULT</div>
+                                  <div className="baggage-column-value">15 kgs (1-piece only)</div>
+                                </div>
+                                <div className="baggage-column">
+                                  <div className="baggage-column-header">CHILD</div>
+                                  <div className="baggage-column-value">15 kgs (1-piece only)</div>
+                                </div>
+                                <div className="baggage-column">
+                                  <div className="baggage-column-header">INFANT</div>
+                                  <div className="baggage-column-value">0 kgs</div>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* CABIN Section */}
+                            <div className="baggage-section">
+                              <h3 className="baggage-heading">CABIN</h3>
+                              <div className="baggage-divider"></div>
+                              <div className="baggage-columns">
+                                <div className="baggage-column">
+                                  <div className="baggage-column-header">ADULT</div>
+                                  <div className="baggage-column-value">7 kgs (1-piece only)</div>
+                                </div>
+                                <div className="baggage-column">
+                                  <div className="baggage-column-header">CHILD</div>
+                                  <div className="baggage-column-value">7 kgs (1-piece only)</div>
+                                </div>
+                                <div className="baggage-column">
+                                  <div className="baggage-column-header">INFANT</div>
+                                  <div className="baggage-column-value">7 kgs (1-piece only)</div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {activeTab[flight.id] === 'cancellation' && (
+                          <div className="cancellation-tab">
+                            <div className="cancellation-empty-state">
+                              <div className="cancellation-icon">
+                                <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                  <circle cx="40" cy="12" r="3" fill="#999" />
+                                  <circle cx="68" cy="52" r="2" fill="#999" />
+                                  <circle cx="55" cy="18" r="2.5" fill="#999" />
+                                  <circle cx="16" cy="45" r="2" fill="#999" />
+                                  <rect x="28" y="28" width="24" height="32" rx="2" stroke="#666" strokeWidth="1.5" fill="none" />
+                                  <path d="M32 34 L36 34 M32 38 L38 38 M32 42 L36 42" stroke="#666" strokeWidth="1.2" strokeLinecap="round" />
+                                  <text x="34" y="36" fontSize="8" fill="#666" fontWeight="600">₹</text>
+                                  <circle cx="40" cy="54" r="8" fill="white" stroke="#666" strokeWidth="1.5" />
+                                  <path d="M40 50 L40 54 M40 58 L40 58" stroke="#e74c3c" strokeWidth="2" strokeLinecap="round" />
+                                  <circle cx="40" cy="58" r="1" fill="#e74c3c" />
+                                </svg>
+                              </div>
+                              <p className="cancellation-message">Sorry! Fare rules could not be<br />fetched at the moment.</p>
+                            </div>
                           </div>
                         )}
                       </div>
-                    )}
-
-                    {activeTab[flight.id] === 'fare-details' && (
-                      <div className="fare-details-tab">
-                        <div className="fare-breakdown-card">
-                          <h3 className="fare-breakdown-heading">Fare breakdown</h3>
-                          
-                          <div className="fare-breakdown-row">
-                            <span className="fare-label">Base Fare</span>
-                            <span className="fare-value">₹{flight.baseFare}</span>
-                          </div>
-                          
-                          <div className="fare-breakdown-row">
-                            <span className="fare-label">Taxes & Fees</span>
-                            <span className="fare-value">₹{flight.taxes}</span>
-                          </div>
-                          
-                          <div className="fare-divider"></div>
-                          
-                          <div className="fare-breakdown-row fare-total-row">
-                            <span className="fare-total-label">TOTAL</span>
-                            <span className="fare-total-value">₹{flight.baseFare + flight.taxes}</span>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {activeTab[flight.id] === 'baggage-rules' && (
-                      <div className="baggage-rules-tab">
-                        {/* CHECK-IN Section */}
-                        <div className="baggage-section">
-                          <h3 className="baggage-heading">CHECK-IN</h3>
-                          <div className="baggage-divider"></div>
-                          <div className="baggage-columns">
-                            <div className="baggage-column">
-                              <div className="baggage-column-header">ADULT</div>
-                              <div className="baggage-column-value">15 kgs (1-piece only)</div>
-                            </div>
-                            <div className="baggage-column">
-                              <div className="baggage-column-header">CHILD</div>
-                              <div className="baggage-column-value">15 kgs (1-piece only)</div>
-                            </div>
-                            <div className="baggage-column">
-                              <div className="baggage-column-header">INFANT</div>
-                              <div className="baggage-column-value">0 kgs</div>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* CABIN Section */}
-                        <div className="baggage-section">
-                          <h3 className="baggage-heading">CABIN</h3>
-                          <div className="baggage-divider"></div>
-                          <div className="baggage-columns">
-                            <div className="baggage-column">
-                              <div className="baggage-column-header">ADULT</div>
-                              <div className="baggage-column-value">7 kgs (1-piece only)</div>
-                            </div>
-                            <div className="baggage-column">
-                              <div className="baggage-column-header">CHILD</div>
-                              <div className="baggage-column-value">7 kgs (1-piece only)</div>
-                            </div>
-                            <div className="baggage-column">
-                              <div className="baggage-column-header">INFANT</div>
-                              <div className="baggage-column-value">7 kgs (1-piece only)</div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {activeTab[flight.id] === 'cancellation' && (
-                      <div className="cancellation-tab">
-                        <div className="cancellation-empty-state">
-                          <div className="cancellation-icon">
-                            <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-                              <circle cx="40" cy="12" r="3" fill="#999" />
-                              <circle cx="68" cy="52" r="2" fill="#999" />
-                              <circle cx="55" cy="18" r="2.5" fill="#999" />
-                              <circle cx="16" cy="45" r="2" fill="#999" />
-                              <rect x="28" y="28" width="24" height="32" rx="2" stroke="#666" strokeWidth="1.5" fill="none" />
-                              <path d="M32 34 L36 34 M32 38 L38 38 M32 42 L36 42" stroke="#666" strokeWidth="1.2" strokeLinecap="round" />
-                              <text x="34" y="36" fontSize="8" fill="#666" fontWeight="600">₹</text>
-                              <circle cx="40" cy="54" r="8" fill="white" stroke="#666" strokeWidth="1.5" />
-                              <path d="M40 50 L40 54 M40 58 L40 58" stroke="#e74c3c" strokeWidth="2" strokeLinecap="round" />
-                              <circle cx="40" cy="58" r="1" fill="#e74c3c" />
-                            </svg>
-                          </div>
-                          <p className="cancellation-message">Sorry! Fare rules could not be<br />fetched at the moment.</p>
-                        </div>
-                      </div>
-                    )}
-                  </div>
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-          ))}
+              );
+            })
+          )}
         </div>
       </section>
     </div>
@@ -2088,7 +2178,7 @@ function FlightResults() {
                   {selectedOutbound.departureLocation} → {selectedOutbound.arrivalLocation} → {selectedOutbound.departureLocation}
                 </span>
                 <span className="fare-modal-separator">|</span>
-                <span>{selectedOutbound.airline} & {selectedReturn.returnFlight.airline}</span>
+                <span>{selectedOutbound.airline} & {selectedReturn.airline}</span>
                 <span className="fare-modal-separator">|</span>
                 <span>Round Trip</span>
               </div>
@@ -2185,8 +2275,8 @@ function FlightResults() {
                 </div>
               ) : (
                 <div className="fare-cards-wrapper">
-                  {selectedReturn?.returnFlight?.fareOptions?.length ? (
-                    selectedReturn.returnFlight.fareOptions.map((fareOption) => (
+                  {selectedReturn?.fareOptions?.length ? (
+                    selectedReturn.fareOptions.map((fareOption) => (
                       <div
                         key={`ret-${fareOption.fareName}`}
                         className="fare-card"
@@ -2203,7 +2293,7 @@ function FlightResults() {
                           />
                           <span className="fare-price-amount">{formatCurrency(fareOption.price)}</span>
                           <span className="fare-price-label">per adult</span>
-                          <span className="fare-type">{fareOption.fareName.toUpperCase()}</span>
+                            <span className="fare-total-value">{flight.price}</span>
                         </div>
 
                         <div className="fare-card-section">
@@ -2264,35 +2354,11 @@ function FlightResults() {
                 <div className="fare-total-prices">
                   <span className="fare-main-price">
                     ₹ {(() => {
-                      // Extract numeric values from price strings
-                      const parsePrice = (priceString) => {
-                        if (!priceString) return 0;
-                        return parseInt(priceString.replace(/[₹,\s]/g, '')) || 0;
-                      };
-                      
-                      // Define fare prices for each type
-                      const departureFarePrices = {
-                        'saver': parsePrice(selectedOutbound?.price),
-                        'flexi-plus': 10957,
-                        'premium': 12850
-                      };
-                      
-                      const returnFarePrices = {
-                        'saver': parsePrice(selectedReturn?.returnFlight?.price),
-                        'flexi': 10275,
-                        'super-saver': 11890
-                      };
-                      
-                      // If no fare selected, default to saver prices (initial state)
-                      const depPrice = selectedDepartureFare 
-                        ? departureFarePrices[selectedDepartureFare] 
-                        : departureFarePrices['saver'];
-                        
-                      const retPrice = selectedReturnFare 
-                        ? returnFarePrices[selectedReturnFare] 
-                        : returnFarePrices['saver'];
-                      
-                      const total = depPrice + retPrice;
+                      const depPrice = Number(selectedDepartureFare?.price)
+                        || parsePriceValue(selectedOutbound?.price);
+                      const retPrice = Number(selectedReturnFare?.price)
+                        || parsePriceValue(selectedReturn?.price);
+                      const total = (depPrice || 0) + (retPrice || 0);
                       return total.toLocaleString('en-IN');
                     })()}
                   </span>

@@ -6,6 +6,9 @@
   max-width: 600px;
   padding-left: 90px;
   padding-right: 140px;
+  position: relative;
+  z-index: 2001;
+  pointer-events: auto;
 
   height: calc(100vh - 180px);
   overflow-y: auto;
@@ -32,7 +35,9 @@
   background: #ffffff;
   padding: 25px;
   border-radius: 4px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+  position: relative;
+  z-index: 2002;
 }
 
 .card-header {
@@ -50,7 +55,7 @@
 }
 
 .clear-all {
-  color: #008cff;
+  color: #e53935;
   font-weight: 600;
   font-size: 13px;
   border: none;
@@ -270,6 +275,9 @@
   grid-template-columns: repeat(4, 1fr);
   gap: 8px;
   margin: 12px 0 20px 0;
+  pointer-events: auto;
+  position: relative;
+  z-index: 1;
 }
 
 .time-slot-box {
@@ -284,17 +292,20 @@
   cursor: pointer;
   transition: all 0.2s ease;
   background: #ffffff;
+  pointer-events: auto !important;
+  position: relative;
+  z-index: 2;
 }
 
 .time-slot-box:hover {
-  border-color: #008cff;
-  background: #f5fbff;
+  border-color: #a81313;
+  background: #f9ecec
 }
 
 .time-slot-box.active {
-  border-color: #008cff;
-  border-width: 2px;
-  background: #e3f2fd;
+  border-color: #a81313;
+  background: #f9ecec;
+    border-width: 2px;
 }
 
 .time-icon {
@@ -304,11 +315,11 @@
 }
 
 .time-slot-box:hover .time-icon {
-  color: #008cff;
+  color: #a81313;
 }
 
 .time-slot-box.active .time-icon {
-  color: #008cff;
+  color: #a81313;
 }
 
 .time-label {

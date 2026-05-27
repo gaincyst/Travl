@@ -6,7 +6,7 @@ function RoundTripSummaryBar({ outboundFlight, returnFlight, onBookNow }) {
 
   // Calculate total price
   const outboundPrice = parseInt(outboundFlight.price.replace(/[^0-9]/g, ""));
-  const returnPrice = parseInt(returnFlight.returnFlight.price.replace(/[^0-9]/g, ""));
+  const returnPrice = parseInt(returnFlight.price.replace(/[^0-9]/g, ""));
   const totalPrice = outboundPrice + returnPrice;
 
   return (
@@ -40,23 +40,23 @@ function RoundTripSummaryBar({ outboundFlight, returnFlight, onBookNow }) {
         {/* MIDDLE: Return Flight Summary */}
         <div className="summary-section return-section">
           <img 
-            src={returnFlight.returnFlight.airlineLogo} 
-            alt={returnFlight.returnFlight.airline} 
+            src={returnFlight.airlineLogo} 
+            alt={returnFlight.airline} 
             className="summary-airline-logo" 
           />
           <div className="summary-flight-details">
             <div className="summary-airline-name">
-              {returnFlight.returnFlight.airline} • {returnFlight.returnFlight.flightCode}
+              {returnFlight.airline} • {returnFlight.flightCode}
             </div>
             <div className="summary-route">
-              <span className="summary-time">{returnFlight.returnFlight.departureTime}</span>
-              <span className="summary-city">{returnFlight.returnFlight.departureLocation}</span>
+              <span className="summary-time">{returnFlight.departureTime}</span>
+              <span className="summary-city">{returnFlight.departureLocation}</span>
               <span className="summary-arrow">→</span>
-              <span className="summary-time">{returnFlight.returnFlight.arrivalTime}</span>
-              <span className="summary-city">{returnFlight.returnFlight.arrivalLocation}</span>
+              <span className="summary-time">{returnFlight.arrivalTime}</span>
+              <span className="summary-city">{returnFlight.arrivalLocation}</span>
             </div>
           </div>
-          <div className="summary-price">{returnFlight.returnFlight.price}</div>
+          <div className="summary-price">{returnFlight.price}</div>
         </div>
 
         {/* DIVIDER: Before Actions */}

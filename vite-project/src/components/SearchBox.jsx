@@ -208,11 +208,11 @@ function SearchBox({ preFilledData, hideServiceTabs, activeService, hideTripType
         }
       });
     } else if (activeTab === "bus") {
-      navigate("/bus-results", {
+      navigate("/buses", {
         state: { fromCity, toCity, startDate, returnDate, tripType }
       });
     } else if (activeTab === "hotel") {
-      navigate("/hotel-results", {
+      navigate("/hotels", {
         state: { city: fromCity, checkInDate: startDate, checkOutDate: returnDate, guests: displayValue }
       });
     } else {

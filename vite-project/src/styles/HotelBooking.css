@@ -2,9 +2,10 @@
 .hotel-booking-page {
   min-height: 100vh;
   background: #f5f5f5;
+  padding-top: 64px;
 }
 
-/* Top header uses .minimal-navbar from HotelResults.css */
+/* Top header uses shared .navbar styles from globals.css */
 
 /* HOTEL DETAIL SECTION */
 .hotel-detail-section {

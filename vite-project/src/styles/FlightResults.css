@@ -339,7 +339,7 @@
   top: 20px;
   max-height: none;
   overflow: visible;
-  z-index: 1;
+  z-index: 2000;
 }
 
 
@@ -349,6 +349,8 @@
   flex: 1;
   min-width: 0; /* Prevents flex item from overflowing */
   margin-left: -70px;
+  position: relative;
+  z-index: 1;
 }
 
 /* Sort By Bar */
@@ -974,7 +976,8 @@
   margin-right: 10px;
   align-self: center;
   border-bottom: 3px solid #63d67ed9;
-  background: linear-gradient(to right, #84d296d9, #ffffff);
+  background: linear-gradient(to right, #84d296d9, 
+  #ffffff);
 }
 
 .refundable-badge {
@@ -1683,9 +1686,16 @@ background-color: #c01313;
   margin-bottom: 1px;
 }
 
+.round-trip-column {
+  flex: 0 0 calc(50% - 7.5px);
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
 /* Round Trip Card Wrapper - Contains card and its expandable details */
 .round-trip-card-wrapper {
-  flex: 0 0 calc(50% - 7.5px);
+  width: 100%;
   display: flex;
   flex-direction: column;
   gap: 0;
@@ -1755,9 +1765,23 @@ background-color: #c01313;
   width: 18px;
   height: 18px;
   cursor: pointer;
-  accent-color: #e81a1a;
   margin-top: 2px;
   flex-shrink: 0;
+  accent-color: #e81a1a;
+  -webkit-appearance: none;
+  appearance: none;
+  border: 2px solid #c9c9c9;
+  border-radius: 50%;
+  background-color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mini-radio-top.is-checked,
+.mini-radio-top:checked {
+  border-color: #e81a1a;
+  background: radial-gradient(circle at center, #e81a1a 0 55%, #ffffff 58%);
 }
 
 .mini-price-section {

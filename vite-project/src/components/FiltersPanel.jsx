@@ -4,21 +4,25 @@ import { PiSunHorizon } from "react-icons/pi";
 import { PiSunLight } from "react-icons/pi";
 import { IoPartlySunnyOutline } from "react-icons/io5";
 
-const FiltersPanel = ({ onFiltersChange }) => {
+const FiltersPanel = ({ onFiltersChange, fromLabel = "New Delhi", toLabel = "Bengaluru", isRoundTrip = false }) => {
+  const safeFromLabel = fromLabel && String(fromLabel).trim() ? String(fromLabel).trim() : "New Delhi";
+  const safeToLabel = toLabel && String(toLabel).trim() ? String(toLabel).trim() : "Bengaluru";
+  const MIN_PRICE = 2000;
+  const MAX_PRICE = 70000;
   // State for all filters
   const [filters, setFilters] = useState({
     popularFilters: {
-      nonStop: true,
+      nonStop: false,
       hideNearbyAirports: false,
       refundableFares: false,
-      oneStop: true,
+      oneStop: false,
     },
-    priceRange: 18800,
+    priceRange: MAX_PRICE,
     priceTouched: false,
     onwardJourney: {
       stops: {
-        nonStop: true,
-        oneStop: true,
+        nonStop: false,
+        oneStop: false,
       },
       departureTime: [],
       arrivalTime: [],
@@ -29,15 +33,11 @@ const FiltersPanel = ({ onFiltersChange }) => {
     },
     returnJourney: {
       stops: {
-        nonStop: true,
-        oneStop: true,
+        nonStop: false,
+        oneStop: false,
       },
       departureTime: [],
       arrivalTime: [],
-      airports: {
-        hindon: false,
-        igi: false,
-      },
     },
     airlines: {
       airIndia: false,
@@ -45,10 +45,6 @@ const FiltersPanel = ({ onFiltersChange }) => {
       akasaAir: false,
       indigo: false,
       spicejet: false,
-    },
-    aircraftSize: {
-      smallMidSize: false,
-      large: false,
     },
   });
 
@@ -82,23 +78,22 @@ const FiltersPanel = ({ onFiltersChange }) => {
     if (filters.onwardJourney.airports.hindon) filters_list.push({ id: 'onward-airport-hindon', label: 'Hindon Airport' });
     if (filters.onwardJourney.airports.igi) filters_list.push({ id: 'onward-airport-igi', label: 'IGI Airport' });
 
-    // Return Journey - Stops
-    if (filters.returnJourney.stops.nonStop) filters_list.push({ id: 'return-stops-nonStop', label: 'BLR: Non Stop' });
-    if (filters.returnJourney.stops.oneStop) filters_list.push({ id: 'return-stops-oneStop', label: 'BLR: 1 Stop' });
+    if (isRoundTrip) {
+      // Return Journey - Stops
+      if (filters.returnJourney.stops.nonStop) filters_list.push({ id: 'return-stops-nonStop', label: 'BLR: Non Stop' });
+      if (filters.returnJourney.stops.oneStop) filters_list.push({ id: 'return-stops-oneStop', label: 'BLR: 1 Stop' });
 
-    // Return Journey - Departure Time
-    filters.returnJourney.departureTime.forEach(time => {
-      filters_list.push({ id: `return-departure-${time}`, label: `BLR Departure: ${time}` });
-    });
+      // Return Journey - Departure Time
+      filters.returnJourney.departureTime.forEach(time => {
+        filters_list.push({ id: `return-departure-${time}`, label: `BLR Departure: ${time}` });
+      });
 
-    // Return Journey - Arrival Time
-    filters.returnJourney.arrivalTime.forEach(time => {
-      filters_list.push({ id: `return-arrival-${time}`, label: `DEL Arrival: ${time}` });
-    });
+      // Return Journey - Arrival Time
+      filters.returnJourney.arrivalTime.forEach(time => {
+        filters_list.push({ id: `return-arrival-${time}`, label: `DEL Arrival: ${time}` });
+      });
+    }
 
-    // Return Journey - Airports
-    if (filters.returnJourney.airports.hindon) filters_list.push({ id: 'return-airport-hindon', label: 'Hindon Airport' });
-    if (filters.returnJourney.airports.igi) filters_list.push({ id: 'return-airport-igi', label: 'IGI Airport' });
 
     // Airlines
     if (filters.airlines.airIndia) filters_list.push({ id: 'airline-airIndia', label: 'Air India' });
@@ -107,15 +102,11 @@ const FiltersPanel = ({ onFiltersChange }) => {
     if (filters.airlines.indigo) filters_list.push({ id: 'airline-indigo', label: 'IndiGo' });
     if (filters.airlines.spicejet) filters_list.push({ id: 'airline-spicejet', label: 'SpiceJet' });
 
-    // Aircraft Size
-    if (filters.aircraftSize.smallMidSize) filters_list.push({ id: 'aircraft-smallMidSize', label: 'Small/Mid-size Aircraft' });
-    if (filters.aircraftSize.large) filters_list.push({ id: 'aircraft-large', label: 'Large Aircraft' });
-
     setAppliedFilters(filters_list);
     if (onFiltersChange) {
       onFiltersChange(filters);
     }
-  }, [filters]);
+  }, [filters, isRoundTrip]);
 
   // Remove individual filter
   const removeFilter = (filterId) => {
@@ -164,20 +155,12 @@ const FiltersPanel = ({ onFiltersChange }) => {
         newFilters.returnJourney.arrivalTime = newFilters.returnJourney.arrivalTime.filter(t => t !== time);
       }
 
-      // Return Journey - Airports
-      if (filterId === 'return-airport-hindon') newFilters.returnJourney.airports.hindon = false;
-      if (filterId === 'return-airport-igi') newFilters.returnJourney.airports.igi = false;
-
       // Airlines
       if (filterId === 'airline-airIndia') newFilters.airlines.airIndia = false;
       if (filterId === 'airline-airIndiaExpress') newFilters.airlines.airIndiaExpress = false;
       if (filterId === 'airline-akasaAir') newFilters.airlines.akasaAir = false;
       if (filterId === 'airline-indigo') newFilters.airlines.indigo = false;
       if (filterId === 'airline-spicejet') newFilters.airlines.spicejet = false;
-
-      // Aircraft Size
-      if (filterId === 'aircraft-smallMidSize') newFilters.aircraftSize.smallMidSize = false;
-      if (filterId === 'aircraft-large') newFilters.aircraftSize.large = false;
 
       return newFilters;
     });
@@ -192,7 +175,7 @@ const FiltersPanel = ({ onFiltersChange }) => {
         refundableFares: false,
         oneStop: false,
       },
-      priceRange: 18800,
+      priceRange: MAX_PRICE,
       priceTouched: false,
       onwardJourney: {
         stops: {
@@ -213,10 +196,6 @@ const FiltersPanel = ({ onFiltersChange }) => {
         },
         departureTime: [],
         arrivalTime: [],
-        airports: {
-          hindon: false,
-          igi: false,
-        },
       },
       airlines: {
         airIndia: false,
@@ -224,10 +203,6 @@ const FiltersPanel = ({ onFiltersChange }) => {
         akasaAir: false,
         indigo: false,
         spicejet: false,
-      },
-      aircraftSize: {
-        smallMidSize: false,
-        large: false,
       },
     });
   };
@@ -255,7 +230,8 @@ const FiltersPanel = ({ onFiltersChange }) => {
   };
 
   const calculateSliderPosition = () => {
-    const percentage = ((filters.priceRange - 6478) / (29600 - 6478)) * 100;
+    const range = MAX_PRICE - MIN_PRICE;
+    const percentage = range > 0 ? ((filters.priceRange - MIN_PRICE) / range) * 100 : 0;
     return percentage;
   };
 
@@ -356,16 +332,16 @@ const FiltersPanel = ({ onFiltersChange }) => {
           <input 
             type="range" 
             className="price-slider"
-            min="6478" 
-            max="29600" 
+            min={MIN_PRICE}
+            max={MAX_PRICE}
             value={filters.priceRange} 
             onChange={handlePriceChange}
             style={{ background: getSliderBackground() }}
           />
         </div>
         <div className="price-labels">
-          <span>₹ 6,478</span>
-          <span>₹ 29,600</span>
+          <span>₹ 2,000</span>
+          <span>₹ 70,000</span>
         </div>
       </div>
 
@@ -373,7 +349,7 @@ const FiltersPanel = ({ onFiltersChange }) => {
       <div className="filter-card">
         <h3 className="section-title-with-bar">Onward Journey</h3>
         
-        <h4 className="subsection-title">Stops From New Delhi</h4>
+        <h4 className="subsection-title">Stops From {safeFromLabel}</h4>
         <label className="checkbox-row">
           <div className="checkbox-label">
             <input 
@@ -409,7 +385,7 @@ const FiltersPanel = ({ onFiltersChange }) => {
           <span className="price">₹ 6,694</span>
         </label>
 
-        <h4 className="subsection-title">Departure From New Delhi</h4>
+        <h4 className="subsection-title">Departure From {safeFromLabel}</h4>
         <div className="time-slots-grid">
           <div 
             className={`time-slot-box ${filters.onwardJourney.departureTime.includes('Before 6 AM') ? 'active' : ''}`}
@@ -446,7 +422,7 @@ const FiltersPanel = ({ onFiltersChange }) => {
           </div>
         </div>
 
-        <h4 className="subsection-title">Arrival at Bengaluru</h4>
+        <h4 className="subsection-title">Arrival at {safeToLabel}</h4>
         <div className="time-slots-grid">
           <div 
             className={`time-slot-box ${filters.onwardJourney.arrivalTime.includes('Before 6 AM') ? 'active' : ''}`}
@@ -518,154 +494,122 @@ const FiltersPanel = ({ onFiltersChange }) => {
         </label>
       </div>
 
-      {/* Return Journey */}
-      <div className="filter-card">
-        <h3 className="section-title-with-bar">Return Journey</h3>
-        
-        <h4 className="subsection-title">Stops From Bengaluru</h4>
-        <label className="checkbox-row">
-          <div className="checkbox-label">
-            <input 
-              type="checkbox" 
-              checked={filters.returnJourney.stops.nonStop}
-              onChange={(e) => setFilters(prev => ({
-                ...prev,
-                returnJourney: { 
-                  ...prev.returnJourney, 
-                  stops: { ...prev.returnJourney.stops, nonStop: e.target.checked }
-                }
-              }))}
-            /> 
-            <span>Non Stop</span>
-          </div>
-          <span className="price">₹ 7,095</span>
-        </label>
-        <label className="checkbox-row">
-          <div className="checkbox-label">
-            <input 
-              type="checkbox" 
-              checked={filters.returnJourney.stops.oneStop}
-              onChange={(e) => setFilters(prev => ({
-                ...prev,
-                returnJourney: { 
-                  ...prev.returnJourney, 
-                  stops: { ...prev.returnJourney.stops, oneStop: e.target.checked }
-                }
-              }))}
-            /> 
-            <span>1 Stop</span>
-          </div>
-          <span className="price">₹ 7,098</span>
-        </label>
+      {isRoundTrip && (
+        <div className="filter-card">
+          <h3 className="section-title-with-bar">Return Journey</h3>
+          
+          <h4 className="subsection-title">Stops From {safeToLabel}</h4>
+          <label className="checkbox-row">
+            <div className="checkbox-label">
+              <input 
+                type="checkbox" 
+                checked={filters.returnJourney.stops.nonStop}
+                onChange={(e) => setFilters(prev => ({
+                  ...prev,
+                  returnJourney: { 
+                    ...prev.returnJourney, 
+                    stops: { ...prev.returnJourney.stops, nonStop: e.target.checked }
+                  }
+                }))}
+              /> 
+              <span>Non Stop</span>
+            </div>
+            <span className="price">₹ 7,095</span>
+          </label>
+          <label className="checkbox-row">
+            <div className="checkbox-label">
+              <input 
+                type="checkbox" 
+                checked={filters.returnJourney.stops.oneStop}
+                onChange={(e) => setFilters((prev) => ({
+                  ...prev,
+                  returnJourney: { 
+                    ...prev.returnJourney, 
+                    stops: { ...prev.returnJourney.stops, oneStop: e.target.checked }
+                  }
+                }))}
+              /> 
+              <span>1 Stop</span>
+            </div>
+            <span className="price">₹ 7,098</span>
+          </label>
 
-        <h4 className="subsection-title">Departure From Bengaluru</h4>
-        <div className="time-slots-grid">
-          <div 
-            className={`time-slot-box ${filters.returnJourney.departureTime.includes('Before 6 AM') ? 'active' : ''}`}
-            onClick={() => toggleTimeSlot('returnJourney', 'departureTime', 'Before 6 AM')}
-          >
-            <PiSunHorizon className="time-icon" />
-            
-            <span className="time-label">Before<br/>6 AM</span>
+          <h4 className="subsection-title">Departure From {safeToLabel}</h4>
+          <div className="time-slots-grid">
+            <div 
+              className={`time-slot-box ${filters.returnJourney.departureTime.includes('Before 6 AM') ? 'active' : ''}`}
+              onClick={() => toggleTimeSlot('returnJourney', 'departureTime', 'Before 6 AM')}
+            >
+              <PiSunHorizon className="time-icon" />
+              
+              <span className="time-label">Before<br/>6 AM</span>
+            </div>
+            <div 
+              className={`time-slot-box ${filters.returnJourney.departureTime.includes('6 AM - 12 PM') ? 'active' : ''}`}
+              onClick={() => toggleTimeSlot('returnJourney', 'departureTime', '6 AM - 12 PM')}
+            >
+              <PiSunLight className="time-icon" />
+              
+              <span className="time-label">6 AM to<br/>12 PM</span>
+            </div>
+            <div 
+              className={`time-slot-box ${filters.returnJourney.departureTime.includes('12 PM - 6 PM') ? 'active' : ''}`}
+              onClick={() => toggleTimeSlot('returnJourney', 'departureTime', '12 PM - 6 PM')}
+            >
+                <IoPartlySunnyOutline className="time-icon"/>
+              <span className="time-label">12 PM to<br/>6 PM</span>
+            </div>
+            <div 
+              className={`time-slot-box ${filters.returnJourney.departureTime.includes('After 6 PM') ? 'active' : ''}`}
+              onClick={() => toggleTimeSlot('returnJourney', 'departureTime', 'After 6 PM')}
+            >
+              <svg className="time-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+              </svg>
+              <span className="time-label">After<br/>6 PM</span>
+            </div>
           </div>
-          <div 
-            className={`time-slot-box ${filters.returnJourney.departureTime.includes('6 AM - 12 PM') ? 'active' : ''}`}
-            onClick={() => toggleTimeSlot('returnJourney', 'departureTime', '6 AM - 12 PM')}
-          >
-            <PiSunLight className="time-icon" />
-            
-            <span className="time-label">6 AM to<br/>12 PM</span>
-          </div>
-          <div 
-            className={`time-slot-box ${filters.returnJourney.departureTime.includes('12 PM - 6 PM') ? 'active' : ''}`}
-            onClick={() => toggleTimeSlot('returnJourney', 'departureTime', '12 PM - 6 PM')}
-          >
+
+          <h4 className="subsection-title">Arrival at {safeFromLabel}</h4>
+          <div className="time-slots-grid">
+            <div 
+              className={`time-slot-box ${filters.returnJourney.arrivalTime.includes('Before 6 AM') ? 'active' : ''}`}
+              onClick={() => toggleTimeSlot('returnJourney', 'arrivalTime', 'Before 6 AM')}
+            >
+              <PiSunHorizon className="time-icon" />
+              
+              <span className="time-label">Before<br/>6 AM</span>
+            </div>
+            <div 
+              className={`time-slot-box ${filters.returnJourney.arrivalTime.includes('6 AM - 12 PM') ? 'active' : ''}`}
+              onClick={() => toggleTimeSlot('returnJourney', 'arrivalTime', '6 AM - 12 PM')}
+            >
+              <PiSunLight className="time-icon" />
+             
+              <span className="time-label">6 AM to<br/>12 PM</span>
+            </div>
+            <div 
+              className={`time-slot-box ${filters.returnJourney.arrivalTime.includes('12 PM - 6 PM') ? 'active' : ''}`}
+              onClick={() => toggleTimeSlot('returnJourney', 'arrivalTime', '12 PM - 6 PM')}
+            >
               <IoPartlySunnyOutline className="time-icon"/>
-            <span className="time-label">12 PM to<br/>6 PM</span>
+              <span className="time-label">12 PM to<br/>6 PM</span>
+            </div>
+            <div 
+              className={`time-slot-box ${filters.returnJourney.arrivalTime.includes('After 6 PM') ? 'active' : ''}`}
+              onClick={() => toggleTimeSlot('returnJourney', 'arrivalTime', 'After 6 PM')}
+            >
+              <svg className="time-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+              </svg>
+              <span className="time-label">After<br/>6 PM</span>
+            </div>
           </div>
-          <div 
-            className={`time-slot-box ${filters.returnJourney.departureTime.includes('After 6 PM') ? 'active' : ''}`}
-            onClick={() => toggleTimeSlot('returnJourney', 'departureTime', 'After 6 PM')}
-          >
-            <svg className="time-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-            </svg>
-            <span className="time-label">After<br/>6 PM</span>
-          </div>
+
         </div>
+      )}
 
-        <h4 className="subsection-title">Arrival at New Delhi</h4>
-        <div className="time-slots-grid">
-          <div 
-            className={`time-slot-box ${filters.returnJourney.arrivalTime.includes('Before 6 AM') ? 'active' : ''}`}
-            onClick={() => toggleTimeSlot('returnJourney', 'arrivalTime', 'Before 6 AM')}
-          >
-            <PiSunHorizon className="time-icon" />
-            
-            <span className="time-label">Before<br/>6 AM</span>
-          </div>
-          <div 
-            className={`time-slot-box ${filters.returnJourney.arrivalTime.includes('6 AM - 12 PM') ? 'active' : ''}`}
-            onClick={() => toggleTimeSlot('returnJourney', 'arrivalTime', '6 AM - 12 PM')}
-          >
-            <PiSunLight className="time-icon" />
-           
-            <span className="time-label">6 AM to<br/>12 PM</span>
-          </div>
-          <div 
-            className={`time-slot-box ${filters.returnJourney.arrivalTime.includes('12 PM - 6 PM') ? 'active' : ''}`}
-            onClick={() => toggleTimeSlot('returnJourney', 'arrivalTime', '12 PM - 6 PM')}
-          >
-            <IoPartlySunnyOutline className="time-icon"/>
-            <span className="time-label">12 PM to<br/>6 PM</span>
-          </div>
-          <div 
-            className={`time-slot-box ${filters.returnJourney.arrivalTime.includes('After 6 PM') ? 'active' : ''}`}
-            onClick={() => toggleTimeSlot('returnJourney', 'arrivalTime', 'After 6 PM')}
-          >
-            <svg className="time-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-            </svg>
-            <span className="time-label">After<br/>6 PM</span>
-          </div>
-        </div>
-
-        <h4 className="subsection-title">Arrival Airports</h4>
-        <label className="checkbox-row">
-          <div className="checkbox-label">
-            <input 
-              type="checkbox" 
-              checked={filters.returnJourney.airports.hindon}
-              onChange={(e) => setFilters(prev => ({
-                ...prev,
-                returnJourney: { 
-                  ...prev.returnJourney, 
-                  airports: { ...prev.returnJourney.airports, hindon: e.target.checked }
-                }
-              }))}
-            /> 
-            <span>Hindon Airport (32Km)</span>
-          </div>
-        </label>
-        <label className="checkbox-row">
-          <div className="checkbox-label">
-            <input 
-              type="checkbox" 
-              checked={filters.returnJourney.airports.igi}
-              onChange={(e) => setFilters(prev => ({
-                ...prev,
-                returnJourney: { 
-                  ...prev.returnJourney, 
-                  airports: { ...prev.returnJourney.airports, igi: e.target.checked }
-                }
-              }))}
-            /> 
-            <span>Indira Gandhi International Airport</span>
-          </div>
-        </label>
-      </div>
-
-      {/* Airlines and Aircraft Size */}
+      {/* Airlines */}
       <div className="filter-card">
         <h3>Airlines</h3>
         
@@ -759,37 +703,6 @@ const FiltersPanel = ({ onFiltersChange }) => {
           <span className="price">₹ 14,605</span>
         </label>
 
-        <h3 className="aircraft-size-title">Aircraft Size</h3>
-        
-        <label className="checkbox-row">
-          <div className="checkbox-label">
-            <input 
-              type="checkbox" 
-              checked={filters.aircraftSize.smallMidSize}
-              onChange={(e) => setFilters(prev => ({
-                ...prev,
-                aircraftSize: { ...prev.aircraftSize, smallMidSize: e.target.checked }
-              }))}
-            />
-            <span>Small / Mid-size aircraft</span>
-          </div>
-          <span className="price">₹ 13,792</span>
-        </label>
-
-        <label className="checkbox-row">
-          <div className="checkbox-label">
-            <input 
-              type="checkbox" 
-              checked={filters.aircraftSize.large}
-              onChange={(e) => setFilters(prev => ({
-                ...prev,
-                aircraftSize: { ...prev.aircraftSize, large: e.target.checked }
-              }))}
-            />
-            <span>Large Aircraft</span>
-          </div>
-          <span className="price">₹ 14,705</span>
-        </label>
       </div>
     </div>
   );

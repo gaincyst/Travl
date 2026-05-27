@@ -141,7 +141,7 @@ const BusFiltersPanel = () => {
       <div className="filter-card">
         <div className="card-header">
           <h3 className="section-title-with-bar">Applied Filters</h3>
-          <button className="clear-all" onClick={clearAll}>CLEAR ALL</button>
+          <button className="bus-clear-all" onClick={clearAll}>CLEAR ALL</button>
         </div>
         {appliedFilters.length > 0 && (
           <div className="applied-pills">
@@ -244,39 +244,39 @@ const BusFiltersPanel = () => {
         </div>
 
         <h4 className="subsection-title">Pick up time</h4>
-        <div className="time-slots-grid">
+        <div className="bus-time-slots-grid">
           <div 
-            className={`time-slot-box ${selectedPickupTimes.includes('pickup-12am-6am') ? 'active' : ''}`}
+            className={`bus-time-slot-box ${selectedPickupTimes.includes('pickup-12am-6am') ? 'active' : ''}`}
             onClick={() => handleTimeSlotToggle('pickup-12am-6am', '12 AM - 6 AM', 'pickup')}
           >
-            <PiSunHorizon className="time-icon" />
+            <PiSunHorizon className="bus-time-icon" />
             
-            <span className="time-label">12 AM -<br/>6 AM</span>
+            <span className="bus-time-label">12 AM -<br/>6 AM</span>
           </div>
           <div 
-            className={`time-slot-box ${selectedPickupTimes.includes('pickup-6am-12pm') ? 'active' : ''}`}
+            className={`bus-time-slot-box ${selectedPickupTimes.includes('pickup-6am-12pm') ? 'active' : ''}`}
             onClick={() => handleTimeSlotToggle('pickup-6am-12pm', '6 AM - 12 PM', 'pickup')}
           >
-            <PiSunLight className="time-icon" />
+            <PiSunLight className="bus-time-icon" />
             
-            <span className="time-label">6 AM -<br/>12 PM</span>
+            <span className="bus-time-label">6 AM -<br/>12 PM</span>
           </div>
           <div 
-            className={`time-slot-box ${selectedPickupTimes.includes('pickup-12pm-6pm') ? 'active' : ''}`}
+            className={`bus-time-slot-box ${selectedPickupTimes.includes('pickup-12pm-6pm') ? 'active' : ''}`}
             onClick={() => handleTimeSlotToggle('pickup-12pm-6pm', '12 PM - 6 PM', 'pickup')}
           >
-            <IoPartlySunnyOutline className="time-icon" />
+            <IoPartlySunnyOutline className="bus-time-icon" />
        
-            <span className="time-label">12 PM -<br/>6 PM</span>
+            <span className="bus-time-label">12 PM -<br/>6 PM</span>
           </div>
           <div 
-            className={`time-slot-box ${selectedPickupTimes.includes('pickup-6pm-12am') ? 'active' : ''}`}
+            className={`bus-time-slot-box ${selectedPickupTimes.includes('pickup-6pm-12am') ? 'active' : ''}`}
             onClick={() => handleTimeSlotToggle('pickup-6pm-12am', '6 PM - 12 AM', 'pickup')}
           >
-            <svg className="time-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg className="bus-time-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
             </svg>
-            <span className="time-label">6 PM -<br/>12 AM</span>
+            <span className="bus-time-label">6 PM -<br/>12 AM</span>
           </div>
         </div>
       </div>
@@ -339,38 +339,38 @@ const BusFiltersPanel = () => {
         <span className="plus-more">Show all (14) ↓</span>
 
         <h4 className="subsection-title">Drop time</h4>
-        <div className="time-slots-grid">
+        <div className="bus-time-slots-grid">
           <div 
-            className={`time-slot-box ${selectedDropTimes.includes('drop-12am-6am') ? 'active' : ''}`}
+            className={`bus-time-slot-box ${selectedDropTimes.includes('drop-12am-6am') ? 'active' : ''}`}
             onClick={() => handleTimeSlotToggle('drop-12am-6am', '12 AM - 6 AM', 'drop')}
           >
-            <PiSunHorizon className="time-icon" />
+            <PiSunHorizon className="bus-time-icon" />
             
-            <span className="time-label">12 AM -<br/>6 AM</span>
+            <span className="bus-time-label">12 AM -<br/>6 AM</span>
           </div>
           <div 
-            className={`time-slot-box ${selectedDropTimes.includes('drop-6am-12pm') ? 'active' : ''}`}
+            className={`bus-time-slot-box ${selectedDropTimes.includes('drop-6am-12pm') ? 'active' : ''}`}
             onClick={() => handleTimeSlotToggle('drop-6am-12pm', '6 AM - 12 PM', 'drop')}
           >
-            <PiSunLight className="time-icon"/>
+            <PiSunLight className="bus-time-icon"/>
            
-            <span className="time-label">6 AM -<br/>12 PM</span>
+            <span className="bus-time-label">6 AM -<br/>12 PM</span>
           </div>
           <div 
-            className={`time-slot-box ${selectedDropTimes.includes('drop-12pm-6pm') ? 'active' : ''}`}
+            className={`bus-time-slot-box ${selectedDropTimes.includes('drop-12pm-6pm') ? 'active' : ''}`}
             onClick={() => handleTimeSlotToggle('drop-12pm-6pm', '12 PM - 6 PM', 'drop')}
           >
-            <IoPartlySunnyOutline className="time-icon" />
-            <span className="time-label">12 PM -<br/>6 PM</span>
+            <IoPartlySunnyOutline className="bus-time-icon" />
+            <span className="bus-time-label">12 PM -<br/>6 PM</span>
           </div>
           <div 
-            className={`time-slot-box ${selectedDropTimes.includes('drop-6pm-12am') ? 'active' : ''}`}
+            className={`bus-time-slot-box ${selectedDropTimes.includes('drop-6pm-12am') ? 'active' : ''}`}
             onClick={() => handleTimeSlotToggle('drop-6pm-12am', '6 PM - 12 AM', 'drop')}
           >
-            <svg className="time-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg className="bus-time-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
             </svg>
-            <span className="time-label">6 PM -<br/>12 AM</span>
+            <span className="bus-time-label">6 PM -<br/>12 AM</span>
           </div>
         </div>
       </div>

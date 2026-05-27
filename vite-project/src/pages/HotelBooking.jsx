@@ -258,76 +258,67 @@ const getGradientStyle = (name) => {
 
   return (
     <div className="hotel-booking-page">
-      {/* HEADER 1 - Top Navigation Header (Same as HotelResults.jsx) */}
-      <nav className="minimal-navbar">
-        <div className="nav-container">
-          {/* Logo */}
-          <div className="logo-container">
-            <img
-              src="/logos.png"
-              alt="Travel2 Logo"
-              className="nav-logo"
-              onClick={() => navigate("/")}
-              style={{ cursor: "pointer" }}
-            />
-          </div>
-
-          {/* Menu */}
-          <ul className="nav-menu">
-            <li onClick={() => navigate("/", { state: { searchBoxType: "flights" } })}>
-              <FaPlane className="menu-icon" /> Flights
-            </li>
-            <li className="active">
-              <FaHotel className="menu-icon" /> Hotels
-            </li>
-            <li onClick={() => navigate("/", { state: { searchBoxType: "bus" } })}>
-              <FaBus className="menu-icon" /> Buses
-            </li>
-            <li>
-              <FaThLarge className="menu-icon" /> More
-            </li>
-          </ul>
-
-          {/* Right section */}
-          <div className="nav-right">
-            <button className="theme-toggle" onClick={toggleTheme}>
-              {darkMode ? <FaSun className="sun-icon" /> : <FaMoon className="moon-icon" />}
-            </button>
-
-            {isLoggedIn && currentUser ? (
-              <div className="profile-avatar-container" ref={profileDropdownRef}>
-                <Avatar
-                  user={currentUser}
-                  size="medium"
-                  onClick={() => setShowProfileDropdown(!showProfileDropdown)}
-                />
-
-                {showProfileDropdown && (
-                  <div className="profile-dropdown-menu">
-                    <div className="profile-menu-item" onClick={() => { setShowProfileDropdown(false); navigate('/profile'); }}>
-                      <FaUser className="profile-menu-icon" />
-                      <span>My Profile</span>
-                    </div>
-                    <div className="profile-menu-item" onClick={() => { setShowProfileDropdown(false); navigate('/dashboard'); }}>
-                      <FaTachometerAlt className="profile-menu-icon" />
-                      <span>Dashboard</span>
-                    </div>
-                    <div className="profile-menu-item logout-item" onClick={handleNavbarLogout}>
-                      <FaSignOutAlt className="profile-menu-icon" />
-                      <span>Logout</span>
-                    </div>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <div className="login-signup" onClick={() => setShowAuthModal(true)} style={{ cursor: "pointer" }}>
-                <FaUserCircle className="user-login-icon" />
-                <span>Login / Signup</span>
-              </div>
-            )}
-          </div>
+      {/* HEADER 1 - Top Navigation Header (Matches Home Page Navbar Styling) */}
+      <header className="navbar navbar-scrolled hotel-booking-navbar">
+        <div className="logo">
+          <a href="/">
+            <img src="/logos.png" alt="Travel2 Logo" className="navbar-logo-img" />
+          </a>
         </div>
-      </nav>
+
+        <nav className="nav-center">
+          <span className="nav-link" onClick={() => navigate("/", { state: { searchBoxType: "flights" } })}>
+            <FaPlane /> Flights
+          </span>
+          <span className="nav-link">
+            <FaHotel /> Hotels
+          </span>
+          <span className="nav-link" onClick={() => navigate("/", { state: { searchBoxType: "bus" } })}>
+            <FaBus /> Buses
+          </span>
+          <span className="nav-link">
+            <FaThLarge /> More
+          </span>
+        </nav>
+
+        <div className="nav-right">
+          <button className="theme-toggle" onClick={toggleTheme}>
+            {darkMode ? <FaSun className="sun-icon" /> : <FaMoon className="moon-icon" />}
+          </button>
+
+          {isLoggedIn && currentUser ? (
+            <div className="profile-avatar-container" ref={profileDropdownRef}>
+              <Avatar
+                user={currentUser}
+                size="medium"
+                onClick={() => setShowProfileDropdown(!showProfileDropdown)}
+              />
+
+              {showProfileDropdown && (
+                <div className="profile-dropdown-menu">
+                  <div className="profile-menu-item" onClick={() => { setShowProfileDropdown(false); navigate('/profile'); }}>
+                    <FaUser className="profile-menu-icon" />
+                    <span>My Profile</span>
+                  </div>
+                  <div className="profile-menu-item" onClick={() => { setShowProfileDropdown(false); navigate('/dashboard'); }}>
+                    <FaTachometerAlt className="profile-menu-icon" />
+                    <span>Dashboard</span>
+                  </div>
+                  <div className="profile-menu-item logout-item" onClick={handleNavbarLogout}>
+                    <FaSignOutAlt className="profile-menu-icon" />
+                    <span>Logout</span>
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="login-signup" onClick={() => setShowAuthModal(true)} style={{ cursor: "pointer" }}>
+              <FaUserCircle className="user-login-icon" />
+              <span>Login / Signup</span>
+            </div>
+          )}
+        </div>
+      </header>
 
       {/* HEADER 2 - Search Summary Header (exactly as Screenshot 2) */}
       <HotelSearchHeader 

@@ -1099,6 +1099,11 @@ background-color: #c01313;
   margin-bottom: 4px;
 }
 
+.seat-item span::before {
+  content: "₹";
+  margin-right: 2px;
+}
+
 .seat-item.available:hover {
   border-color: #f32121;
   background: #fde3e3;
@@ -1546,6 +1551,10 @@ background-color: #c01313;
 .cancellation-table td:nth-child(3) {
   text-align: left;
   font-weight: 500;
+}
+
+.cancellation-table td:nth-child(3)::before {
+  content: "₹ ";
 }
 
 /* Policy Notes */
@@ -2329,7 +2338,7 @@ background-color: #c01313;
   margin-right: 8px;
 }
 
-.appply-btn,
+.bus-appply-btn,
 .remove-btn,
 .login-btn {
   padding: 8px 16px;
@@ -2341,7 +2350,7 @@ background-color: #c01313;
   transition: all 0.2s ease;
 }
 
-.appply-btn {
+.bus-appply-btn {
   background: transparent;
   color: #921515;
   border: 1px solid transparent;
@@ -2349,7 +2358,7 @@ background-color: #c01313;
 
 }
 
-.appply-btn:hover {
+.bus-appply-btn:hover {
   text-decoration: underline;
 }
 

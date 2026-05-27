@@ -44,7 +44,7 @@
   margin: 0;
 }
 
-.clear-all {
+.bus-clear-all {
   color: #008cff;
   font-weight: 600;
   font-size: 13px;
@@ -56,7 +56,7 @@
   margin-top: -50px;
 }
 
-.clear-all:hover {
+.bus-clear-all:hover {
   text-decoration: underline;
 }
 
@@ -172,14 +172,14 @@
   margin: 20px 0 12px 0;
 }
 
-.time-slots-grid {
+.bus-time-slots-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 8px;
   margin: 12px 0 20px 0;
 }
 
-.time-slot-box {
+.bus-time-slot-box {
   border: 1px solid #d0d0d0;
   border-radius: 8px;
   padding: 16px 8px;
@@ -193,32 +193,32 @@
   background: #ffffff;
 }
 
-.time-slot-box:hover {
+.bus-time-slot-box:hover {
   border-color: #a81313;
   background: #f9ecec;
 }
 
-.time-slot-box.active {
+.bus-time-slot-box.active {
   border-color: #c81f1f;
   border-width: 2px;
   background: #f8ebeb;
 }
 
-.time-icon {
+.bus-time-icon {
   width: 28px;
   height: 28px;
   color: #666666;
 }
 
-.time-slot-box:hover .time-icon {
+.bus-time-slot-box:hover .time-icon {
   color: #de1717;
 }
 
-.time-slot-box.active .time-icon {
+.bus-time-slot-box.active .time-icon {
   color: #a00707;
 }
 
-.time-label {
+.bus-time-label {
   font-size: 11px;
   color: #333333;
   text-align: center;

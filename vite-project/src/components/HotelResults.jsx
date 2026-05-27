@@ -514,8 +514,6 @@ function HotelResults() {
               {/* HOTEL CARDS (dynamic from backend) */}
               {loading ? (
                 <div className="loading-state">Loading hotels...</div>
-              ) : error ? (
-                <div className="error-state">{error}</div>
               ) : results && results.length > 0 ? (
                 <div className="hotel-cards-container">
                   {results.map((hotel) => (
